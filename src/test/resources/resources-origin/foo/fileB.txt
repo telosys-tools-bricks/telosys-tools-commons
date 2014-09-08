@@ -1,0 +1,5 @@
+file B
+aaa
+bb  bbb  bb
+ccccccccc
+ddd dddd

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databases defaultId="0" maxId="4">
+<db dialect="" driver="org.h2.Driver" id="0" isolationLevel="" name="H2 in memory" poolSize="10" typeName="" url="jdbc:h2:~/test">
+<property name="user" value=""/>
+<property name="password" value=""/>
+<metadata catalog="" schema="ROOT" table-name-pattern="%" table-types="TABLE   VIEW  "/>
+</db>
+</databases>
