@@ -21,6 +21,16 @@ public class TestsEnv {
 	
 	private final static String SRC_TEST_RESOURCES = "src/test/resources/" ;
 
+	/**
+	 * Returns the absolute path for the given test file name without checking existence
+	 * @param fileName
+	 * @return
+	 */
+	public final static String buildAbsolutePath(String fileName) {
+		File file = new File(SRC_TEST_RESOURCES + fileName);
+		return file.getAbsolutePath();
+	}
+	
 	public final static String getTestFileAbsolutePath(String fileName) {
 		File file = getTestFile( fileName ); 
 		return file.getAbsolutePath();

@@ -120,7 +120,7 @@ public class SqlScriptRunner {
      * @throws SQLException
      *             if any SQL errors occur
      * @throws IOException
-     *             if there is an error reading from the Reader
+     *             if there is an error reading from the Reader (FileNotFoundException, etc)
      */
     private void runScript(Connection conn, Reader reader) throws IOException,
             SQLException {
