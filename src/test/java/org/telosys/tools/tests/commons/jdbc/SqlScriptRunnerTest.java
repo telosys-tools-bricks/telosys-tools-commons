@@ -31,8 +31,8 @@ public class SqlScriptRunnerTest extends TestCase {
 
 	public void testNoFileWithPath() throws TelosysToolsException, IOException, SQLException {
 		
-		Connection con = getH2Connection() ;
-		SqlScriptRunner scriptRunner = new SqlScriptRunner(con, true, true);
+		Connection conn = getH2Connection() ;
+		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
 		String scriptFileFullPath = TestsEnv.buildAbsolutePath("sql/script1-inex.sql");
 		System.out.println("Script file : " + scriptFileFullPath );
 		
@@ -46,14 +46,14 @@ public class SqlScriptRunnerTest extends TestCase {
 			System.out.println("Expected exception : " + e.toString());
 		} 
 
-		con.close();
+		conn.close();
 		assertNotNull(error);
 	}
 
 	public void testNoFileWithReader() throws TelosysToolsException, IOException, SQLException {
 		
 		Connection con = getH2Connection() ;
-		SqlScriptRunner scriptRunner = new SqlScriptRunner(con, true, true);
+		SqlScriptRunner scriptRunner = new SqlScriptRunner(con);
 		
 		File scriptFile = new File( TestsEnv.buildAbsolutePath("sql/script1-inex.sql") ) ;
 		System.out.println("Script file : " + scriptFile.getAbsolutePath() ); 
@@ -63,6 +63,28 @@ public class SqlScriptRunnerTest extends TestCase {
 			FileReader fileReader = new FileReader(scriptFile) ; 
 			System.out.println("Running SQL script ...");
 			scriptRunner.runScript( fileReader); // FileNotFound Exception expected
+			System.out.println("SQL script executed.");
+		} catch (FileNotFoundException e) {
+			error = e ;
+			System.out.println("Expected exception : " + e.toString());
+		}
+		
+		con.close();
+		assertNotNull(error);
+	}
+
+	public void testNoFileWithFile() throws TelosysToolsException, IOException, SQLException {
+		
+		Connection con = getH2Connection() ;
+		SqlScriptRunner scriptRunner = new SqlScriptRunner(con);
+		
+		File scriptFile = new File( TestsEnv.buildAbsolutePath("sql/script1-inex.sql") ) ;
+		System.out.println("Script file : " + scriptFile.getAbsolutePath() ); 
+		
+		Exception error = null ;
+		try {
+			System.out.println("Running SQL script ...");
+			scriptRunner.runScript( scriptFile); // FileNotFound Exception expected
 			System.out.println("SQL script executed.");
 		} catch (FileNotFoundException e) {
 			error = e ;
@@ -88,7 +110,7 @@ public class SqlScriptRunnerTest extends TestCase {
 	public void testWithFileReader() throws TelosysToolsException, IOException, SQLException {
 		
 		Connection conn = getH2Connection() ;
-		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn, true, true);
+		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
 		
 		File scriptFile = TestsEnv.getTestFile("sql/script1-H2.sql");
 		FileReader fileReader = new FileReader(scriptFile) ; 
@@ -102,10 +124,26 @@ public class SqlScriptRunnerTest extends TestCase {
 		conn.close();
 	}
 
+	public void testWithFile() throws TelosysToolsException, IOException, SQLException {
+		
+		Connection conn = getH2Connection() ;
+		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
+		
+		File scriptFile = TestsEnv.getTestFile("sql/script1-H2.sql");
+		
+		System.out.println("Running SQL script ...");
+		scriptRunner.runScript(scriptFile);
+		System.out.println("SQL script executed.");
+		
+		int count = doSQLSelectCount(conn) ;
+		System.out.println("SQL count = " + count );
+		conn.close();
+	}
+
 	public void testWithFileName() throws TelosysToolsException, IOException, SQLException {
 		
 		Connection conn = getH2Connection() ;
-		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn, true, true);
+		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
 		
 		String scriptFileFullPath = TestsEnv.getTestFileAbsolutePath("sql/script1-H2.sql"); 
 		

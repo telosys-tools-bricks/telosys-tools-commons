@@ -18,9 +18,9 @@ public class TestH2Database {
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, TelosysToolsException{
 		System.out.println("Test H2 connection...");
 
-		testRemoteConnections();
+		//testRemoteConnections();
 
-		//testEmbeddedConnections();
+		testEmbeddedConnections();
 	}
 
 	public static void testRemoteConnections() throws ClassNotFoundException, SQLException {

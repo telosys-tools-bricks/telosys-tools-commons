@@ -15,79 +15,125 @@
  */
 package org.telosys.tools.commons.jdbc;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Tool to run database scripts ( SQL files )
+ * Tool to run database SQL scripts ( SQL files ) <br>
+ * The default configuration is : <br> 
+ *  - SQL command delimiter = ';' <br>
+ *  - stop on error  = true <br>
+ *  - auto-commit    = true <br>
+ *  
  */
 public class SqlScriptRunner {
 
-    private static final String DEFAULT_DELIMITER = ";";
+    private final Connection connection;
 
-    private Connection connection;
-
-    private boolean stopOnError;
-    private boolean autoCommit;
-
-    private PrintWriter logWriter = new PrintWriter(System.out);
+    private String      delimiter   = ";";
+    //private final boolean fullLineDelimiter = false;
+    private boolean     stopOnError = true ;
+    private boolean     autoCommit  = true ;
+    private PrintWriter logWriter      = new PrintWriter(System.out);
     private PrintWriter errorLogWriter = new PrintWriter(System.err);
 
-    private String delimiter = DEFAULT_DELIMITER;
-    private boolean fullLineDelimiter = false;
+    /**
+     * Constructor
+     * @param connection the JDBC connection to be used (not closed at the end)
+     */
+    public SqlScriptRunner(Connection connection ) {
+    	if ( connection == null ) {
+    		throw new IllegalArgumentException("Connection parameter is null");
+    	}
+        this.connection = connection;
+    }
 
     /**
-     * Default constructor
+     * Set the "auto-commit" mode (true by default)
+     * @param autoCommit  
      */
-    public SqlScriptRunner(Connection connection, boolean autoCommit,
-            boolean stopOnError) {
-        this.connection = connection;
+    public void setAutoCommit( boolean autoCommit ) {
         this.autoCommit = autoCommit;
+    }
+
+    /**
+     * Set the "stop on error" flag (true by default)
+     * @param stopOnError  
+     */
+    public void setStopOnError( boolean stopOnError ) {
         this.stopOnError = stopOnError;
     }
 
-    public void setDelimiter(String delimiter, boolean fullLineDelimiter) {
+    /**
+     * Set a specific delimiter
+     * @param delimiter 
+     */
+    public void setDelimiter( String delimiter ) {
         this.delimiter = delimiter;
-        this.fullLineDelimiter = fullLineDelimiter;
     }
 
     /**
-     * Setter for logWriter property
-     *
-     * @param logWriter
-     *            - the new value of the logWriter property
+     * Set a specific log writer (the default is System.out)
+     * @param logWriter the specific log writer (or null for none)
      */
     public void setLogWriter(PrintWriter logWriter) {
         this.logWriter = logWriter;
     }
 
     /**
-     * Setter for errorLogWriter property
-     *
-     * @param errorLogWriter
-     *            - the new value of the errorLogWriter property
+     * Set a specific error log writer (the default is System.err)
+     * @param errorLogWriter the specific error log writer (or null for none)
      */
     public void setErrorLogWriter(PrintWriter errorLogWriter) {
         this.errorLogWriter = errorLogWriter;
     }
 
+    /**
+     * Runs an SQL script (using the file name of the script)
+     * @param fileName the file name of the script to be executed
+     * @throws IOException
+     * @throws SQLException
+     */
     public void runScript(String fileName) throws IOException, SQLException 
     {
-		FileReader fr = new FileReader(fileName);
-		SqlScriptRunner r = new SqlScriptRunner(connection, true, true);
-		r.runScript(fr);
-		fr.close();
+		FileReader fileReader = new FileReader(fileName);
+		runScript(fileReader);
+		fileReader.close();
     }
     
     /**
-     * Runs an SQL script (read in using the Reader parameter)
-     *
-     * @param reader
-     *            - the source of the script
+     * Runs an SQL script ( using the given file )
+     * @param file
+     * @throws IOException
+     * @throws SQLException
+     */
+    public void runScript(File file) throws IOException, SQLException 
+    {
+//    	if ( ! file.exists()  ) {
+//    		throw new IllegalArgumentException("File " + file.getAbsolutePath() + " doesn't exist");
+//    	}
+//    	if ( ! file.isFile() ) {
+//    		throw new IllegalArgumentException("'" + file.getAbsolutePath() + "' is not a file");
+//    	}
+		FileReader fileReader = new FileReader(file);
+		runScript(fileReader);
+		fileReader.close();
+    }
+    
+    /**
+     * Runs an SQL script (using the Reader parameter)
+     * @param reader the SQL script provided as a Reader instance
+     * @throws IOException
+     * @throws SQLException
      */
     public void runScript(Reader reader) throws IOException, SQLException {
         try {
@@ -110,20 +156,13 @@ public class SqlScriptRunner {
     }
 
     /**
-     * Runs an SQL script (read in using the Reader parameter) using the
-     * connection passed in
-     *
-     * @param conn
-     *            - the connection to use for the script
-     * @param reader
-     *            - the source of the script
-     * @throws SQLException
-     *             if any SQL errors occur
-     * @throws IOException
-     *             if there is an error reading from the Reader (FileNotFoundException, etc)
+     * Runs the SQL script using the given input
+     * @param conn the connection to be used
+     * @param reader  the source of the script
+     * @throws IOException if an error occurs on the Reader (FileNotFoundException, etc)
+     * @throws SQLException if any SQL errors occur 
      */
-    private void runScript(Connection conn, Reader reader) throws IOException,
-            SQLException {
+    private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
         StringBuffer command = null;
         try {
             LineNumberReader lineReader = new LineNumberReader(reader);
@@ -147,63 +186,68 @@ public class SqlScriptRunner {
                 {
                     // Do nothing
                 } 
-                else if (!fullLineDelimiter
-                        && trimmedLine.endsWith(getDelimiter())
-                        || fullLineDelimiter
-                        && trimmedLine.equals(getDelimiter())) 
+//                else if (!fullLineDelimiter 
+//                        && trimmedLine.endsWith(getDelimiter())
+//                        || fullLineDelimiter
+//                        && trimmedLine.equals(getDelimiter())) 
+                else if ( trimmedLine.endsWith(getDelimiter() ) )
                 {
                     command.append(line.substring(0, line.lastIndexOf(getDelimiter())));
                     command.append(" ");
                     
-                    Statement statement = conn.createStatement();
-
-                    println(command);
-
-                    boolean hasResults = false;
-                    if (stopOnError) 
-                    {
-                        hasResults = statement.execute(command.toString());
-                    } 
-                    else 
-                    {
-                        try {
-                            statement.execute(command.toString());
-                        } catch (SQLException e) {
-                            e.fillInStackTrace();
-                            printlnError("Error executing: " + command);
-                            printlnError(e);
-                        }
-                    }
-
-                    if (autoCommit && !conn.getAutoCommit()) {
-                        conn.commit();
-                    }
-
-                    ResultSet rs = statement.getResultSet();
-                    if (hasResults && rs != null) 
-                    {
-                        ResultSetMetaData md = rs.getMetaData();
-                        int cols = md.getColumnCount();
-                        for (int i = 0; i < cols; i++) {
-                            String name = md.getColumnLabel(i);
-                            print(name + "\t");
-                        }
-                        println("");
-                        while (rs.next()) {
-                            for (int i = 0; i < cols; i++) {
-                                String value = rs.getString(i);
-                                print(value + "\t");
-                            }
-                            println("");
-                        }
-                    }
-
-                    command = null;
-                    try {
-                        statement.close();
-                    } catch (Exception e) {
-                        // Ignore to workaround a bug in Jakarta DBCP
-                    }
+                    executeSqlCommand(conn, command.toString());
+//                    Statement statement = conn.createStatement();
+//
+//                    println(command);
+//
+//                    boolean hasResults = false;
+//                    if (stopOnError) 
+//                    {
+//                        hasResults = statement.execute(command.toString());
+//                    } 
+//                    else 
+//                    {
+//                        try {
+//                            statement.execute(command.toString());
+//                        } catch (SQLException e) {
+//                            e.fillInStackTrace();
+//                            printlnError("Error executing: " + command);
+//                            printlnError(e);
+//                        }
+//                    }
+//
+//                    if (autoCommit && !conn.getAutoCommit()) {
+//                        conn.commit();
+//                    }
+//
+//                    ResultSet rs = statement.getResultSet();
+//                    if (hasResults && rs != null) 
+//                    {
+//                        ResultSetMetaData md = rs.getMetaData();
+//                        int cols = md.getColumnCount();
+//                        for (int i = 0; i < cols; i++) {
+//                            String name = md.getColumnLabel(i);
+//                            print(name + "\t");
+//                        }
+//                        println("");
+//                        while (rs.next()) {
+//                            for (int i = 0; i < cols; i++) {
+//                                String value = rs.getString(i);
+//                                print(value + "\t");
+//                            }
+//                            println("");
+//                        }
+//                    }
+//
+//                    command = null;
+//                    try {
+//                        statement.close();
+//                    } catch (Exception e) {
+//                        // Ignore to workaround a bug in Jakarta DBCP
+//                    }
+//                    Thread.yield();
+                    
+                    command = null ;
                     Thread.yield();
                 } else {
                     command.append(line);
@@ -229,34 +273,78 @@ public class SqlScriptRunner {
         }
     }
 
+    private void executeSqlCommand(Connection conn, String command) throws SQLException {
+    	
+        println(command);
+
+        Statement statement = conn.createStatement();
+
+        boolean resultIsResultSet  = false;
+        if (stopOnError) 
+        {
+        	resultIsResultSet = statement.execute(command);
+        } 
+        else 
+        {
+            try {
+            	resultIsResultSet = statement.execute(command);
+            } catch (SQLException e) {
+                e.fillInStackTrace();
+                printlnError("Error executing: " + command);
+                printlnError(e);
+            }
+        }
+
+        if (autoCommit && !conn.getAutoCommit()) {
+            conn.commit();
+        }
+
+        // If there's a ResultSet print it
+        ResultSet rs = statement.getResultSet();
+        if (resultIsResultSet && rs != null) 
+        {
+            ResultSetMetaData md = rs.getMetaData();
+            int cols = md.getColumnCount();
+            for (int i = 1; i <= cols; i++) {
+                String name = md.getColumnLabel(i);
+                print(name + "\t");
+            }
+            println("");
+            while (rs.next()) {
+                for (int i = 1; i <= cols; i++) {
+                    String value = rs.getString(i);
+                    print(value + "\t");
+                }
+                println("");
+            }
+            rs.close();
+        }
+
+        try {
+            statement.close();
+        } catch (Exception e) {
+            // Ignore to workaround a bug in Jakarta DBCP
+        }
+    }
+
     private String getDelimiter() {
         return delimiter;
     }
 
     private void print(Object o) {
-        if (logWriter != null) {
-            System.out.print(o);
-        }
+        if (logWriter != null)  logWriter.print(o);
     }
 
     private void println(Object o) {
-        if (logWriter != null) {
-            logWriter.println(o);
-        }
+        if (logWriter != null)  logWriter.println(o);
     }
 
     private void printlnError(Object o) {
-        if (errorLogWriter != null) {
-            errorLogWriter.println(o);
-        }
+        if (errorLogWriter != null)  errorLogWriter.println(o);
     }
 
     private void flush() {
-        if (logWriter != null) {
-            logWriter.flush();
-        }
-        if (errorLogWriter != null) {
-            errorLogWriter.flush();
-        }
+        if (logWriter      != null)  logWriter.flush();
+        if (errorLogWriter != null)  errorLogWriter.flush();
     }
 }
