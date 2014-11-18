@@ -111,6 +111,10 @@ public class DbConfigManagerTest extends TestCase {
 		assertNotNull(databaseConfiguration);
 		assertEquals(0, databaseConfiguration.getDatabaseId());
 		
+		DatabaseConfiguration defaultDatabaseConfiguration = databasesConfigurations.getDatabaseConfiguration();
+		assertNotNull(defaultDatabaseConfiguration);
+		assertEquals(0, defaultDatabaseConfiguration.getDatabaseId());
+		
 		//--- Update 
 		System.out.println("UPDATED CONFIG : ");
 		databaseConfiguration.setDatabaseName("New name");

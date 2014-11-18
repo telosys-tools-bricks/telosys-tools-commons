@@ -73,10 +73,10 @@ public class ConnectionManagerTest extends TestCase {
 		conn2.close();
 	}
 
-	private void printLibraries(String[] libraries) {
-		System.out.println("Libraries : ");
-		for ( String s : libraries ) {
-			System.out.println(". " + s);
-		}
-	}
+//	private void printLibraries(String[] libraries) {
+//		System.out.println("Libraries : ");
+//		for ( String s : libraries ) {
+//			System.out.println(". " + s);
+//		}
+//	}
 }

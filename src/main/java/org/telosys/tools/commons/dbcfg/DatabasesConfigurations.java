@@ -71,6 +71,19 @@ public class DatabasesConfigurations {
 		return databasesMap.get(databaseId) ;
 	}
 	
+	/**
+	 * Returns the database configuration for the default database
+	 * @return the database configuration (or null if none)
+	 */
+	public DatabaseConfiguration getDatabaseConfiguration() {
+		return getDatabaseConfiguration( getDatabaseDefaultId() ) ;
+	}
+	
+	/**
+	 * Removes the database configuration identified by the given id
+	 * @param id
+	 * @return true if found and removed (else false)
+	 */
 	public boolean removeDatabaseConfiguration(int id) {
 		Integer databaseId = new Integer(id);
 		DatabaseConfiguration removed = databasesMap.remove(databaseId) ;
@@ -95,13 +108,11 @@ public class DatabasesConfigurations {
 		ArrayList<Integer> keysArrayList = new ArrayList<Integer>(databasesMap.keySet()) ;
 		Collections.sort(keysArrayList) ;
 		
-		
 		LinkedList<DatabaseConfiguration> list = new LinkedList<DatabaseConfiguration>();
 		for ( Integer id : keysArrayList ) {
 			list.add( databasesMap.get(id) ) ;
 		}
 		return list;
 	}
-	
 	
 }
