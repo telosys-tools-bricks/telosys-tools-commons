@@ -76,7 +76,12 @@ public class DatabasesConfigurations {
 	 * @return the database configuration (or null if none)
 	 */
 	public DatabaseConfiguration getDatabaseConfiguration() {
-		return getDatabaseConfiguration( getDatabaseDefaultId() ) ;
+		int defaultDbId = getDatabaseDefaultId() ;
+		DatabaseConfiguration databaseConfiguration = getDatabaseConfiguration( getDatabaseDefaultId() ) ;
+		if  ( databaseConfiguration == null ) {
+			throw new RuntimeException("Cannot get database configuration for default id " + defaultDbId );
+		}
+		return databaseConfiguration ;
 	}
 	
 	/**
