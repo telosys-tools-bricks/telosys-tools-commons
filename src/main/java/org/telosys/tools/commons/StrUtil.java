@@ -453,7 +453,7 @@ public final class StrUtil
 	{
 		if ( null == s1 )
 		{
-			if ( null == s2 ) return true ;
+			return ( null == s2 ? true : false );
 		}
 		else
 		{

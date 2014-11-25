@@ -34,4 +34,20 @@ public class StrUtilTest extends TestCase {
 		replaceVar("aaaaa${TOTO}bbb", "${TOTO}", "",         "aaaaabbb") ;
 		replaceVar("aaaaa$bbb",       "$",       "DOLLAR",   "aaaaaDOLLARbbb") ;
 	}
+
+	public void testIdentical() {
+		assertTrue( StrUtil.identical(null, null) ) ;
+		assertTrue( StrUtil.identical("", "") ) ;
+		assertTrue( StrUtil.identical("a", "a") ) ;
+		assertTrue( StrUtil.identical("a ", "a ") ) ;
+		assertTrue( StrUtil.identical("ab", "ab") ) ;
+
+		assertFalse( StrUtil.identical("ab", "AB") ) ;
+		assertFalse( StrUtil.identical("a ", " a") ) ;
+		assertFalse( StrUtil.identical("", " ") ) ;
+		assertFalse( StrUtil.identical(null, " ") ) ;
+		assertFalse( StrUtil.identical(null, "") ) ;
+		assertFalse( StrUtil.identical("",  null) ) ;
+		assertFalse( StrUtil.identical(" ", null) ) ;
+	}
 }
