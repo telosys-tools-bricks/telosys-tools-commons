@@ -28,7 +28,7 @@ public class JdbcTypes {
 	
 	private final LinkedList<JdbcType> _list = new LinkedList<JdbcType>() ;
 	
-	public JdbcTypes() {
+	protected JdbcTypes() {
 		super();
 	}
 
@@ -38,7 +38,7 @@ public class JdbcTypes {
 	 * @param text the JDBC text ( Java constant name from 'java.sql.Types' : "NUMERIC", "TINYINT", "VARCHAR", ... )
 	 * @param type the recommended Java type associated with the JDBC code 
 	 */
-	public void add(int code, String text, String type)
+	protected void add(int code, String text, String type)
 	{
 		_list.add( new JdbcType(code, text, type) );
 	}
@@ -50,7 +50,7 @@ public class JdbcTypes {
 	 * @param typeForNull the recommended Java type associated with the JDBC code if "NULL"
 	 * @param typeForNotNull the recommended Java type associated with the JDBC code if "NOT NULL"
 	 */
-	public void add(int code, String text, String typeForNull, String typeForNotNull)
+	protected void add(int code, String text, String typeForNull, String typeForNotNull)
 	{
 		_list.add( new JdbcType(code, text, typeForNull, typeForNotNull) );
 	}
