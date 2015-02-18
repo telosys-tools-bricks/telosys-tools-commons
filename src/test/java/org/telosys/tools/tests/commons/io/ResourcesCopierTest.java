@@ -1,6 +1,7 @@
 package org.telosys.tools.tests.commons.io;
 
 import java.io.File;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -65,29 +66,33 @@ public class ResourcesCopierTest extends TestCase {
 	
 	//----------- File to Folder ------------------
 	public void testCopyFileToFolder1()  {
+		createFileIfNotExists(getDestinationFile("mydir/fileA.txt"));
 		int n = copy (	getOriginFile("foo/fileA.txt"), 
 						getExistingDestinationFolder("mydir"), 
 						OverwriteChooser.YES);
-		assertTrue(n == 1 );
+		assertTrue(n == 1 ); // 1 because "overwrite"
 	}
 	public void testCopyFileToFolder1bis() {
+		createFileIfNotExists(getDestinationFile("mydir/fileA.txt"));
 		int n = copy (	getOriginFile("foo/fileA.txt"), 
 						getExistingDestinationFolder("mydir"), 
 						OverwriteChooser.NO);
-		assertTrue(n == 0 );
+		assertTrue(n == 0 ); // 0 because "do not overwrite"
 	}
 	
 	public void testCopyFileToFolder2()  {
+		createFileIfNotExists(getDestinationFile("mydir/dest-A/fileA.txt"));
 		int n = copy (	getOriginFile("foo/fileA.txt"), 
 						getExistingDestinationFolder("mydir/dest-A"), 
 						OverwriteChooser.YES);
-		assertTrue(n == 1 );
+		assertTrue(n == 1 ); // 1 because "overwrite"
 	}
 	public void testCopyFileToFolder2bis() {
+		createFileIfNotExists(getDestinationFile("mydir/dest-A/fileA.txt"));
 		int n = copy (	getOriginFile("foo/fileA.txt"), 
 						getExistingDestinationFolder("mydir/dest-A"), 
 						OverwriteChooser.NO);
-		assertTrue(n == 0 );
+		assertTrue(n == 0 ); // 0 because "do not overwrite" 
 	}
 	
 	//----------------------------------------------
@@ -104,25 +109,30 @@ public class ResourcesCopierTest extends TestCase {
 	}
 	
 	private File getDestinationFile(String fileOrFolderName ) {
-		//return new File(TestsFolders.getFullFileName("resources-destination/" + fileOrFolderName));
 		return new File("target/tests-tmp/resources-destination/" + fileOrFolderName);
 	}
 	
 	private File getExistingDestinationFolder(String folderName ) {
-//		File folder = new File("target/tests-tmp/resources-destination/" + folderName);
-//		if ( folder.exists() ) {
-//			if ( folder.isDirectory() ) {
-//				return folder ;
-//			}
-//			else {
-//				throw new RuntimeException("'"+ folder.getName() + "' is not a folder");
-//			}
-//		}
-//		else {
-//			folder.mkdirs();
-//			return folder ;
-//		}
 		return TestsEnv.getTmpExistingFolder("/resources-destination/" + folderName);
+	}
+	
+	/**
+	 * Creates a void file if it doesn't exist (in order to be sure this file exists)
+	 */
+	private void createFileIfNotExists(File file ) {
+		System.out.println("createFileIfNotExists( " + file.getAbsolutePath() + ")" );
+		if ( ! file.exists() ) {
+			System.out.println("Creating file " + file.getAbsolutePath() );
+			//(works for both Windows and Linux)
+			file.getParentFile().mkdirs(); 
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Cannot create file " + file.getAbsolutePath() );
+			}
+			System.out.println("File " + file.getAbsolutePath() + " created." );
+		}
 	}
 	
 	private int copy(File source, File destination, int choice ) {
@@ -136,8 +146,8 @@ public class ResourcesCopierTest extends TestCase {
 			n = copier.copy(source, destination);
 			System.out.println(n + " file(s) copied");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException("Cannot copy file");
 		}
 		return n ;
 	}
