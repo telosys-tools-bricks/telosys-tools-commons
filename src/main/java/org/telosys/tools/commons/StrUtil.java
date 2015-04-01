@@ -193,6 +193,25 @@ public final class StrUtil
     }
 
     /**
+     * Returns an instance of Integer for the given string value <br>
+     * @param sValue
+     * @return the instance or null if the given value is null or invalid
+     */
+    public static Integer getIntegerObject(final String sValue)
+    {
+    	Integer i = null ;
+    	if ( sValue != null ) {
+        	try {
+            	i = new Integer(sValue.trim());
+        	}
+            catch (NumberFormatException ex) {
+            	i = null ;
+            }
+    	}
+        return i; 
+    }
+
+    /**
      * @param sVal : String value to convert 
      * @param dDefaultValue : Default value if the string is null or contains an invalid value
      * @return

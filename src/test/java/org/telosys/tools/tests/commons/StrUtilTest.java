@@ -1,8 +1,8 @@
 package org.telosys.tools.tests.commons;
 
-import org.telosys.tools.commons.StrUtil;
-
 import junit.framework.TestCase;
+
+import org.telosys.tools.commons.StrUtil;
 
 public class StrUtilTest extends TestCase {
 
@@ -49,5 +49,25 @@ public class StrUtilTest extends TestCase {
 		assertFalse( StrUtil.identical(null, "") ) ;
 		assertFalse( StrUtil.identical("",  null) ) ;
 		assertFalse( StrUtil.identical(" ", null) ) ;
+	}
+
+	public void testGetIntegerObject() {
+		assertNull( StrUtil.getIntegerObject(null) ) ;
+		assertNull( StrUtil.getIntegerObject("") ) ;
+		assertNull( StrUtil.getIntegerObject("  ") ) ;
+		assertEquals( new Integer(123), StrUtil.getIntegerObject("123") ) ;
+		assertEquals( new Integer(123), StrUtil.getIntegerObject(" 123") ) ;
+		assertEquals( new Integer(123), StrUtil.getIntegerObject("123  ") ) ;
+		assertEquals( new Integer(123), StrUtil.getIntegerObject("  123  ") ) ;
+		assertEquals( new Integer(-123), StrUtil.getIntegerObject("-123  ") ) ;
+		assertEquals( new Integer(-123), StrUtil.getIntegerObject("  -123  ") ) ;
+		assertNull( StrUtil.getIntegerObject("12.34") ) ;
+		assertNull( StrUtil.getIntegerObject("- 2") ) ;
+		assertNull( StrUtil.getIntegerObject("+123") ) ;
+		assertNull( StrUtil.getIntegerObject("  +123") ) ;
+
+		//--- Check reverse conversion
+		assertEquals( "123", (new Integer(123)).toString() ) ;
+		assertEquals( "-123", (new Integer(-123)).toString() ) ;
 	}
 }
