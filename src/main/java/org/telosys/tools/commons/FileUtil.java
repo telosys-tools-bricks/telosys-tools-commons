@@ -315,4 +315,34 @@ public class FileUtil {
     		}
     	}
 	}
+    //----------------------------------------------------------------------------------------------------
+	/**
+	 * Reads the file content and loads it in a byte array 
+	 * @param file
+	 * @return
+	 * @since 3.0.0
+	 */
+	public static byte[] read( File file ) throws Exception {
+		
+		if ( file == null ) {
+			throw new Exception ("File argument is null");
+		}
+		
+		FileInputStream fileInputStream ;
+		try {
+			fileInputStream = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new Exception("File '" + file.getName() + "' not found", e);
+		}
+		
+		
+		byte[] fileContent = new byte[(int) file.length()];
+		try {
+			fileInputStream.read(fileContent);
+			fileInputStream.close();
+		} catch (IOException e) {
+			throw new Exception("IOException : cannot read or close file  '" + file.getName() + "' ", e);
+		}
+		return fileContent;
+	}
 }

@@ -172,4 +172,63 @@ public class FileUtilTest extends TestCase {
 		System.out.println("s = " + s );
 		assertEquals(dir+"/xxx/yyy/zzz.txt", s);
 	}
+
+	public void testReadNull()  {
+		Exception exception = null ;
+		try {
+			FileUtil.read(null);
+		} catch (Exception e) {
+			System.out.println("Exception : " + e.getMessage());
+			exception = e ;
+		}
+		assertNotNull(exception);
+	}
+	
+	public void testReadFileNotFound()  {
+		Exception exception = null ;
+		try {
+			FileUtil.read(new File("xxx/yyy/zzz/toto.txt"));
+		} catch (Exception e) {
+			System.out.println("Exception : " + e.getMessage());
+			exception = e ;
+		}
+		assertNotNull(exception);
+	}
+	
+	public void testRead1()  {
+		String fileName = "files/file1.txt" ;
+		System.out.println("read file " + fileName);
+		File file = TestsEnv.getTestFile(fileName);
+		System.out.println("file.getParent() : " + file.getParent() );
+		System.out.println("file.getName()   : " + file.getName() );
+		byte[] content = new byte[0];
+		try {
+			content = FileUtil.read(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		printFileContent(content);
+		assertEquals(file.length(), content.length);
+	}
+	
+	public void testRead2()  {
+		String fileName = "files/file2.txt" ;
+		System.out.println("read file " + fileName);
+		File file = TestsEnv.getTestFile(fileName);
+		byte[] content = new byte[0];
+		try {
+			content = FileUtil.read(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		printFileContent(content);
+		assertEquals(file.length(), content.length);
+	}
+	
+	private void printFileContent(byte[] content)  {
+		System.out.println("File content :");
+		for ( byte b : content ) {
+			System.out.print((char)b);
+		}
+	}
 }
