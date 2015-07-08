@@ -67,24 +67,26 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	}
 
 	//----------------------------------------------------------------------------------
-	private static final int STACK_MAX_CALLERS = 1000 ;
+//	private static final int STACK_MAX_CALLERS = 1000 ;
 	
     private void printStackTrace(Throwable ex)
     {
-        StackTraceElement stackTrace[] = ex.getStackTrace();
-        StackTraceElement stackTraceElement = null;
-        if ( stackTrace.length > 0 )
-        {
-            //--- Callers stack ( 1 to N )
-	        for ( int i = 0 ; i < stackTrace.length && i < STACK_MAX_CALLERS+1 ; i++ )
-	        {
-	            stackTraceElement = stackTrace[i];
-	            int iLineNumber = stackTraceElement.getLineNumber();
-	            String sLineNumber = "" ;
-	            if ( iLineNumber > 0 ) sLineNumber = " (line " + iLineNumber + ")" ;
-	            print( " . " + stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + sLineNumber );
-	        }
-        }    	
+//        StackTraceElement stackTrace[] = ex.getStackTrace();
+//        StackTraceElement stackTraceElement = null;
+//        if ( stackTrace.length > 0 )
+//        {
+//            //--- Callers stack ( 1 to N )
+//	        for ( int i = 0 ; i < stackTrace.length && i < STACK_MAX_CALLERS+1 ; i++ )
+//	        {
+//	            stackTraceElement = stackTrace[i];
+//	            int iLineNumber = stackTraceElement.getLineNumber();
+//	            String sLineNumber = "" ;
+//	            if ( iLineNumber > 0 ) sLineNumber = " (line " + iLineNumber + ")" ;
+//	            print( " . " + stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + sLineNumber );
+//	        }
+//        }    	
+        
+        print ( ExceptionUtil.getStackTraceAsString(ex) ) ;
     }
 	
 }
