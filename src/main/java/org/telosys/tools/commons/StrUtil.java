@@ -202,7 +202,8 @@ public final class StrUtil
     	Integer i = null ;
     	if ( sValue != null ) {
         	try {
-            	i = new Integer(sValue.trim());
+            	// i = new Integer(sValue.trim());
+            	i = Integer.valueOf(sValue.trim()); // v 3.0.0 (Sonar Issue Fixed)
         	}
             catch (NumberFormatException ex) {
             	i = null ;
