@@ -57,7 +57,8 @@ public class DatabasesConfigurations {
 	 * @param databaseConfiguration
 	 */
 	public void storeDatabaseConfiguration(DatabaseConfiguration databaseConfiguration) {
-		Integer databaseId = new Integer(databaseConfiguration.getDatabaseId());
+		// Integer databaseId = new Integer(databaseConfiguration.getDatabaseId());
+		Integer databaseId = Integer.valueOf(databaseConfiguration.getDatabaseId()); // v 3.0.0 : Sonar Issue Fixed
 		databasesMap.put(databaseId, databaseConfiguration);
 	}
 	
@@ -67,7 +68,8 @@ public class DatabasesConfigurations {
 	 * @return the database configuration (or null if none)
 	 */
 	public DatabaseConfiguration getDatabaseConfiguration(int id) {
-		Integer databaseId = new Integer(id);
+		// Integer databaseId = new Integer(id);
+		Integer databaseId = Integer.valueOf(id); // v 3.0.0 : Sonar Issue Fixed
 		return databasesMap.get(databaseId) ;
 	}
 	
@@ -90,7 +92,8 @@ public class DatabasesConfigurations {
 	 * @return true if found and removed (else false)
 	 */
 	public boolean removeDatabaseConfiguration(int id) {
-		Integer databaseId = new Integer(id);
+		// Integer databaseId = new Integer(id);
+		Integer databaseId = Integer.valueOf(id); // v 3.0.0 : Sonar Issue Fixed
 		DatabaseConfiguration removed = databasesMap.remove(databaseId) ;
 		return removed != null ;
 	}
