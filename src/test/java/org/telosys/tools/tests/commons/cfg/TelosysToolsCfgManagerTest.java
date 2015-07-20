@@ -71,7 +71,7 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		print(file);
 		
 		TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectFolder);
-		TelosysToolsCfg telosysToolsCfg = cfgManager.loadProjectConfig();
+		TelosysToolsCfg telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
 		
 		print(telosysToolsCfg);
 		
@@ -90,7 +90,7 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectFolder);
 		
 		System.out.println("Load");
-		TelosysToolsCfg telosysToolsCfg = cfgManager.loadProjectConfig();
+		TelosysToolsCfg telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
 
 		System.out.println("Update");
 		telosysToolsCfg.setEntityPackage("org.demo.entity");
@@ -98,10 +98,10 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
 
 		System.out.println("Save");
-		cfgManager.saveProjectConfig(telosysToolsCfg);
+		cfgManager.saveTelosysToolsCfg(telosysToolsCfg);
 		
 		System.out.println("Re-Load");
-		telosysToolsCfg = cfgManager.loadProjectConfig();
+		telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
 		assertEquals("org.demo.entity", telosysToolsCfg.getEntityPackage() );
 		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
 		

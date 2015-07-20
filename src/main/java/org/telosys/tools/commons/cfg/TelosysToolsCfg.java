@@ -36,7 +36,7 @@ import org.telosys.tools.commons.variables.VariablesUtil;
 public class TelosysToolsCfg 
 {
 	private final static String     DATABASES_DBCFG_FILE = "databases.dbcfg";
-	private final static Variable[] VOID_VARIABLES_ARRAY = new Variable[0] ;
+	//private final static Variable[] VOID_VARIABLES_ARRAY = new Variable[0] ;
 	
     //--- Properties Names for directories 
 	private final static String REPOS_FOLDER      = "RepositoriesFolder";
@@ -44,12 +44,11 @@ public class TelosysToolsCfg
 	private final static String DOWNLOADS_FOLDER  = "DownloadsFolder";    
 	private final static String LIBRARIES_FOLDER  = "LibrariesFolder";
     
-	
 	//----------------------------------------------------------------------------------------
 	private final String     _projectAbsolutePath ; 
 	private final String     _cfgFileAbsolutePath ; 
 	private final boolean    _initializedFromFile ; 
-	private final Properties _cfgFileProperties ; 
+	//private final Properties _cfgFileProperties ; // removed in v 3.0.0
 
 	//----------------------------------------------------------------------------------------
 	//--- Project folders default values
@@ -74,10 +73,8 @@ public class TelosysToolsCfg
 	
 	//----------------------------------------------------------------------------------------
 	//--- Project Variables
-	private Variable[] _specificVariables = VOID_VARIABLES_ARRAY ; // Specific variables defined by the user 
+	private Variable[] _specificVariables = new Variable[0] ; // Specific variables defined by the user 
 
-	//private final Variable[] _allVariables ; // Standard variables + specific variables 
-	
 	//----------------------------------------------------------------------------------------
     /**
      * Constructor 
@@ -85,7 +82,8 @@ public class TelosysToolsCfg
      * @param cfgFileAbsolutePath the configuration file (full path)
      * @param prop the project configuration properties (if null default values will be used) 
      */
-    public TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop )
+    //public TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop )
+    protected TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop ) // v 3.0.0
     {
     	if ( projectAbsolutePath == null ) {
     		throw new IllegalArgumentException("projectAbsolutePath is null");
@@ -97,29 +95,28 @@ public class TelosysToolsCfg
     	_cfgFileAbsolutePath = cfgFileAbsolutePath ;
     	
     	_initializedFromFile = initFromProperties(prop);
-    	_cfgFileProperties = prop ;
+    	// _cfgFileProperties = prop ; // removed in v 3.0.0
     }
     
-    /**
-     * Constructor 
-     * @param projectAbsolutePath the project directory (full path) 
-     */
-    public TelosysToolsCfg ( String projectAbsolutePath )
-    {
-    	if ( projectAbsolutePath == null ) {
-    		throw new IllegalArgumentException("projectAbsolutePath is null");
-    	}
-    	_projectAbsolutePath = projectAbsolutePath ;
-    	
-    	TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectAbsolutePath) ;
-    	_cfgFileAbsolutePath = cfgManager.getCfgFileAbsolutePath();
-    	
-    	_initializedFromFile = false ;
-    	_cfgFileProperties = null ;
-		//--- No properties => keep the default values 
-    	//--- Init with default specific variables
-    	//_specificVariables = getDefaultSpecificVariables();
-    }    
+// removed in v 3.0.0
+//    /**
+//     * Constructor 
+//     * @param projectAbsolutePath the project directory (full path) 
+//     */
+//    public TelosysToolsCfg ( String projectAbsolutePath )
+//    {
+//    	if ( projectAbsolutePath == null ) {
+//    		throw new IllegalArgumentException("projectAbsolutePath is null");
+//    	}
+//    	_projectAbsolutePath = projectAbsolutePath ;
+//    	
+//    	TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectAbsolutePath) ;
+//    	_cfgFileAbsolutePath = cfgManager.getCfgFileAbsolutePath();
+//    	
+//    	_initializedFromFile = false ;
+//    	//_cfgFileProperties = null ; // removed in v 3.0.0
+//    }
+    
 	//------------------------------------------------------------------------------------------------------
     protected boolean initFromProperties(Properties prop)
 	{
@@ -184,16 +181,16 @@ public class TelosysToolsCfg
      */
     public Properties getProperties()
 	{
-    	// Properties properties = new Properties(); 
-    	Properties properties = null ; 
-    	// v 2.1.1 (keep original properties if any and update)
-    	if ( this._cfgFileProperties != null ) { 
-    		// We have original properties => keep them
-        	properties = this._cfgFileProperties ; 
-    	}
-    	else {
-    		properties = new Properties(); 
-    	}
+//    	Properties properties = null ; 
+//    	// v 2.1.1 (keep original properties if any and update)
+//    	if ( this._cfgFileProperties != null ) { 
+//    		// We have original properties => keep them
+//        	properties = this._cfgFileProperties ; 
+//    	}
+//    	else {
+//    		properties = new Properties(); 
+//    	}
+    	Properties properties = new Properties();  // v 3.0.0
     	
     	//--- General 
     	properties.setProperty(REPOS_FOLDER,     _sRepositoriesFolder);
@@ -540,19 +537,21 @@ public class TelosysToolsCfg
 		}
 		return false ; 
 	}
-	/**
-	 * Set the specific variables defined for the current project  
-	 * @param variables
-	 */
-	public void setSpecificVariables(Variable[] variables)
-	{
-		if ( variables != null ) {
-			_specificVariables = variables ;
-		}
-		else {
-			_specificVariables = new Variable[0] ;
-		}
-	}	
+	
+// removed in v 3.0.0
+//	/**
+//	 * Set the specific variables defined for the current project  
+//	 * @param variables
+//	 */
+//	public void setSpecificVariables(Variable[] variables)
+//	{
+//		if ( variables != null ) {
+//			_specificVariables = variables ;
+//		}
+//		else {
+//			_specificVariables = new Variable[0] ;
+//		}
+//	}	
 	/**
 	 * Set the specific variables defined for the current project  
 	 * @param variables

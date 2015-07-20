@@ -23,7 +23,7 @@ import org.telosys.tools.commons.TelosysToolsException;
 /**
  * Projects configuration manager <br>
  * . save and load the projects configuration<br>
- * . hold each project configuration in a cache<br>
+ * 
  */
 public class TelosysToolsCfgManager {
 
@@ -72,32 +72,36 @@ public class TelosysToolsCfgManager {
 	
 	//-------------------------------------------------------------------------------------------------
 	/**
-	 * Loads the project's configuration from the properties file  <br>
+	 * Loads a TelosysToolsCfg instance initialized from the 'telosys-tools.cfg' file <br>
 	 * If the properties file doesn't exist the configuration contains the default values
-	 * @param project
 	 * @return the configuration (never null, use default values if the doesn't exist) 
+	 * @throws TelosysToolsException
 	 */
-	public TelosysToolsCfg loadProjectConfig() throws TelosysToolsException
+	public TelosysToolsCfg loadTelosysToolsCfg() throws TelosysToolsException
 	{
-		//PluginLogger.log("ProjectConfigManager.loadProjectConfig(p)..." );
-
 		PropertiesManager propManager = new PropertiesManager( this.cfgFileAbsolutePath ) ;
 		Properties prop = propManager.load(); // Ret NULL if file not found
-		if ( prop != null )
-		{
-			TelosysToolsCfg projectConfig = new TelosysToolsCfg(this.projectAbsolutePath, this.cfgFileAbsolutePath, prop );
-			return projectConfig ;
+		if ( prop != null ) {
+			return new TelosysToolsCfg(this.projectAbsolutePath, this.cfgFileAbsolutePath, prop );
 		}
-		else
-		{
+		else {
 			// Properties file not found, no properties loaded : use default values
-			TelosysToolsCfg projectConfig = new TelosysToolsCfg(this.projectAbsolutePath, this.cfgFileAbsolutePath, null );
-			return projectConfig ;
+			return new TelosysToolsCfg(this.projectAbsolutePath, this.cfgFileAbsolutePath, null );
 		}
 	}
 	
+	/**
+	 * Creates a default instance of TelosysToolsCfg without loading from file
+	 * @return
+	 */
+	public TelosysToolsCfg createDefaultTelosysToolsCfg() 
+	{
+		return new TelosysToolsCfg(this.projectAbsolutePath, this.cfgFileAbsolutePath, null );
+	}
+	
 	//-------------------------------------------------------------------------------------------------
-	public void saveProjectConfig( TelosysToolsCfg telosysToolsCfg ) throws TelosysToolsException
+//	public void saveProjectConfig( TelosysToolsCfg telosysToolsCfg ) throws TelosysToolsException
+	public void saveTelosysToolsCfg( TelosysToolsCfg telosysToolsCfg ) throws TelosysToolsException
 	{
 		PropertiesManager propManager = new PropertiesManager( this.cfgFileAbsolutePath ) ;
 		// Save the configuration as a set of properties
