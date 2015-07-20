@@ -63,11 +63,11 @@ public class TelosysToolsCfg
 	private String _ROOT_PKG   = "org.demo" ;
 
 	//--- Standard variables : folders default values
-	private String _SRC      =  "" ;
-	private String _RES      =  "" ;
-	private String _WEB      =  "" ;
-	private String _TEST_SRC =  "" ;
-	private String _TEST_RES =  "" ;
+	private String _SRC      =  "src/main/java" ;
+	private String _RES      =  "src/main/resources" ;
+	private String _WEB      =  "src/main/webapp" ;
+	private String _TEST_SRC =  "src/test/java" ;
+	private String _TEST_RES =  "src/test/resources" ;
 	private String _DOC      =  "doc" ;
 	private String _TMP      =  "tmp" ;
 	
