@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.StrUtil;
+import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 
 /**
  * Telosys Tools environment manager <br>
@@ -42,6 +43,7 @@ public class EnvironmentManager {
 
 	private final String environmentDirectory ;
 	
+	//-----------------------------------------------------------------------------------------------------
 	/**
 	 * Constructor
 	 * @param environmentDirectory the directory where the environment is located (OS full path)
@@ -51,52 +53,9 @@ public class EnvironmentManager {
 		this.environmentDirectory = environmentDirectory;
 	}
 
-	
+	//-----------------------------------------------------------------------------------------------------
 	/**
-	 * Returns the environment directory (OS full path)
-	 * @return
-	 */
-	public String getEnvironmentFolderFullPath() {
-		return environmentDirectory;
-	}
-
-	/**
-	 * Returns the TelosysTools configuration file name<br>
-	 * ( e.g. 'telosys-tools.cfg' )
-	 * @return
-	 */
-	public String getTelosysToolsConfigFileName() {
-		return TELOSYS_TOOLS_CFG ;
-	}
-
-	/**
-	 * Returns the TelosysTools configuration file path (OS full path)<br>
-	 * ( e.g. 'X:/dir/myproject/telosys-tools.cfg' )
-	 * @return
-	 */
-	public String getTelosysToolsConfigFileFullPath() {
-		return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_CFG) ;
-	}
-
-	/**
-	 * Returns the TelosysTools folder name ( e.g. "TelosysTools" )
-	 * @return
-	 */
-	public String getTelosysToolsFolderName() {
-		return TELOSYS_TOOLS_FOLDER_NAME ;
-	}
-
-	/**
-	 * Returns the TelosysTools folder full path (OS full path)<br>
-	 * ( e.g. 'X:/dir/myproject/TelosysTools' )
-	 * @return
-	 */
-	public String getTelosysToolsFolderFullPath() {
-		return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_FOLDER_NAME) ;
-	}
-
-	/**
-	 * Initializes the environment using the standard folders and configuration files
+	 * Initializes the environment using the standard default folders and configuration files
 	 * @param sb
 	 */
 	public void initStandardEnvironment(StringBuffer sb) {
@@ -108,12 +67,70 @@ public class EnvironmentManager {
 		initTelosysToolsConfigFile(sb);
 	}
 	
+	//-----------------------------------------------------------------------------------------------------	
+	/**
+	 * Initializes the environment using the folder names defined in the given configuration
+	 * @param telosysToolsCfg
+	 * @param sb
+	 */
+	public void initStandardEnvironment(TelosysToolsCfg telosysToolsCfg, StringBuffer sb) {
+		createFolder( telosysToolsCfg.getRepositoriesFolder(), sb ); // e.g. 'TelosysTools' 
+		createFolder( telosysToolsCfg.getDownloadsFolder(), sb );    // e.g. 'TelosysTools/downloads' 
+		createFolder( telosysToolsCfg.getLibrariesFolder(), sb );    // e.g. 'TelosysTools/lib' 
+		createFolder( telosysToolsCfg.getTemplatesFolder(), sb );    // e.g. 'TelosysTools/templates' 
+		initDatabasesConfigFile(sb);
+		initTelosysToolsConfigFile(sb);
+	}
+	//-----------------------------------------------------------------------------------------------------	
+	/**
+	 * Returns the environment directory (OS full path)
+	 * @return
+	 */
+	protected String getEnvironmentFolderFullPath() {
+		return environmentDirectory;
+	}
+
+	/**
+	 * Returns the TelosysTools configuration file name<br>
+	 * ( e.g. 'telosys-tools.cfg' )
+	 * @return
+	 */
+	protected String getTelosysToolsConfigFileName() {
+		return TELOSYS_TOOLS_CFG ;
+	}
+
+	/**
+	 * Returns the TelosysTools configuration file path (OS full path)<br>
+	 * ( e.g. 'X:/dir/myproject/telosys-tools.cfg' )
+	 * @return
+	 */
+	protected String getTelosysToolsConfigFileFullPath() {
+		return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_CFG) ;
+	}
+
+	/**
+	 * Returns the TelosysTools folder name ( e.g. "TelosysTools" )
+	 * @return
+	 */
+	protected String getTelosysToolsFolderName() {
+		return TELOSYS_TOOLS_FOLDER_NAME ;
+	}
+
+	/**
+	 * Returns the TelosysTools folder full path (OS full path)<br>
+	 * ( e.g. 'X:/dir/myproject/TelosysTools' )
+	 * @return
+	 */
+	protected String getTelosysToolsFolderFullPath() {
+		return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_FOLDER_NAME) ;
+	}
+
 	/**
 	 * Creates a folder in the environment folder
 	 * @param folderToBeCreated 
 	 * @param sb
 	 */
-	public void createFolder(String folderToBeCreated, StringBuffer sb){
+	protected void createFolder(String folderToBeCreated, StringBuffer sb){
 
 		if ( ! StrUtil.nullOrVoid(folderToBeCreated) )  {
 			folderToBeCreated = folderToBeCreated.trim() ;
@@ -142,7 +159,7 @@ public class EnvironmentManager {
 	 * Copy the default configuration file in the environment folder
 	 * @param sb
 	 */
-	public void initTelosysToolsConfigFile( StringBuffer sb ){
+	protected void initTelosysToolsConfigFile( StringBuffer sb ){
 		String destinationFullPath = FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_CFG) ; 
 		copyFileFromMetaInf(destinationFullPath, TELOSYS_TOOLS_CFG, sb);
 	}
@@ -153,7 +170,7 @@ public class EnvironmentManager {
 	 * If the destination file already exists it is not copied 
 	 * @param sb 
 	 */
-	public void initDatabasesConfigFile( StringBuffer sb ){
+	protected void initDatabasesConfigFile( StringBuffer sb ) {
 		initDatabasesConfigFile( TELOSYS_TOOLS_FOLDER_NAME, sb );
 	}
 	
@@ -164,7 +181,7 @@ public class EnvironmentManager {
 	 * @param folderName the folder (in the environment folder) where to create the file
 	 * @param sb
 	 */
-	public void initDatabasesConfigFile( String folderName, StringBuffer sb ){
+	protected void initDatabasesConfigFile( String folderName, StringBuffer sb ){
 		String dirFullPath = fullPathInEnvironmentDir(folderName);
 		File destinationDir = new File (dirFullPath) ;
 		if ( destinationDir.exists() != true ) {
