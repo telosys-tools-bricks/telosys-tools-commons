@@ -23,25 +23,25 @@ import java.io.InputStream;
 
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.StrUtil;
-import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 
 /**
  * Telosys Tools environment manager <br>
  * For environment initialization (folders creation, files initialization, etc) <br>
  * All the methods are designed to log the actions result in a StringBuffer.
  * 
- * @author L Guerin
+ * @author Laurent GUERIN
  *
  */
 public class EnvironmentManager {
 
-	private final static String TELOSYS_TOOLS_CFG         = "telosys-tools.cfg" ;
+	//private final static String TELOSYS_TOOLS_CFG         = "telosys-tools.cfg" ;
 	
-	private final static String DATABASES_DBCFG           = "databases.dbcfg" ;
+	//private final static String DATABASES_DBCFG           = "databases.dbcfg" ;
 
-	private final static String TELOSYS_TOOLS_FOLDER_NAME = "TelosysTools" ;
+	// private final static String TELOSYS_TOOLS_FOLDER_NAME = "TelosysTools" ;
 
-	private final String environmentDirectory ;
+	private final TelosysToolsEnv telosysToolsEnv ;
+	private final String          environmentDirectory ;
 	
 	//-----------------------------------------------------------------------------------------------------
 	/**
@@ -51,6 +51,7 @@ public class EnvironmentManager {
 	public EnvironmentManager(String environmentDirectory) {
 		super();
 		this.environmentDirectory = environmentDirectory;
+		this.telosysToolsEnv = TelosysToolsEnv.getInstance();
 	}
 
 	//-----------------------------------------------------------------------------------------------------
@@ -59,28 +60,33 @@ public class EnvironmentManager {
 	 * @param sb
 	 */
 	public void initStandardEnvironment(StringBuffer sb) {
-		createFolder( TELOSYS_TOOLS_FOLDER_NAME, sb );
-		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/downloads", sb );
-		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/lib", sb );
-		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/templates", sb );
+//		createFolder( TELOSYS_TOOLS_FOLDER_NAME, sb );
+//		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/downloads", sb );
+//		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/lib", sb );
+//		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/templates", sb );
+		createFolder( telosysToolsEnv.getTelosysToolsFolder(), sb );
+		createFolder( telosysToolsEnv.getDownloadsFolder(), sb );
+		createFolder( telosysToolsEnv.getLibrariesFolder(), sb );
+		createFolder( telosysToolsEnv.getTemplatesFolder(), sb );
 		initDatabasesConfigFile(sb);
 		initTelosysToolsConfigFile(sb);
 	}
 	
-	//-----------------------------------------------------------------------------------------------------	
-	/**
-	 * Initializes the environment using the folder names defined in the given configuration
-	 * @param telosysToolsCfg
-	 * @param sb
-	 */
-	public void initStandardEnvironment(TelosysToolsCfg telosysToolsCfg, StringBuffer sb) {
-		createFolder( telosysToolsCfg.getRepositoriesFolder(), sb ); // e.g. 'TelosysTools' 
-		createFolder( telosysToolsCfg.getDownloadsFolder(), sb );    // e.g. 'TelosysTools/downloads' 
-		createFolder( telosysToolsCfg.getLibrariesFolder(), sb );    // e.g. 'TelosysTools/lib' 
-		createFolder( telosysToolsCfg.getTemplatesFolder(), sb );    // e.g. 'TelosysTools/templates' 
-		initDatabasesConfigFile(sb);
-		initTelosysToolsConfigFile(sb);
-	}
+//	//-----------------------------------------------------------------------------------------------------	
+// Removed in v 3.0.0
+//	/**
+//	 * Initializes the environment using the folder names defined in the given configuration
+//	 * @param telosysToolsCfg
+//	 * @param sb
+//	 */
+//	public void initStandardEnvironment(TelosysToolsCfg telosysToolsCfg, StringBuffer sb) {
+//		createFolder( telosysToolsCfg.getRepositoriesFolder(), sb ); // e.g. 'TelosysTools' 
+//		createFolder( telosysToolsCfg.getDownloadsFolder(), sb );    // e.g. 'TelosysTools/downloads' 
+//		createFolder( telosysToolsCfg.getLibrariesFolder(), sb );    // e.g. 'TelosysTools/lib' 
+//		createFolder( telosysToolsCfg.getTemplatesFolder(), sb );    // e.g. 'TelosysTools/templates' 
+//		initDatabasesConfigFile(sb);
+//		initTelosysToolsConfigFile(sb);
+//	}
 	//-----------------------------------------------------------------------------------------------------	
 	/**
 	 * Returns the environment directory (OS full path)
@@ -90,14 +96,14 @@ public class EnvironmentManager {
 		return environmentDirectory;
 	}
 
-	/**
-	 * Returns the TelosysTools configuration file name<br>
-	 * ( e.g. 'telosys-tools.cfg' )
-	 * @return
-	 */
-	protected String getTelosysToolsConfigFileName() {
-		return TELOSYS_TOOLS_CFG ;
-	}
+//	/**
+//	 * Returns the TelosysTools configuration file name<br>
+//	 * ( e.g. 'telosys-tools.cfg' )
+//	 * @return
+//	 */
+//	protected String getTelosysToolsConfigFileName() {
+//		return TELOSYS_TOOLS_CFG ;
+//	}
 
 	/**
 	 * Returns the TelosysTools configuration file path (OS full path)<br>
@@ -105,16 +111,26 @@ public class EnvironmentManager {
 	 * @return
 	 */
 	protected String getTelosysToolsConfigFileFullPath() {
-		return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_CFG) ;
+		//return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_CFG) ;
+		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsConfigFileName()) ;
 	}
 
 	/**
-	 * Returns the TelosysTools folder name ( e.g. "TelosysTools" )
+	 * Returns the 'databases.dbcfg' full path (OS full path)<br>
+	 * ( e.g. 'X:/dir/myproject/TelosysTools/databases.dbcfg' )
 	 * @return
 	 */
-	protected String getTelosysToolsFolderName() {
-		return TELOSYS_TOOLS_FOLDER_NAME ;
+	protected String getDatabasesDbCfgFullPath() {
+		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getDatabasesDbCfgFilePath()) ;
 	}
+
+//	/**
+//	 * Returns the TelosysTools folder name ( e.g. "TelosysTools" )
+//	 * @return
+//	 */
+//	protected String getTelosysToolsFolderName() {
+//		return TELOSYS_TOOLS_FOLDER_NAME ;
+//	}
 
 	/**
 	 * Returns the TelosysTools folder full path (OS full path)<br>
@@ -122,7 +138,8 @@ public class EnvironmentManager {
 	 * @return
 	 */
 	protected String getTelosysToolsFolderFullPath() {
-		return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_FOLDER_NAME) ;
+		//return FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_FOLDER_NAME) ;
+		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsFolder()) ;
 	}
 
 	/**
@@ -159,57 +176,66 @@ public class EnvironmentManager {
 	 * Copy the default configuration file in the environment folder
 	 * @param sb
 	 */
-	protected void initTelosysToolsConfigFile( StringBuffer sb ){
-		String destinationFullPath = FileUtil.buildFilePath(environmentDirectory, TELOSYS_TOOLS_CFG) ; 
-		copyFileFromMetaInf(destinationFullPath, TELOSYS_TOOLS_CFG, sb);
+	protected void initTelosysToolsConfigFile( StringBuffer sb ) {
+		//String telosysToolsCfgFileName = telosysToolsEnv.getTelosysToolsConfigFileName() ;
+		//String destinationFullPath = FileUtil.buildFilePath(environmentDirectory, telosysToolsCfgFileName ) ; 
+		// copyFileFromMetaInfIfNotExists(destinationFullPath, telosysToolsCfgFileName, sb);
+		copyFileFromMetaInfIfNotExists( getTelosysToolsConfigFileFullPath(), 
+				telosysToolsEnv.getTelosysToolsConfigFileName() , sb);
 	}
 	
-	/**
-	 * Initializes the Telosys Tools databases configuration file <br>
-	 * Copy the default databases configuration file in the standard folder ( in "TelosysTools" )
-	 * If the destination file already exists it is not copied 
-	 * @param sb 
-	 */
-	protected void initDatabasesConfigFile( StringBuffer sb ) {
-		initDatabasesConfigFile( TELOSYS_TOOLS_FOLDER_NAME, sb );
-	}
+//	/**
+//	 * Initializes the Telosys Tools databases configuration file <br>
+//	 * Copy the default databases configuration file in the standard folder ( in "TelosysTools" )
+//	 * If the destination file already exists it is not copied 
+//	 * @param sb 
+//	 */
+//	protected void initDatabasesConfigFile( StringBuffer sb ) {
+//		initDatabasesConfigFile( TELOSYS_TOOLS_FOLDER_NAME, sb );
+//	}
 	
 	/**
 	 * Initializes the Telosys Tools databases configuration file <br>
 	 * Copy the default databases configuration file in the given environment sub-folder <br>
 	 * If the destination file already exists it is not copied 
-	 * @param folderName the folder (in the environment folder) where to create the file
 	 * @param sb
 	 */
-	protected void initDatabasesConfigFile( String folderName, StringBuffer sb ){
-		String dirFullPath = fullPathInEnvironmentDir(folderName);
-		File destinationDir = new File (dirFullPath) ;
-		if ( destinationDir.exists() != true ) {
-			sb.append("ERROR : cannot create '" + DATABASES_DBCFG + "' file, directory '" + folderName + "' doesn't exist ! \n");
-			return ;
-		}
-		if ( destinationDir.isDirectory() != true ) {
-			sb.append("ERROR : cannot create '" + DATABASES_DBCFG + "' file, '" + folderName + "' is not a directory ! \n");
-			return ;
-		}
-		
-		String outsideFilePath = FileUtil.buildFilePath(dirFullPath, DATABASES_DBCFG) ; 
-		copyFileFromMetaInf(outsideFilePath, DATABASES_DBCFG, sb);
+////	protected void initDatabasesConfigFile( String folderName, StringBuffer sb ) {
+//	protected void initDatabasesConfigFile( StringBuffer sb ) {
+//		String databasesDbCfgFileName = telosysToolsEnv.getDatabasesDbCfgFileName() ;
+//		String folderName = telosysToolsEnv.getTelosysToolsFolder() ;
+//		
+//		String dirFullPath = fullPathInEnvironmentDir(folderName);
+//		File destinationDir = new File (dirFullPath) ;
+//		if ( destinationDir.exists() != true ) {
+//			sb.append("ERROR : cannot create '" + databasesDbCfgFileName + "' file, directory '" + folderName + "' doesn't exist ! \n");
+//			return ;
+//		}
+//		if ( destinationDir.isDirectory() != true ) {
+//			sb.append("ERROR : cannot create '" + databasesDbCfgFileName + "' file, '" + folderName + "' is not a directory ! \n");
+//			return ;
+//		}
+//		
+//		String outsideFilePath = FileUtil.buildFilePath(dirFullPath, databasesDbCfgFileName) ; 
+//		copyFileFromMetaInfIfNotExists(outsideFilePath, databasesDbCfgFileName, sb);
+//	}
+	protected void initDatabasesConfigFile( StringBuffer sb ) {
+		copyFileFromMetaInfIfNotExists( getDatabasesDbCfgFullPath(), 
+				telosysToolsEnv.getDatabasesDbCfgFileName(), sb);
 	}
 
-	private String fullPathInEnvironmentDir(String dir){
-		
-		String dir2 = "" ;
-		if ( ! StrUtil.nullOrVoid(dir) )  {
-			dir2 = dir.trim() ;
-		}
-		return FileUtil.buildFilePath(environmentDirectory, dir2);
-	}
+//	private String fullPathInEnvironmentDir(String dir){		
+//		String dir2 = "" ;
+//		if ( ! StrUtil.nullOrVoid(dir) )  {
+//			dir2 = dir.trim() ;
+//		}
+//		return FileUtil.buildFilePath(environmentDirectory, dir2);
+//	}
 	
 	//private final static String INSIDE_FILE = "/META-INF/files/" + Const.DATABASES_DBCFG ;
     private static final int BUFFER_SIZE = 1024 ; // 1 kb   
 	private final static String META_INF_FILES = "/META-INF/files/" ;
-	private void copyFileFromMetaInf(String destFullPath, String fileName, StringBuffer sb){
+	private void copyFileFromMetaInfIfNotExists(String destFullPath, String fileName, StringBuffer sb){
 		File destFile = new File (destFullPath) ;
 		if ( destFile.exists() ) {
 			sb.append(". file '" + destFullPath + "' exists (not created) \n");

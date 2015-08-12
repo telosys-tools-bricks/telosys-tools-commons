@@ -48,6 +48,15 @@ public class EnvironmentManagerTest extends TestCase {
 		assertEquals(TestsEnv.getTmpRootFolder()+"/TelosysTools" , folder);
 	}
 	
+	public void testGetDatabasesDbCfgFullPath() throws TelosysToolsException {
+		printSeparator();
+		System.out.println("getDatabasesDbCfgFullPath()...");
+		EnvironmentManager em = getEnvironmentManager() ;
+		String fullPath = em.getDatabasesDbCfgFullPath() ;
+		System.out.println(fullPath);
+		assertEquals(TestsEnv.getTmpRootFolder()+"/TelosysTools/databases.dbcfg" , fullPath);
+	}
+	
 	public void testCreateFolder() throws TelosysToolsException {
 		printSeparator();
 		System.out.println("createFolder('foo1')...");
@@ -84,27 +93,34 @@ public class EnvironmentManagerTest extends TestCase {
 		System.out.println("testInitDatabasesConfigFile()...");
 
 		EnvironmentManager em = getEnvironmentManager();
-
-//		String filePath = em.getTelosysToolsConfigFile();
-//		System.out.println("File : " + filePath);
-//		File file = new File(filePath);
-//		if ( file.exists() ) {
-//			System.out.println("Delete " + filePath);
-//			file.delete();
-//		}
 		
-		StringBuffer sb = new StringBuffer();
-		em.initDatabasesConfigFile("aaaa", sb);
-		String result = sb.toString();
-		System.out.println(result);
-		assertTrue( result.contains("cannot create"));
+		
+		String filePath = em.getDatabasesDbCfgFullPath() ;
+		System.out.println("File : " + filePath);
+		File file = new File(filePath);
+		if ( file.exists() ) {
+			System.out.println("Delete " + filePath);
+			file.delete();
+		}
 
-		TestsEnv.getTmpExistingFolder("tmp-folder");
-		sb = new StringBuffer();
-		em.initDatabasesConfigFile("tmp-folder", sb);
-		result = sb.toString();
-		System.out.println(result);
-		assertTrue( result.contains("created"));
+		StringBuffer sb = new StringBuffer();
+		em.initDatabasesConfigFile(sb);
+		System.out.println(sb.toString());
+		
+		assertTrue( file.exists() );
+		
+//		StringBuffer sb = new StringBuffer();
+//		em.initDatabasesConfigFile("aaaa", sb);
+//		String result = sb.toString();
+//		System.out.println(result);
+//		assertTrue( result.contains("cannot create"));
+
+//		TestsEnv.getTmpExistingFolder("tmp-folder");
+//		sb = new StringBuffer();
+//		em.initDatabasesConfigFile("tmp-folder", sb);
+//		result = sb.toString();
+//		System.out.println(result);
+//		assertTrue( result.contains("created"));
 	}
 
 }
