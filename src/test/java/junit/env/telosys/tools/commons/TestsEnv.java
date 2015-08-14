@@ -92,20 +92,15 @@ public class TestsEnv {
 	//-----------------------------------------------------------------------------------------
 	private final static String TARGET_TESTS_TMP_DIR = "target/tests-tmp/" ;
 	
-	//private final static String TESTS_ROOT_FOLDER = "D:/tmp/telosys-tools-tests" ;
-	
-	public final static String getTmpRootFolder() {
-		//return TESTS_ROOT_FOLDER ;
+	public final static String getTmpRootFolderFullPath() {
 		return getTmpExistingFolderFullPath( "" ) ;
 	}
 	
-	public final static String getTmpBundlesFolder() {
-		//return TESTS_ROOT_FOLDER + "/TelosysTools/templates";
+	public final static String getTmpBundlesFolderFullPath() {
 		return getTmpExistingFolderFullPath( "/TelosysTools/templates" ) ;
 	}
 	
-	public final static String getTmpDownloadFolder() {
-		//return TESTS_ROOT_FOLDER + "/TelosysTools/downloads";
+	public final static String getTmpDownloadFolderFullPath() {
 		return getTmpExistingFolderFullPath( "/TelosysTools/downloads" ) ;
 	}
 	

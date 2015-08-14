@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.StrUtil;
 
@@ -53,13 +54,38 @@ public class EnvironmentManager {
 		this.environmentDirectory = environmentDirectory;
 		this.telosysToolsEnv = TelosysToolsEnv.getInstance();
 	}
-
+	//-----------------------------------------------------------------------------------------------------
+	/**
+	 * Checks if the Telosys Tools environment is initialized <br>
+	 * Check "TelosysTools" folder existence and "telosys-tools.cfg" file existence 
+	 * @return
+	 */
+	public boolean isEnvironmentInitialized() {
+		//--- Check "TelosysTools" folder existence
+		File telosysToolsFolder = new File( getTelosysToolsFolderFullPath() ) ; 
+		if ( ! telosysToolsFolder.exists() ) {
+			return false ;
+		}
+		if ( ! telosysToolsFolder.isDirectory() ) {
+			return false ;
+		}
+		//--- Check "telosys-tools.cfg" file existence
+		File telosysToolsCfgFile = new File( getTelosysToolsConfigFileFullPath() ) ; 
+		if ( ! telosysToolsCfgFile.exists() ) {
+			return false ;
+		}
+		if ( ! telosysToolsCfgFile.isFile() ) {
+			return false ;
+		}
+		//--- OK, both exist
+		return true ;
+	}
 	//-----------------------------------------------------------------------------------------------------
 	/**
 	 * Initializes the environment using the standard default folders and configuration files
 	 * @param sb
 	 */
-	public void initStandardEnvironment(StringBuffer sb) {
+	public void initEnvironment(StringBuffer sb) {
 //		createFolder( TELOSYS_TOOLS_FOLDER_NAME, sb );
 //		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/downloads", sb );
 //		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/lib", sb );
@@ -147,7 +173,7 @@ public class EnvironmentManager {
 	 * @param folderToBeCreated 
 	 * @param sb
 	 */
-	protected void createFolder(String folderToBeCreated, StringBuffer sb){
+	protected void createFolder(String folderToBeCreated, StringBuffer sb) {
 
 		if ( ! StrUtil.nullOrVoid(folderToBeCreated) )  {
 			folderToBeCreated = folderToBeCreated.trim() ;
@@ -157,14 +183,15 @@ public class EnvironmentManager {
 				sb.append(". folder '" + folderToBeCreated + "' exists (not created)");
 			}
 			else {
-				boolean created = newDir.mkdirs();
-				//boolean created = EclipseProjUtil.createFolder(project, folderName ) ;	
-				if ( created ) {
-					sb.append(". folder '" + folderToBeCreated + "' created");
-				}
-				else {
-					sb.append(". folder '" + folderToBeCreated + "' not created (ERROR)");
-				}
+//				boolean created = newDir.mkdirs();
+//				if ( created ) {
+//					sb.append(". folder '" + folderToBeCreated + "' created");
+//				}
+//				else {
+//					sb.append(". folder '" + folderToBeCreated + "' not created (ERROR)");
+//				}
+				DirUtil.createDirectory( newDir ); // v 3.0.0
+				sb.append(". folder '" + folderToBeCreated + "' created");
 			}
 		}
 		sb.append("\n");

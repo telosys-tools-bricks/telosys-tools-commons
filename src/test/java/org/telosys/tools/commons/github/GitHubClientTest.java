@@ -48,7 +48,7 @@ public class GitHubClientTest extends TestCase {
 		GitHubClient gitHubClient = new GitHubClient( properties);
 		
 		String repoName = "basic-templates-TT210" ;
-		String destinationFile = TestsEnv.getTmpDownloadFolder() + "/" + repoName + ".zip" ;
+		String destinationFile = TestsEnv.getTmpDownloadFolderFullPath() + "/" + repoName + ".zip" ;
 		System.out.println("Download repository " + repoName );
 		System.out.println("                 to " + destinationFile );
 		gitHubClient.downloadRepository(GITHUB_USER, repoName, destinationFile);

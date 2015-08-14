@@ -60,7 +60,7 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 	
 	private File getTelosysToolCfgFile() throws TelosysToolsException {
 		//return FileUtil.getFileByClassPath("/cfg/telosys-tools.cfg");
-		String fileName = TestsEnv.getTmpRootFolder() + "/telosys-tools.cfg" ;
+		String fileName = TestsEnv.getTmpRootFolderFullPath() + "/telosys-tools.cfg" ;
 		return new File(fileName) ;
 	}
 	

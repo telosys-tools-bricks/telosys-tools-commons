@@ -213,7 +213,8 @@ public class FileUtil {
     	if ( parent != null ) {
     		if ( parent.exists() == false ) {
     			// Creates the directory, including any necessary but nonexistent parent directories.
-    			parent.mkdirs() ; 
+    			// parent.mkdirs() ; 
+    			DirUtil.createDirectory( parent ); // v 3.0.0
     		}
     	}
     }

@@ -41,8 +41,8 @@ public class ZipUtil {
 		File folder = new File(outputFolder);
 		if (!folder.exists()) {
 			if (createFolder) {
-				// folder.mkdir();
-				folder.mkdirs(); // creates all parent directories 
+				// folder.mkdirs(); // creates all parent directories 
+				DirUtil.createDirectory( folder ); // v 3.0.0
 			} else {
 				throw new Exception("UnZip error : folder '" + outputFolder + "' doesn't exist");
 			}
@@ -69,7 +69,8 @@ public class ZipUtil {
 					log("   install : " + zipEntryName );
 					log("        in : " + destinationFile.getAbsolutePath() );
 					if ( zipEntry.isDirectory() ) {
-						destinationFile.mkdirs(); // create directory (including parents)
+						//destinationFile.mkdirs(); // create directory (including parents)
+						DirUtil.createDirectory(destinationFile); // v 3.0.0
 					}
 					else {
 						unzipEntry(zis, destinationFile); // extract to file
@@ -128,7 +129,6 @@ public class ZipUtil {
 	private static void unzipEntry(ZipInputStream zis, File newFile) throws IOException {
 
 		// create non existent parent folders (to avoid FileNotFoundException) ???
-		// new File(newFile.getParent()).mkdirs();
 
 		byte[] buffer = new byte[1024];
 		FileOutputStream fos = new FileOutputStream(newFile);

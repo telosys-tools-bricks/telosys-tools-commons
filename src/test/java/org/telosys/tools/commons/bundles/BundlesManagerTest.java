@@ -88,7 +88,7 @@ public class BundlesManagerTest extends TestCase {
 	public void testFolder() throws TelosysToolsException {
 		System.out.println("========== File system folder  ");
 
-		String bundlesFolderInConfig = TestsEnv.getTmpBundlesFolder();
+		String bundlesFolderInConfig = TestsEnv.getTmpBundlesFolderFullPath();
 		System.out.println("Bundles folder in config : '" + bundlesFolderInConfig + "'");
 		BundlesManager bm = getBundlesManager();
 		
