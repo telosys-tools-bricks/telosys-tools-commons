@@ -27,7 +27,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-
+/**
+ * Utility class for FILE operations ( set of static methods )
+ * 
+ * @author Laurent GUERIN 
+ * 
+ */
 public class FileUtil {
 	
     private static final int BUFFER_SIZE = 4*1024 ; // 4 kb   
@@ -69,7 +74,7 @@ public class FileUtil {
     
     //----------------------------------------------------------------------------------------------------
     /**
-     * Copies a file into another one 
+     * Copy a file into another one 
      * @param inputFileName
      * @param outputFileName
      * @param createFolder if true creates the destination folder if necessary
@@ -108,7 +113,7 @@ public class FileUtil {
 
     //----------------------------------------------------------------------------------------------------
     /**
-     * Copies a file into another one 
+     * Copy a file into another one 
      * @param inputFile
      * @param outputFile
      * @param createFolder if true creates the destination folder if necessary
@@ -133,7 +138,7 @@ public class FileUtil {
 
     //----------------------------------------------------------------------------------------------------
     /**
-     * Copies a file into a directory 
+     * Copy a file into a directory 
      * @param inputFile 
      * @param directory 
      * @param createFolder if true creates the destination folder if necessary
@@ -166,7 +171,7 @@ public class FileUtil {
 
     //----------------------------------------------------------------------------------------------------
     /**
-     * Copies input URL to destination file 
+     * Copy input URL to destination file 
      * @param  inputFileURL
      * @param  outputFileName
      * @param  createFolder if true creates the destination folder if necessary
@@ -201,6 +206,74 @@ public class FileUtil {
         //--- Copy and close
         copyAndClose( is, fos);
     }
+    
+    /**
+     * Same as 'copyFileFromMetaInf' but only if the destination file doesn't exist
+     * @param filePathInMetaInf  origin file path in "META-INF"
+     * @param destFullPath  destination full path
+     * @param createFolder  if true creates the destination folder if necessary
+     * @return
+     * @throws Exception
+     */
+    public static boolean copyFileFromMetaInfIfNotExist(String filePathInMetaInf, String destFullPath, boolean createFolder) throws Exception {
+		File destFile = new File (destFullPath) ;
+		if ( destFile.exists() ) {
+			return false ; // Not copied
+		}
+		else {
+			copyFileFromMetaInf(filePathInMetaInf, destFullPath, createFolder) ;
+			return true ; // Copied
+		}
+	}
+	
+	/**
+	 * Builds the path with the "META-INF" prefix
+	 * @param filePathInMetaInf
+	 * @return
+	 * @throws Exception
+	 */
+	private static String buildMetaInfPath(String filePathInMetaInf) throws Exception {
+		return FileUtil.buildFilePath("/META-INF/", filePathInMetaInf) ;
+	}
+	
+	/**
+	 * Copy a file from a resource accessible via the ClassPath <br>
+	 * The file is supposed to be located in the standard resource folder "META-INF" <br>
+	 *  
+	 * @param filePathInMetaInf origin file path in "META-INF"
+	 * @param destFullPath destination full path
+     * @param createFolder if true creates the destination folder if necessary
+	 * @throws Exception
+	 */
+	public static void copyFileFromMetaInf(String filePathInMetaInf, String destFullPath, boolean createFolder) throws Exception {
+		//--- Build the full file name ( e.g. "META-INF/mydir/myfile" )
+		String fullFileNameInMetaInf = buildMetaInfPath(filePathInMetaInf) ;
+
+		//--- Get input stream (file in JAR)
+		InputStream is = FileUtil.class.getResourceAsStream(fullFileNameInMetaInf);
+		if ( is == null ) {
+			throw new Exception("File '" + filePathInMetaInf + "' not found in 'META-INF' \n");
+		}
+		
+        //--- Create output file folder is non existent 
+        if ( createFolder ) {
+        	//createFolderIfNecessary(outputFileName);
+        	createParentFolderIfNecessary(new File(destFullPath));        	
+        }
+    			
+		//--- Open output stream
+		FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(destFullPath);
+        } catch (FileNotFoundException ex)
+        {
+            //sb.append("ERROR : cannot create output file '" + destFullPath + "' ! \n");
+            throw new Exception("Cannot create output file '" + destFullPath + "' \n");
+        }
+
+        //--- Copy 
+		copyAndClose(is, fos);
+	}
     
     //----------------------------------------------------------------------------------------------------
     /**

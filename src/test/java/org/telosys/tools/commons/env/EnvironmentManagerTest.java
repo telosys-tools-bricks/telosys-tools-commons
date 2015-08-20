@@ -85,7 +85,7 @@ public class EnvironmentManagerTest extends TestCase {
 		}
 		
 		StringBuffer sb = new StringBuffer();
-		em.initTelosysToolsConfigFile(sb);
+		em.initTelosysToolsConfigFile(sb, null); // no variables to initialize
 		String result = sb.toString();
 		System.out.println(result);
 		assertFalse( result.contains("not created"));

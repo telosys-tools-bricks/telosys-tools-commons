@@ -16,14 +16,15 @@
 package org.telosys.tools.commons.env;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
 
 import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.StrUtil;
+import org.telosys.tools.commons.TelosysToolsException;
+import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
+import org.telosys.tools.commons.variables.Variable;
 
 /**
  * Telosys Tools environment manager <br>
@@ -35,7 +36,6 @@ import org.telosys.tools.commons.StrUtil;
  */
 public class EnvironmentManager {
 	
-
 	private final TelosysToolsEnv telosysToolsEnv ;
 	private final String          environmentDirectory ;
 	
@@ -81,16 +81,29 @@ public class EnvironmentManager {
 	 * @param sb
 	 */
 	public void initEnvironment(StringBuffer sb) {
-//		createFolder( TELOSYS_TOOLS_FOLDER_NAME, sb );
-//		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/downloads", sb );
-//		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/lib", sb );
-//		createFolder( TELOSYS_TOOLS_FOLDER_NAME + "/templates", sb );
+		initEnvironment(sb, null);
+	}
+	
+	/**
+	 * Initializes the environment using the standard default folders and configuration files <br>
+	 * Initializes the given variables in the 'cfg' file (if any)
+	 * @param sb
+	 * @param variables list of specific variables to set in the '.cfg' file (can be null if none)
+	 */
+	public void initEnvironment(StringBuffer sb, List<Variable> variables) {
+		//--- Create folders
 		createFolder( telosysToolsEnv.getTelosysToolsFolder(), sb );
 		createFolder( telosysToolsEnv.getDownloadsFolder(), sb );
 		createFolder( telosysToolsEnv.getLibrariesFolder(), sb );
 		createFolder( telosysToolsEnv.getTemplatesFolder(), sb );
+		//--- Init 'databases.dbcfg' file
 		initDatabasesConfigFile(sb);
-		initTelosysToolsConfigFile(sb);
+		//--- Init 'telosys-tools.cfg' file
+		try {
+			initTelosysToolsConfigFile(sb, variables);
+		} catch (TelosysToolsException e) {
+			throw new RuntimeException("Cannot init 'cfg' file ", e);
+		}
 	}
 	
 //	//-----------------------------------------------------------------------------------------------------	
@@ -181,13 +194,28 @@ public class EnvironmentManager {
 	/**
 	 * Initializes the Telosys Tools configuration file <br>
 	 * Copy the default configuration file in the environment folder <br>
-	 * If the destination file already exists it is not copied 
+	 * If the destination file already exists it is not copied <br>
+	 * Initializes the given variables in the file if any 
 	 * @param sb
+	 * @param variables list of specific variables to set in the '.cfg' file (can be null if none)
 	 */
-	protected void initTelosysToolsConfigFile( StringBuffer sb ) {
-//		copyFileFromMetaInfIfNotExists( getTelosysToolsConfigFileFullPath(), 
-//				telosysToolsEnv.getTelosysToolsConfigFileName(), sb);
+	protected void initTelosysToolsConfigFile( StringBuffer sb, List<Variable> variables ) throws TelosysToolsException {
+		//--- Initialize the file (from META-INF) in the project environment
 		initFileFromMetaInf(telosysToolsEnv.getTelosysToolsConfigFileName(), getTelosysToolsConfigFileFullPath(), sb );
+		//--- Set specific variables if any
+		if ( variables != null ) {
+			if ( variables.size() > 0 ) {
+				TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(environmentDirectory);
+				//--- Load the configuration
+				TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
+				//--- Set the given specific variables values
+				for ( Variable var : variables ) {
+					telosysToolsCfg.setSpecificVariable(var);
+				}
+				//--- Save the configuration
+				telosysToolsCfgManager.saveTelosysToolsCfg(telosysToolsCfg);
+			}
+		}
 	}
 	
 	//-----------------------------------------------------------------------------------------------------	
@@ -198,11 +226,10 @@ public class EnvironmentManager {
 	 * @param sb
 	 */
 	protected void initDatabasesConfigFile( StringBuffer sb ) {
-//		copyFileFromMetaInfIfNotExists( getDatabasesDbCfgFullPath(), 
-//				telosysToolsEnv.getDatabasesDbCfgFileName(), sb);		
 		initFileFromMetaInf(telosysToolsEnv.getDatabasesDbCfgFileName(), getDatabasesDbCfgFullPath(), sb );
 	}
 	
+	//-----------------------------------------------------------------------------------------------------	
 	/**
 	 * Initializes a Telosys Tools configuration file by copying a file from 'META-INF'
 	 * @param shortFileName  the file name in 'META-INF/files' ( eg 'telosys-tools.cfg' )
@@ -213,7 +240,7 @@ public class EnvironmentManager {
 		//--- File path inside "META-INF" folder
 		String filePathInMetaInf = FileUtil.buildFilePath("/files/", shortFileName) ; 
 		try {
-			boolean copied = copyFileFromMetaInfIfNotExist( filePathInMetaInf, destinationFullPath );
+			boolean copied = FileUtil.copyFileFromMetaInfIfNotExist( filePathInMetaInf, destinationFullPath, true);
 			if (copied) {
 				sb.append(". file '" + shortFileName + "' created. \n");
 			}
@@ -223,125 +250,6 @@ public class EnvironmentManager {
 		} catch (Exception e) {
 			sb.append("ERROR : cannot copy file '" + shortFileName + "' \n");
 			sb.append("EXCEPTION : " + e.getClass().getSimpleName() + " : " + e.getMessage() + " \n");
-		}
-	}
-//	//----------------------------------------------------------------------------------------------------
-//	private String buildFilePathInMetaInfFolder(String fileName)  {
-//		return FileUtil.buildFilePath("/files/", fileName) ;
-//	}
-//	//----------------------------------------------------------------------------------------------------
-//	private void reportStatus(boolean copied, Exception e, String fileName, StringBuffer sb )  {
-//		if (e != null ) {
-//			sb.append("ERROR : cannot copy file '" + fileName + "' \n");
-//			sb.append("EXCEPTION : " + e.getClass().getSimpleName() + " : " + e.getMessage() + " \n");
-//		}
-//		else {
-//			if (copied) {
-//				sb.append(". file '" + fileName + "' created. \n");
-//			}
-//			else {
-//				sb.append(". file '" + fileName + "' already exists (not created) \n");
-//			}
-//		}
-//	}
-	
-
-	//-----------------------------------------------------------------------------------------------------	
-//	private void copyFileFromMetaInfIfNotExists(String destFullPath, String fileName, StringBuffer sb) {
-//		File destFile = new File (destFullPath) ;
-//		if ( destFile.exists() ) {
-//			sb.append(". file '" + destFullPath + "' exists (not created) \n");
-//		}
-//		else {
-//			String fileNameInMetaInf = META_INF_FILES + fileName ;
-//			//--- Get input stream (file in JAR)
-//			InputStream is = EnvironmentManager.class.getResourceAsStream(fileNameInMetaInf);
-//			if ( is != null ) {
-//				//--- Open output stream
-//				FileOutputStream fos = null;
-//		        try
-//		        {
-//		            fos = new FileOutputStream(destFullPath);
-//		            try {
-//						copyAndClose(is, fos);
-//						sb.append(". file '" + destFullPath + "' created. \n");
-//					} catch (IOException ioex) {
-//						sb.append("ERROR : IOException : " + ioex.getMessage() + "\n");
-//					}
-//		        } catch (FileNotFoundException ex)
-//		        {
-//		            sb.append("ERROR : cannot create output file '" + destFullPath + "' ! \n");
-//		        }
-//			}
-//			else {
-//				sb.append("ERROR : '" + fileName + "' input file not found in jar ! \n");
-//			}
-//		}
-//	}
-
-	//----------------------------------------------------------------------------------------------------
-    private final static int    BUFFER_SIZE    = 1024 ; // 1 kb   
-//	private final static String META_INF = "/META-INF/files/" ;
-
-	private String buildMetaInfPath(String filePathInMetaInf) throws Exception {
-		return FileUtil.buildFilePath("/META-INF/", filePathInMetaInf) ;
-	}
-	
-	private boolean copyFileFromMetaInfIfNotExist(String filePathInMetaInf, String destFullPath) throws Exception {
-		File destFile = new File (destFullPath) ;
-		if ( destFile.exists() ) {
-			return false ; // Not copied
-		}
-		else {
-			copyFileFromMetaInf(filePathInMetaInf, destFullPath) ;
-			return true ; // Copied
-		}
-	}
-	
-	private void copyFileFromMetaInf(String filePathInMetaInf, String destFullPath) throws Exception {
-		//--- Build the full file name ( e.g. "META-INF/mydir/myfile" )
-		String fullFileNameInMetaInf = buildMetaInfPath(filePathInMetaInf) ;
-
-		//--- Get input stream (file in JAR)
-		InputStream is = EnvironmentManager.class.getResourceAsStream(fullFileNameInMetaInf);
-		if ( is == null ) {
-			throw new Exception("File '" + filePathInMetaInf + "' not found in 'META-INF' \n");
-		}
-		
-		//--- Open output stream
-		FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(destFullPath);
-        } catch (FileNotFoundException ex)
-        {
-            //sb.append("ERROR : cannot create output file '" + destFullPath + "' ! \n");
-            throw new Exception("Cannot create output file '" + destFullPath + "' \n");
-        }
-
-        //--- Copy 
-//        try {
-//			copyAndClose(is, fos);
-//			sb.append(". file '" + destFullPath + "' created. \n");
-//		} catch (IOException ioex) {
-//			sb.append("ERROR : IOException : " + ioex.getMessage() + "\n");
-//		}
-		copyAndClose(is, fos);
-		
-	}
-	
-	private void copyAndClose(InputStream is, FileOutputStream fos) throws Exception {
-		byte buffer[] = new byte[BUFFER_SIZE];
-		int len = 0;
-		
-        try {
-			while ((len = is.read(buffer)) > 0)
-			{
-				fos.write(buffer, 0, len);
-			}
-			is.close();
-			fos.close();
-		} catch (IOException ioex) {
-			throw new Exception("IO error", ioex);
 		}
 	}
 }

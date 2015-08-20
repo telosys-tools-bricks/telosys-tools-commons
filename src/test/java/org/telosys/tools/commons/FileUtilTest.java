@@ -134,7 +134,72 @@ public class FileUtilTest extends TestCase {
 		}
 	}
 	
+	public void testCopyFileFromMetaInf() throws Exception {
+		
+		Exception exception = null ;
+		try {
+			testCopyFileFromMetaInf("resource-file0.txt");
+		} catch (Exception e) {
+			exception = e ;
+			System.out.println("Expected exception : " + e.getMessage() );
+			assertNotNull(exception);
+		}
+		
+		testCopyFileFromMetaInf("resource-file1.txt"); 
 
+		testCopyFileFromMetaInf("dir2/resource-file2.txt"); 
+	}
+	
+	private void testCopyFileFromMetaInf(String srcFileName) throws Exception {
+
+		System.out.println("-----");
+		System.out.println("Test with '" +srcFileName+"'");
+		final String destFolderName = "/copied-from-metainf" ;
+		String destFileFullPath   = TestsEnv.getTmpFileOrFolderFullPath(destFolderName + "/" + srcFileName );
+		String destFolderFullPath = TestsEnv.getTmpFileOrFolderFullPath(destFolderName);
+
+		//--- Initial state : no directory
+		DirUtil.deleteDirectory( new File(destFolderFullPath) ) ;
+		
+		//--- 1rst try to copy : folder doesn't exist => exception expected
+		System.out.println("Copying from META-INF : " + srcFileName + " to " + destFileFullPath);
+		Exception exception = null ;
+		try {
+			FileUtil.copyFileFromMetaInf(srcFileName, destFileFullPath, false);
+		} catch (Exception e) {
+			exception = e ;
+			System.out.println("Expected exception : " + e.getMessage() );
+		}
+		assertNotNull(exception);
+		
+		//--- 2nd try to copy : folder doesn't exist but flag is 'create folder' => no exception expected
+		FileUtil.copyFileFromMetaInf(srcFileName, destFileFullPath, true);
+		checkFileExistence(destFileFullPath);
+		
+		//--- 3nd try to copy : copy same file again
+		FileUtil.copyFileFromMetaInf(srcFileName, destFileFullPath, false);
+		checkFileExistence(destFileFullPath);
+	}
+
+	//------------------------------------------------------------------------------------------
+	// Utilities
+	//------------------------------------------------------------------------------------------
+	private void checkFileExistence(String fileName)  {
+		File file = new File(fileName);
+		if ( file.exists() ) {
+			System.out.println("File found : " + file);
+			System.out.println(" . getAbsolutePath()  : " + file.getAbsolutePath() );
+			//System.out.println(" . getCanonicalPath() : " + file.getCanonicalPath() );
+			System.out.println(" . getName()          : " + file.getName() );
+			System.out.println(" . getPath()          : " + file.getPath() );
+			System.out.println(" . getParent()        : " + file.getParent() );
+		}
+		else {
+			System.out.println("File not found " );
+		}
+		assertTrue ( file.exists()) ;
+	}
+	
 	public void testBuildFilePath1()  {
 		String dir = "D:\\workspaces\\runtime-EclipseApplication\\myapp/TelosysTools/templates/front-springmvc-TT210-R2/resources" ;
 		String file = "/src/main/webapp" ;

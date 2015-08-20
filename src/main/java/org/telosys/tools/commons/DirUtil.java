@@ -17,8 +17,12 @@ package org.telosys.tools.commons ;
 
 import java.io.File;
 
-
-
+/**
+ * Utility class for DIRECTORY operations ( set of static methods )
+ * 
+ * @author Laurent GUERIN 
+ * 
+ */
 public class DirUtil {
 	
 	/**
@@ -56,16 +60,15 @@ public class DirUtil {
 	    if ( directory == null ) {
 	    	throw new IllegalArgumentException("directory argument is null");
 	    }
-	    if ( ! directory.isDirectory() ) {
-	    	throw new IllegalArgumentException("argument is not a directory");
+	    if ( directory.exists() ) {
+		    if ( ! directory.isDirectory() ) {
+		    	throw new IllegalArgumentException("argument is not a directory");
+		    }
+		    deleteDirectoryRecursively(directory);
 	    }
-	    deleteDirectoryRecursively(directory);
 	}
 	
 	private static void deleteDirectoryRecursively(final File directory) {
-//	    if ( directory == null ) {
-//	        return;
-//	    }
 	    
 	    if ( directory.exists() ) {
 	    	//--- Delete the directory content

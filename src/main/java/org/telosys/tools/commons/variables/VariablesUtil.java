@@ -15,10 +15,11 @@
  */
 package org.telosys.tools.commons.variables;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.List;
 import java.util.Properties;
 
 public class VariablesUtil 
@@ -39,10 +40,12 @@ public class VariablesUtil
     	Hashtable<String, String> allVariables = new Hashtable<String, String>();
     	
     	//--- 1) Project specific variables (defined by user)
-    	Variable[] specificVariables = VariablesUtil.getVariablesFromProperties( prop );
+    	//Variable[] specificVariables = VariablesUtil.getSpecificVariablesFromProperties( prop );
+    	List<Variable> specificVariables = VariablesUtil.getSpecificVariablesFromProperties( prop );
     	for ( Variable v : specificVariables ) {
     		allVariables.put(v.getName(), v.getValue());
     	}
+    	
     	//--- 2) Packages and folders ( at the end to override specific variables if any )
     	allVariables.put( VariablesNames.ROOT_PKG,   prop.getProperty(VariablesNames.ROOT_PKG,    "") ); // v 2.0.6
     	allVariables.put( VariablesNames.ENTITY_PKG, prop.getProperty(VariablesNames.ENTITY_PKG,  "") ); // v 2.0.6
@@ -55,16 +58,16 @@ public class VariablesUtil
     	allVariables.put( VariablesNames.DOC,      prop.getProperty(VariablesNames.DOC,      "") );
     	allVariables.put( VariablesNames.TMP,      prop.getProperty(VariablesNames.TMP,      "") );
     	
-    	//--- 3) Get all variables to build the array
+    	//--- 3) Put together all variables 
     	LinkedList<Variable> variablesList = new LinkedList<Variable>();
     	for ( String varName : allVariables.keySet() ) {
     		String varValue = allVariables.get(varName) ;
     		variablesList.add( new Variable( varName, varValue) ) ;
     	}
     	//--- Convert list to array
-    	Variable[] allVariablesArray = variablesList.toArray( new Variable[variablesList.size()] );
-    	
-		return allVariablesArray ;
+//    	Variable[] allVariablesArray = variablesList.toArray( new Variable[variablesList.size()] );
+//		return allVariablesArray ;
+    	return listToArray(variablesList) ; // v 3.0.0
 	}
 	
     //---------------------------------------------------------------------------------------------------------
@@ -73,60 +76,67 @@ public class VariablesUtil
 	 * @param properties
 	 * @return array of variables (never null)
 	 */
-	public static Variable[] getVariablesFromProperties( Properties properties )
+	public static LinkedList<Variable> getSpecificVariablesFromProperties( Properties properties )
 	{
 		LinkedList<Variable> list = new LinkedList<Variable>();
 		Enumeration<Object> e = properties.keys() ;
-		
-		while ( e.hasMoreElements() )
-		{
+		while ( e.hasMoreElements() ) {
 			String key = (String) e.nextElement() ;
-			if ( key.startsWith( PROJECT_VARIABLE_PREFIX ) )
-			{
+			if ( key.startsWith( PROJECT_VARIABLE_PREFIX ) ) {
 				String sVarValue = properties.getProperty(key);
 				String sVarName = key.substring( PROJECT_VARIABLE_PREFIX.length() ) ;
-				Variable newItem = new Variable(sVarName, sVarValue );
-				
-				//--- Insert in ascending order 
-				ListIterator<Variable> iter = list.listIterator();
-				while ( iter.hasNext() ) 
-				{
-					Variable item = iter.next();
-					if ( newItem.compareTo(item) <= 0 ) 
-					{
-						// newItem should come BEFORE item in the list.
-						// Move the iterator back one space so that it points to the correct insertion point,
-						// and end the loop.
-						iter.previous();
-						break;
-					} 
-				}
-				iter.add(newItem);
+				//--- Add in the list 
+				list.add( new Variable(sVarName, sVarValue ) );
 			}
 		}
-		
-		//--- Convert to VariableItem[]
-		/***
-		int listSize = list.size() ;
-		if ( listSize > 0 )
-		{
-			Variable[] items = new Variable[ listSize ] ;
-			for ( int i = 0 ; i < listSize ; i++ )
-			{
-				items[i] = (Variable) list.get(i);
-			}
-			return items ;
-		}
-		else
-		{
-			return new Variable[0] ;
-		}
-		***/
-		return list.toArray( new Variable[list.size()] );
+		sortByVariableName(list);
+		return list ;
 	}
 	
     //---------------------------------------------------------------------------------------------------------
-	public static Variable getVariableFromProperties( String variableName, Properties properties )
+//    /**
+//	 * Returns the specific variables defined in the given properties, using the standard project prefix <br>
+//	 * @param properties
+//	 * @return array of variables (never null)
+//	 */
+//	public static Variable[] getSpecificVariablesArrayFromProperties( Properties properties )
+//	{
+//		LinkedList<Variable> list = new LinkedList<Variable>();
+//		Enumeration<Object> e = properties.keys() ;
+//		
+//		while ( e.hasMoreElements() )
+//		{
+//			String key = (String) e.nextElement() ;
+//			if ( key.startsWith( PROJECT_VARIABLE_PREFIX ) )
+//			{
+//				String sVarValue = properties.getProperty(key);
+//				String sVarName = key.substring( PROJECT_VARIABLE_PREFIX.length() ) ;
+//				Variable newItem = new Variable(sVarName, sVarValue );
+//				
+//				//--- Insert in ascending order 
+//				ListIterator<Variable> iter = list.listIterator();
+//				while ( iter.hasNext() ) 
+//				{
+//					Variable item = iter.next();
+//					if ( newItem.compareTo(item) <= 0 ) 
+//					{
+//						// newItem should come BEFORE item in the list.
+//						// Move the iterator back one space so that it points to the correct insertion point,
+//						// and end the loop.
+//						iter.previous();
+//						break;
+//					} 
+//				}
+//				iter.add(newItem);
+//			}
+//		}
+//		
+//		//return list.toArray( new Variable[list.size()] );
+//		return listToArray(list) ; // v 3.0.0
+//	}
+	
+    //---------------------------------------------------------------------------------------------------------
+	public static Variable getSpecificVariableFromProperties( String variableName, Properties properties )
 	{
 		if ( null == variableName ) {
 			throw new IllegalArgumentException("Variable name argument is null");
@@ -153,7 +163,8 @@ public class VariablesUtil
 	 * @param properties
 	 * @return the number of variables stored in the properties
 	 */
-	public static int putVariablesInProperties( Variable[] variables, Properties properties )
+	//public static int putVariablesInProperties( Variable[] variables, Properties properties )
+	public static int putSpecificVariablesInProperties( List<Variable> variables, Properties properties )
 	{
 		int count = 0 ;
 		if ( null == variables ) return 0 ;
@@ -161,7 +172,7 @@ public class VariablesUtil
 			throw new IllegalArgumentException("Properties argument is null");
 		}
 		for ( Variable var : variables ) {
-			putVariableInProperties(var, properties);
+			putSpecificVariableInProperties(var, properties);
 			count++ ;
 		}
 		return count ;
@@ -173,7 +184,7 @@ public class VariablesUtil
 	 * @param variable
 	 * @param properties
 	 */
-	public static void putVariableInProperties( Variable variable, Properties properties ) {
+	public static void putSpecificVariableInProperties( Variable variable, Properties properties ) {
 		if ( null == variable ) {
 			throw new IllegalArgumentException("Variable argument is null");
 		}
@@ -185,5 +196,27 @@ public class VariablesUtil
 			String sPropName = PROJECT_VARIABLE_PREFIX + variableName ;
 			properties.put(sPropName, variable.getValue() );
 		}
+	}
+
+	//---------------------------------------------------------------------------------------------------------
+	/**
+	 * Converts the given List to Array
+	 * @param variablesList
+	 * @return
+	 */
+	public static Variable[] listToArray( List<Variable> variablesList ) {
+		if ( variablesList != null && variablesList.size() > 0 ) {
+			return variablesList.toArray( new Variable[variablesList.size()] );
+		}
+		return new Variable[0];
+	}
+
+	//---------------------------------------------------------------------------------------------------------
+	/**
+	 * Sorts the given list of variable ( sorted by 'name' : see 'compareTo' in Variable )
+	 * @param variablesList
+	 */
+	public static void sortByVariableName( List<Variable> variablesList ) {
+		Collections.sort(variablesList);
 	}
 }
