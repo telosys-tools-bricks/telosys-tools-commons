@@ -29,7 +29,8 @@ public class ResourcesCopier {
 	//----------------------------------------------------------------------------------------------------
 	/**
 	 * Constructor
-	 * @param overwriteChooser an OverwriteChooser implementation (if null overwrite is always 'YES')
+	 * @param overwriteChooser an OverwriteChooser implementation or null (if null overwrite is always 'YES')
+	 * @param copyHandler a CopyHandler implementation or null (if null no notification)
 	 */
 	public ResourcesCopier(OverwriteChooser overwriteChooser, CopyHandler copyHandler) {
 		super();

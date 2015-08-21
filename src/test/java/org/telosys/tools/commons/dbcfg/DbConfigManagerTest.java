@@ -3,13 +3,13 @@ package org.telosys.tools.commons.dbcfg;
 import java.io.File;
 import java.util.List;
 
+import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
 
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.dbcfg.DatabaseConfiguration;
-import org.telosys.tools.commons.dbcfg.DatabasesConfigurations;
-import org.telosys.tools.commons.dbcfg.DbConfigManager;
+import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
 
 public class DbConfigManagerTest extends TestCase {
 
@@ -170,5 +170,28 @@ public class DbConfigManagerTest extends TestCase {
 		dbDonfigManager.save(databasesConfigurations);
 		System.out.println("SAVED.");
 	}
+	
+	public void testLoadWithTelosysToolsCfg() throws TelosysToolsException {
+		printSeparator();
+		
+		String projectAbsolutePath = TestsEnv.buildAbsolutePath("myproject"); 
+		System.out.println("Test with project env in " + projectAbsolutePath);
+		TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(projectAbsolutePath);
+		TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
+		
+		DbConfigManager dbDonfigManager = new DbConfigManager(telosysToolsCfg);
+		DatabasesConfigurations databasesConfigurations = dbDonfigManager.load();
+		
+		print(databasesConfigurations);
+		
+		assertEquals(0, databasesConfigurations.getDatabaseDefaultId() ) ;
+
+		assertEquals(2, databasesConfigurations.getNumberOfDatabases() ) ;
+		
+		DatabaseConfiguration databaseConfiguration = databasesConfigurations.getDatabaseConfiguration(0);
+		assertNull(databaseConfiguration);
+		
+	}
+
 	
 }

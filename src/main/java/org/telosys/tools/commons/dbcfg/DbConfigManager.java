@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.XmlFileUtil;
 import org.telosys.tools.commons.XmlUtil;
+import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,6 +35,10 @@ public class DbConfigManager {
 
 	private final File file ;
 
+	/**
+	 * Constructor for a specific 'dbcfg' file
+	 * @param file
+	 */
 	public DbConfigManager(File file) {
 		super();
 		if ( file != null ) {
@@ -41,6 +46,21 @@ public class DbConfigManager {
 		}
 		else {
 			throw new IllegalArgumentException("File is null");
+		}
+	}
+
+	/**
+	 * Constructor for the standard 'dbcfg' file (defined in the given TelosysToolsCfg )
+	 * @param telosysToolsCfg
+	 */
+	public DbConfigManager( TelosysToolsCfg telosysToolsCfg) {
+		super();
+		if ( telosysToolsCfg != null ) {
+			String dbcfgFileName = telosysToolsCfg.getDatabasesDbCfgFileAbsolutePath();
+			this.file = new File(dbcfgFileName);
+		}
+		else {
+			throw new IllegalArgumentException("TelosysToolsCfg is null");
 		}
 	}
 
