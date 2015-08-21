@@ -1,13 +1,17 @@
 package org.telosys.tools.commons.env;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
 
 import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.env.EnvironmentManager;
+import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
+import org.telosys.tools.commons.variables.Variable;
 
 public class EnvironmentManagerTest extends TestCase {
 
@@ -132,15 +136,6 @@ public class EnvironmentManagerTest extends TestCase {
 		System.out.println("testInitEnvironment()...");
 
 		EnvironmentManager em = new EnvironmentManager( TestsEnv.getTmpExistingFolderFullPath("myproject1") );
-//		File telosysToolsFolder = new File ( em.getTelosysToolsFolderFullPath() ) ;
-//		if ( telosysToolsFolder.exists() ) {
-//			System.out.println("Deleting 'TelosysTools' folder...");
-//			DirUtil.deleteDirectory(telosysToolsFolder);
-//		}
-//		File cfgFile = TestsEnv.getTmpFileOrFolder("myproject1/telosys-tools.cfg");
-//		if ( cfgFile.exists() ) {
-//			cfgFile.delete();
-//		}
 		cleanTelosysToolsEnvironment(em);
 		
 		StringBuffer sb = new StringBuffer();
@@ -153,6 +148,42 @@ public class EnvironmentManagerTest extends TestCase {
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/templates").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/databases.dbcfg").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/telosys-tools.cfg").exists() );
+	}
+	
+	public void testInitEnvironmentWithVariables() throws TelosysToolsException {
+		printSeparator();
+		System.out.println("testInitEnvironmentWithVariables()...");
+
+		String projectFullPath = TestsEnv.getTmpExistingFolderFullPath("myproject2") ;
+		EnvironmentManager em = new EnvironmentManager( projectFullPath);
+		cleanTelosysToolsEnvironment(em);
+		
+		List<Variable> variables = new LinkedList<Variable>();
+		variables.add(new Variable("PROJECT_NAME","myproject2") );
+		variables.add(new Variable("MY_VAR1","value1") );
+		
+		StringBuffer sb = new StringBuffer();
+		em.initEnvironment(sb, variables);
+		System.out.println(sb.toString());
+		
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools").exists() );
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/lib").exists() );
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/downloads").exists() );
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/templates").exists() );
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/databases.dbcfg").exists() );
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/telosys-tools.cfg").exists() );
+		
+		TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(projectFullPath) ;
+		TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
+		Variable var ;
+
+		var = telosysToolsCfg.getSpecificVariable("MY_VAR1");
+		assertNotNull(var);
+		assertEquals("value1", var.getValue());
+		
+		var = telosysToolsCfg.getSpecificVariable("PROJECT_NAME");
+		assertNotNull(var);
+		assertEquals("myproject2", var.getValue());
 	}
 	
 	public void testIsInitialized() throws TelosysToolsException {

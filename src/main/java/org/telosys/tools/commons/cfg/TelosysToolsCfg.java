@@ -543,7 +543,27 @@ public class TelosysToolsCfg
 	{
 		// return _specificVariables ;
 		return _specificVariables.toArray(new Variable[0]); // v 3.0.0
-	}	
+	}
+	
+	/**
+	 * Returns the specific variables defined for the current project  
+	 * @return array of variables (never null, void array if none)
+	 */
+	/**
+	 * Returns the specific variable for the given variable name 
+	 * @param variableName
+	 * @return the variable or null if the variable is not defined
+	 */
+	public Variable getSpecificVariable(String variableName) // v 3.0.0
+	{
+		for ( Variable var : _specificVariables ) {
+			if ( var.getName().equals(variableName) ) {
+				return var ;
+			}
+		}
+		return null ;
+	}
+	
 	/**
 	 * Returns true if the current configuration has at least one specific variable
 	 * @return
