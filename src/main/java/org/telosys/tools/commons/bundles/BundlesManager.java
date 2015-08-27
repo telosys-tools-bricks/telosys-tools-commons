@@ -34,7 +34,7 @@ import org.telosys.tools.commons.github.GitHubRepository;
  */
 public class BundlesManager {
 
-	private final TelosysToolsCfg cfg ;
+	private final TelosysToolsCfg telosysToolsCfg ;
 	
 	//--------------------------------------------------------------------------------------------------
 	/**
@@ -44,7 +44,7 @@ public class BundlesManager {
 	public BundlesManager(TelosysToolsCfg cfg) {
 		super();
 		if ( cfg == null ) throw new IllegalArgumentException("TelosysToolsCfg is null");
-		this.cfg = cfg;
+		this.telosysToolsCfg = cfg;
 	}
 
 	//--------------------------------------------------------------------------------------------------
@@ -54,30 +54,30 @@ public class BundlesManager {
 	 * @return
 	 */
 	public String getDownloadsFolderFullPath() {
-		return cfg.getDownloadsFolderAbsolutePath() ;
+		return telosysToolsCfg.getDownloadsFolderAbsolutePath() ;
 	}
 	
-	//--------------------------------------------------------------------------------------------------
-	/**
-	 * Returns the BUNDLES folder's full path in the file system <br>
-	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates' )
-	 * @return
-	 */
-	public String getBundlesFolderFullPath() {
-		return cfg.getTemplatesFolderAbsolutePath() ;
-	}
-	
-	//--------------------------------------------------------------------------------------------------
-	/**
-	 * Returns the file system folder's full path for the given bundle name <br>
-	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates/bundleName' )
-	 * @param bundleName
-	 * @return
-	 */
-	public String getBundleFolderFullPath( String bundleName ) {
-		return FileUtil.buildFilePath( getBundlesFolderFullPath() , bundleName);
-	}
-	
+//	//--------------------------------------------------------------------------------------------------
+//	/**
+//	 * Returns the BUNDLES folder's full path in the file system <br>
+//	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates' )
+//	 * @return
+//	 */
+//	public String getBundlesFolderFullPath() {
+//		return telosysToolsCfg.getTemplatesFolderAbsolutePath() ;
+//	}
+//	
+//	//--------------------------------------------------------------------------------------------------
+//	/**
+//	 * Returns the file system folder's full path for the given bundle name <br>
+//	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates/bundleName' )
+//	 * @param bundleName
+//	 * @return
+//	 */
+//	public String getBundleFolderFullPath( String bundleName ) {
+//		return FileUtil.buildFilePath( getBundlesFolderFullPath() , bundleName);
+//	}
+//	
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Returns true if the bundle is already installed (if the bundle's folder exists)
@@ -85,7 +85,8 @@ public class BundlesManager {
 	 * @return
 	 */
 	public boolean isBundleAlreadyInstalled( String bundleName ) {
-		File bundlesFolder = new File(getBundleFolderFullPath(bundleName)) ;
+//		File bundlesFolder = new File(getBundleFolderFullPath(bundleName)) ;
+		File bundlesFolder = new File(telosysToolsCfg.getTemplatesBundleFolderAbsolutePath(bundleName)) ; // v 3.0.0
 		if ( bundlesFolder.exists() ) {
 			return true ;
 		}
@@ -104,12 +105,12 @@ public class BundlesManager {
 	 */
 	public BundleStatus downloadBundle( String userName, String bundleName ) {
 		
-		return downloadBundle( userName, bundleName, cfg.getDownloadsFolder() ) ;
+		return downloadBundle( userName, bundleName, telosysToolsCfg.getDownloadsFolder() ) ;
 	}
 
 	public BundleStatus downloadAndInstallBundle( String userName, String bundleName ) {
 		
-		BundleStatus status1 = downloadBundle( userName, bundleName, cfg.getDownloadsFolder() ) ;
+		BundleStatus status1 = downloadBundle( userName, bundleName, telosysToolsCfg.getDownloadsFolder() ) ;
 		if ( status1.isDone() && status1.getException() == null ) {
 			BundleStatus status2 = installBundle(status1.getZipFile(), bundleName);
 			return status2 ;
@@ -129,7 +130,7 @@ public class BundlesManager {
 	 */
 	public BundleStatus downloadBundle( String userName, String bundleName, String downloadFolderInProject )  {
 		BundleStatus status = new BundleStatus();
-		GitHubClient gitHubClient = new GitHubClient( cfg.getProperties() ) ; 
+		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
 		String destinationFile = buildDestinationFileName(bundleName, downloadFolderInProject) ;
 		status.log("-> Download bundle '" + bundleName + "' ");
 		status.log("   in '" + destinationFile + "' ");
@@ -158,7 +159,7 @@ public class BundlesManager {
 	 */
 	public List<String> getBundlesList( String userName ) throws Exception {
 		List<String> bundles = new LinkedList<String>();
-		GitHubClient gitHubClient = new GitHubClient( cfg.getProperties() ) ; 
+		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
 		List<GitHubRepository> repositories = gitHubClient.getRepositories( userName );
 		for ( GitHubRepository repo : repositories ) {
 // Removed in ver 2.1.0 ( "size" is not reliable in the GitHub API ) 
@@ -182,7 +183,7 @@ public class BundlesManager {
 		String sFile = repoName + ".zip" ;
 		String pathInProject = FileUtil.buildFilePath(sDownloadFolder, sFile);
 		// file path in Operating System 
-		String fullPath = FileUtil.buildFilePath(cfg.getProjectAbsolutePath(), pathInProject);
+		String fullPath = FileUtil.buildFilePath(telosysToolsCfg.getProjectAbsolutePath(), pathInProject);
 		return fullPath;
 	}
 	
@@ -203,7 +204,8 @@ public class BundlesManager {
 			return status ;
 		}
 		else {
-			String bundleFolder = getBundleFolderFullPath(bundleName) ;
+//			String bundleFolder = getBundleFolderFullPath(bundleName) ;
+			String bundleFolder = telosysToolsCfg.getTemplatesBundleFolderAbsolutePath(bundleName) ; // v 3.0.0
 			status.log("-> Install '" + zipFileName + "' ");
 			status.log("   in '" + bundleFolder + "' ");
 			try {

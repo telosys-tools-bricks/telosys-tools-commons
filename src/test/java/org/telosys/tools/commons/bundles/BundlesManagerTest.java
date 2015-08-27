@@ -97,19 +97,19 @@ public class BundlesManagerTest extends TestCase {
 		System.out.println(" result = '" + downloadsFolder + "'... ");
 		assertEquals(telosysToolsCfg.getDownloadsFolderAbsolutePath(), downloadsFolder);
 
-		System.out.println("Getting bundles folder ...");
-		String bundlesFolder = bm.getBundlesFolderFullPath() ;
-		System.out.println(" result = '" + bundlesFolder + "'... ");
-		assertEquals(telosysToolsCfg.getTemplatesFolderAbsolutePath(), bundlesFolder);
+//		System.out.println("Getting bundles folder ...");
+//		String bundlesFolder = bm.getBundlesFolderFullPath() ;
+//		System.out.println(" result = '" + bundlesFolder + "'... ");
+//		assertEquals(telosysToolsCfg.getTemplatesFolderAbsolutePath(), bundlesFolder);
 		
 		
-		String bundleName = "foo";
-		System.out.println("Getting folder for " + bundleName + "'... ");		
-		String folder = bm.getBundleFolderFullPath(bundleName);
-		System.out.println(" result = '" + folder + "'... ");
-		
-		String expected = telosysToolsCfg.getTemplatesFolderAbsolutePath() + "/" + bundleName ;
-		assertEquals(expected, folder);
+//		String bundleName = "foo";
+//		System.out.println("Getting folder for " + bundleName + "'... ");		
+//		String folder = bm.getBundleFolderFullPath(bundleName);
+//		System.out.println(" result = '" + folder + "'... ");
+//		
+//		String expected = telosysToolsCfg.getTemplatesFolderAbsolutePath() + "/" + bundleName ;
+//		assertEquals(expected, folder);
 	}
 
 	public void testBundlesList() throws Exception {

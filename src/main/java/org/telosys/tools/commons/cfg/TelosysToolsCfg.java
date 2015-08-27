@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.env.TelosysToolsEnv;
 import org.telosys.tools.commons.variables.Variable;
 import org.telosys.tools.commons.variables.VariablesNames;
@@ -410,6 +411,25 @@ public class TelosysToolsCfg
      */
     public String getTemplatesFolderAbsolutePath() {
     	return FileUtil.buildFilePath(_projectAbsolutePath, _sTemplatesFolder ) ;
+	}
+
+    /**
+     * Returns the templates bundle folder absolute path for the given bundle name <br>
+     * ( e.g. 'X:/dir/myproject/TelosysTools/templates/mybundle' )
+     * @param bundleName
+     * @return
+     */
+    public String getTemplatesBundleFolderAbsolutePath(String bundleName) {
+    	String templatesFolderAbsolutePath = getTemplatesFolderAbsolutePath()  ;
+		if ( StrUtil.nullOrVoid(bundleName) ) {
+			// No current bundle => use the standard templates folder as is
+			return templatesFolderAbsolutePath ;
+		}
+		else {
+			// There's a bundle defined => use it
+			return FileUtil.buildFilePath(templatesFolderAbsolutePath, bundleName.trim() );
+		}
+    	
 	}
 
 	//------------------------------------------------------------------------------------------------------
