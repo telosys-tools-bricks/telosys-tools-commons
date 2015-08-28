@@ -86,7 +86,7 @@ public class BundlesManager {
 	 */
 	public boolean isBundleAlreadyInstalled( String bundleName ) {
 //		File bundlesFolder = new File(getBundleFolderFullPath(bundleName)) ;
-		File bundlesFolder = new File(telosysToolsCfg.getTemplatesBundleFolderAbsolutePath(bundleName)) ; // v 3.0.0
+		File bundlesFolder = new File(telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName)) ; // v 3.0.0
 		if ( bundlesFolder.exists() ) {
 			return true ;
 		}
@@ -205,7 +205,7 @@ public class BundlesManager {
 		}
 		else {
 //			String bundleFolder = getBundleFolderFullPath(bundleName) ;
-			String bundleFolder = telosysToolsCfg.getTemplatesBundleFolderAbsolutePath(bundleName) ; // v 3.0.0
+			String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ; // v 3.0.0
 			status.log("-> Install '" + zipFileName + "' ");
 			status.log("   in '" + bundleFolder + "' ");
 			try {

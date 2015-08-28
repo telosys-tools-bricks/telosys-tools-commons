@@ -415,11 +415,14 @@ public class TelosysToolsCfg
 
     /**
      * Returns the templates bundle folder absolute path for the given bundle name <br>
-     * ( e.g. 'X:/dir/myproject/TelosysTools/templates/mybundle' )
-     * @param bundleName
+     * e.g. : <br>
+     * 'X:/dir/myproject/TelosysTools/templates/mybundle' for 'mybundle' <br>
+     * 'X:/dir/myproject/TelosysTools/templates' for '' or ' ' or null <br>
+     * 
+     * @param bundleName the bundle name (can be null or void)
      * @return
      */
-    public String getTemplatesBundleFolderAbsolutePath(String bundleName) {
+    public String getTemplatesFolderAbsolutePath(String bundleName) {
     	String templatesFolderAbsolutePath = getTemplatesFolderAbsolutePath()  ;
 		if ( StrUtil.nullOrVoid(bundleName) ) {
 			// No current bundle => use the standard templates folder as is

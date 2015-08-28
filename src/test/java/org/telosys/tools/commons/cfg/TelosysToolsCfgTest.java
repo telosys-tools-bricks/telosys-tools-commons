@@ -76,7 +76,7 @@ public class TelosysToolsCfgTest extends TestCase {
 		
 		assertEquals(projectFolderAbsolutePath + "/TelosysTools/templates", telosysToolsCfg.getTemplatesFolderAbsolutePath() );
 		assertEquals(projectFolderAbsolutePath + "/TelosysTools/templates/mybundle", 
-				telosysToolsCfg.getTemplatesBundleFolderAbsolutePath("mybundle") );
+				telosysToolsCfg.getTemplatesFolderAbsolutePath("mybundle") );
 	}
 
 }
