@@ -56,7 +56,7 @@ public class TelosysToolsCfg
 
 	//----------------------------------------------------------------------------------------
 	//--- Project folders default values
-	private final String _sRepositoriesFolder ; 
+	private final String _sModelsFolder ; 
 	private final String _sTemplatesFolder    ; 
 	private final String _sDownloadsFolder    ; 
 	private final String _sLibrariesFolder    ; 
@@ -92,10 +92,10 @@ public class TelosysToolsCfg
     {
     	// v 3.0.0
     	TelosysToolsEnv env = TelosysToolsEnv.getInstance();
-    	_sRepositoriesFolder = env.getModelsFolder() ; 
-    	_sTemplatesFolder    = env.getTemplatesFolder() ; 
-    	_sDownloadsFolder    = env.getDownloadsFolder() ; 
-    	_sLibrariesFolder    = env.getLibrariesFolder() ;
+    	_sModelsFolder    = env.getModelsFolder() ; 
+    	_sTemplatesFolder = env.getTemplatesFolder() ; 
+    	_sDownloadsFolder = env.getDownloadsFolder() ; 
+    	_sLibrariesFolder = env.getLibrariesFolder() ;
     	
     	if ( projectAbsolutePath == null ) {
     		throw new IllegalArgumentException("projectAbsolutePath is null");
@@ -260,7 +260,7 @@ public class TelosysToolsCfg
     public String getDatabasesDbCfgFile() {
     	//return FileUtil.buildFilePath(getRepositoriesFolder(), DATABASES_DBCFG_FILE);
     	// v 3.0.0
-    	return FileUtil.buildFilePath(getRepositoriesFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+    	return FileUtil.buildFilePath(getModelsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}
     /**
      * Returns the absolute file name of the "databases.dbcfg" file 
@@ -271,7 +271,7 @@ public class TelosysToolsCfg
 	{
     	//return FileUtil.buildFilePath(getRepositoriesFolderAbsolutePath(), DATABASES_DBCFG_FILE);
     	// v 3.0.0
-    	return FileUtil.buildFilePath(getRepositoriesFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+    	return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}
 
     //==============================================================================
@@ -487,13 +487,13 @@ public class TelosysToolsCfg
     
 	//------------------------------------------------------------------------------------------------------
     /**
-     * Returns the repositories folder in the current project (relative path in the project) <br>
+     * Returns the models folder in the current project (relative path in the project) <br>
      * ( e.g. 'TelosysTools' )
      * @return
      */
-    public String getRepositoriesFolder()
+    public String getModelsFolder()
 	{
-    	return _sRepositoriesFolder ;
+    	return _sModelsFolder ;
 	}
 //    /**
 //     * Set the repositories folder in the current project (relative path in the project) <br>
@@ -504,12 +504,12 @@ public class TelosysToolsCfg
 //    	_sRepositoriesFolder = repositoriesFolder ;
 //	}
     /**
-     * Returns the repositories folder absolute path <br>
+     * Returns the models folder absolute path <br>
      * ( e.g. 'X:/dir/myproject/TelosysTools' )
      * @return
      */
-    public String getRepositoriesFolderAbsolutePath() {
-    	return FileUtil.buildFilePath(_projectAbsolutePath, _sRepositoriesFolder ) ;
+    public String getModelsFolderAbsolutePath() {
+    	return FileUtil.buildFilePath(_projectAbsolutePath, _sModelsFolder ) ;
 	}
     
     //=======================================================================================================
