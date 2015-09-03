@@ -47,6 +47,7 @@ public class TelosysToolsCfg
 //	private final static String TEMPLATES_FOLDER  = "TemplatesFolder";
 //	private final static String DOWNLOADS_FOLDER  = "DownloadsFolder";    
 //	private final static String LIBRARIES_FOLDER  = "LibrariesFolder";
+	private final static String SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
     
 	//----------------------------------------------------------------------------------------
 	private final String     _projectAbsolutePath ; 
@@ -74,6 +75,8 @@ public class TelosysToolsCfg
 	private String _TEST_RES =  "src/test/resources" ;
 	private String _DOC      =  "doc" ;
 	private String _TMP      =  "tmp" ;
+	
+	private String _specificDestinationFolder = "" ;  // v 3.0.0
 	
 	//----------------------------------------------------------------------------------------
 	//--- Specific variables defined by the user for the current project
@@ -132,14 +135,14 @@ public class TelosysToolsCfg
 	//------------------------------------------------------------------------------------------------------
     protected boolean initFromProperties(Properties prop)
 	{
-    	if ( prop != null)
-    	{    	
+    	if ( prop != null ) {    	
     		// v 3.0.0
 //	    	// Initialization with the given properties, use original values as default values
 //	    	_sRepositoriesFolder = prop.getProperty(REPOS_FOLDER,     _sRepositoriesFolder);
 //	    	_sTemplatesFolder    = prop.getProperty(TEMPLATES_FOLDER, _sTemplatesFolder);
 //	    	_sDownloadsFolder    = prop.getProperty(DOWNLOADS_FOLDER, _sDownloadsFolder);
 //	    	_sLibrariesFolder    = prop.getProperty(LIBRARIES_FOLDER, _sLibrariesFolder);
+	    	_specificDestinationFolder = prop.getProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder);
 	    	
 	    	//--- Packages 
 	    	_ROOT_PKG   = prop.getProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
@@ -210,6 +213,7 @@ public class TelosysToolsCfg
 //    	properties.setProperty(TEMPLATES_FOLDER, _sTemplatesFolder);
 //    	properties.setProperty(DOWNLOADS_FOLDER, _sDownloadsFolder);
 //    	properties.setProperty(LIBRARIES_FOLDER, _sLibrariesFolder);
+    	properties.setProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder );
     	
     	//--- Packages 
     	properties.setProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
@@ -229,6 +233,7 @@ public class TelosysToolsCfg
     	
     	return properties ;
 	}
+    
 	//------------------------------------------------------------------------------------------------------
     /**
      * Returns the file system project folder (absolute path)
@@ -237,6 +242,24 @@ public class TelosysToolsCfg
     public String getProjectAbsolutePath()
 	{
     	return _projectAbsolutePath ;
+	}
+    
+	//------------------------------------------------------------------------------------------------------
+    /**
+     * Returns the destination folder for code generation (absolute path) <br>
+     * By default the destination folder is the project folder <br>
+     * If a specific destination as been defined it replaces the project folder <br>
+     * @return
+     */
+    public String getDestinationFolderAbsolutePath()
+	{
+    	if ( StrUtil.nullOrVoid( _specificDestinationFolder ) ) {
+    		//--- No specific destination folder => use the project folder
+    		return _projectAbsolutePath;
+    	}
+    	else {
+    		return _specificDestinationFolder ;
+    	}
 	}
     
 	//------------------------------------------------------------------------------------------------------
@@ -556,6 +579,36 @@ public class TelosysToolsCfg
 	}
 	
     //=======================================================================================================
+    // Specific destination folder  ( since v 3.0.0 )
+    //=======================================================================================================
+	/**
+	 * Returns the specific destination folder for code generation <br>
+	 * or void if not defined <br> 
+	 * ( e.g. "X:/foo/bar/myfolder" or "" if not set )
+	 * @return 
+	 */
+	public String getSpecificDestinationFolder() 
+	{
+		return _specificDestinationFolder ;
+	}
+	
+	/**
+	 * Set the specific destination folder for code generation <br>
+	 * ( e.g. "X:/foo/bar/myfolder" or "" for not defined )
+	 * @param rootPackage
+	 */
+	public void setSpecificDestinationFolder(String specificDestinationFolder) 
+	{
+		if ( specificDestinationFolder == null ) {
+			_specificDestinationFolder = "" ;
+		}
+		else {
+			_specificDestinationFolder = specificDestinationFolder.trim() ;
+		}
+	}
+	
+	
+    //=======================================================================================================
     // Variables 
     //=======================================================================================================
 	/**
@@ -568,10 +621,6 @@ public class TelosysToolsCfg
 		return _specificVariables.toArray(new Variable[0]); // v 3.0.0
 	}
 	
-	/**
-	 * Returns the specific variables defined for the current project  
-	 * @return array of variables (never null, void array if none)
-	 */
 	/**
 	 * Returns the specific variable for the given variable name 
 	 * @param variableName

@@ -77,6 +77,34 @@ public class TelosysToolsCfgTest extends TestCase {
 		assertEquals(projectFolderAbsolutePath + "/TelosysTools/templates", telosysToolsCfg.getTemplatesFolderAbsolutePath() );
 		assertEquals(projectFolderAbsolutePath + "/TelosysTools/templates/mybundle", 
 				telosysToolsCfg.getTemplatesFolderAbsolutePath("mybundle") );
+		
+	}
+
+	public void testDestinationFolder() throws TelosysToolsException {
+		printSeparator();
+		
+		String projectFolderAbsolutePath  = "X:/foo/bar/myproject" ;
+		String telosysToolCfgAbsolutePath = "X:/foo/bar/myproject/telosys-tools.cfg" ;
+		
+		TelosysToolsCfg telosysToolsCfg = new TelosysToolsCfg(projectFolderAbsolutePath, telosysToolCfgAbsolutePath, null);
+		
+		//--- Without specific destination
+		System.out.println("specific destination folder = " + telosysToolsCfg.getSpecificDestinationFolder() );
+		assertEquals("", telosysToolsCfg.getSpecificDestinationFolder() );
+
+		String destinationFolder = telosysToolsCfg.getDestinationFolderAbsolutePath();
+		System.out.println("destinationFolder = " + destinationFolder );
+		assertEquals(telosysToolsCfg.getProjectAbsolutePath(), destinationFolder);
+		
+		//--- With specific destination
+		telosysToolsCfg.setSpecificDestinationFolder("X:/foo/mydestination") ;
+		System.out.println("specific destination folder = " + telosysToolsCfg.getSpecificDestinationFolder() );
+		assertEquals("X:/foo/mydestination", telosysToolsCfg.getSpecificDestinationFolder() );
+		
+		destinationFolder = telosysToolsCfg.getDestinationFolderAbsolutePath();
+		System.out.println("destinationFolder = " + destinationFolder );
+		assertEquals(telosysToolsCfg.getSpecificDestinationFolder(), destinationFolder);
+		
 	}
 
 }

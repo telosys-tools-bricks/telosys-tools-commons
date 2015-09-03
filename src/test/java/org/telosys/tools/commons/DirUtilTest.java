@@ -2,6 +2,7 @@ package org.telosys.tools.commons;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
@@ -59,6 +60,38 @@ public class DirUtilTest extends TestCase {
 
 		createDir( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo999/bar1/bar2") ) ;
 		deleteDir( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo999") ) ;
+	}
+	
+	//---------------------------------------------------------------------------------------------
+	public void testGetDirectoryFiles() throws IOException  {
+		System.out.println("===== testGetDirectoryFiles() ");
+		
+		//createDir( TestsEnv.getTmpFileOrFolder(     "tests-dir/mydir/foo888/aaa/bbb") ) ;
+		
+		File directory = TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888");
+		DirUtil.deleteDirectory(directory);
+		createDir( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa/bbb/ccc") ) ;
+		
+		createVoidFile( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa/ooo.txt") ); 
+		createVoidFile( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa/bbb/aaa.txt") ); 
+		createVoidFile( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa/bbb/ccc/xxx.txt") ); 
+		createVoidFile( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa/bbb/ccc/yyy.txt") ); 
+		createVoidFile( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa/bbb/ccc/zzz.txt") ); 
+		
+		getDirFiles(TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa"), true,  5 );
+		getDirFiles(TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888/aaa"), false, 1 );
+		getDirFiles(TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888"), true,  5 );
+		getDirFiles(TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888"), false, 0 );
+	}
+	
+	//---------------------------------------------------------------------------------------------
+	private void getDirFiles(File dir, boolean recursively, int expectedNbFiles ) {
+		List<String> files = DirUtil.getDirectoryFiles(dir, recursively );
+		System.out.println("Dir '" + dir.getAbsolutePath()+ " contains " + files.size() + " file(s)" );
+		for ( String fileName : files ) {
+			System.out.println(" . " + fileName);
+		}
+		assertEquals(expectedNbFiles, files.size());
 	}
 	
 	//---------------------------------------------------------------------------------------------

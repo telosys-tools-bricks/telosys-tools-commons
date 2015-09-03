@@ -58,10 +58,19 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		return sb.toString();
 	}
 	
+	/**
+	 * Returns a File pointing on a non-existent 'telosys-tools.cfg' file
+	 * @return
+	 * @throws TelosysToolsException
+	 */
 	private File getTelosysToolCfgFile() throws TelosysToolsException {
 		//return FileUtil.getFileByClassPath("/cfg/telosys-tools.cfg");
 		String fileName = TestsEnv.getTmpRootFolderFullPath() + "/telosys-tools.cfg" ;
-		return new File(fileName) ;
+		File file = new File(fileName) ;
+		if ( file.exists() ) {
+			file.delete() ;
+		}
+		return file ;
 	}
 	
 	public void testLoad0() throws TelosysToolsException {
@@ -91,11 +100,13 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		
 		System.out.println("Load");
 		TelosysToolsCfg telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
+		assertEquals("", telosysToolsCfg.getSpecificDestinationFolder() );
 
 		System.out.println("Update");
 		telosysToolsCfg.setEntityPackage("org.demo.entity");
 		assertEquals("org.demo.entity", telosysToolsCfg.getEntityPackage() );
 		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
+		telosysToolsCfg.setSpecificDestinationFolder("x:/foo/bar/dest");
 
 		System.out.println("Save");
 		cfgManager.saveTelosysToolsCfg(telosysToolsCfg);
@@ -104,6 +115,7 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
 		assertEquals("org.demo.entity", telosysToolsCfg.getEntityPackage() );
 		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
+		assertEquals("x:/foo/bar/dest", telosysToolsCfg.getSpecificDestinationFolder() );
 		
 		
 	}

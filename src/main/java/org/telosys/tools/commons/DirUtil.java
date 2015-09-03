@@ -16,6 +16,8 @@
 package org.telosys.tools.commons ;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Utility class for DIRECTORY operations ( set of static methods )
@@ -86,6 +88,45 @@ public class DirUtil {
 	        }
         	//--- Delete the directory itself (now is void)
 	        directory.delete();
+	    }
+	}
+
+	/**
+	 * Returns a list of absolute paths for all the files contained in the given directory
+	 * @param directory
+	 * @param recursively
+	 * @return
+	 */
+	public static List<String> getDirectoryFiles(final File directory, final boolean recursively) {
+		List<String> list = new LinkedList<String>();
+	    if ( directory == null ) {
+	    	throw new IllegalArgumentException("directory argument is null");
+	    }
+	    if ( directory.exists() ) {
+		    if ( ! directory.isDirectory() ) {
+		    	throw new IllegalArgumentException("argument is not a directory");
+		    }
+		    getDirectoryFiles(directory, list, recursively);
+	    }
+	    return list;
+	}
+	
+	private static void getDirectoryFiles(final File directory, final List<String> list, final boolean recursive) {
+	    
+	    if ( directory.exists() ) {
+	    	//--- Get the directory content
+	        for ( File entry : directory.listFiles() ) {
+	            if ( entry.isDirectory() ) {
+	            	//--- Process the directory content
+	            	if ( recursive ) {
+		            	getDirectoryFiles(entry, list, recursive);
+	            	}
+	            }
+	            else {
+	            	//--- Add the file in the list
+	                list.add(entry.getAbsolutePath());
+	            }
+	        }
 	    }
 	}
 }
