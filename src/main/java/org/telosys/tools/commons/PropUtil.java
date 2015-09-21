@@ -28,6 +28,12 @@ import java.util.Date;
 
 public class PropUtil {
 	
+	/**
+	 * Private constructor to avoid instance creation
+	 */
+	private PropUtil() {
+	}
+	
     private static final int  BUFFER_SIZE  = 2048;
 	
 	/**
