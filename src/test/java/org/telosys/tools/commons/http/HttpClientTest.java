@@ -21,6 +21,10 @@ import org.telosys.tools.commons.http.HttpResponse;
  */
 public class HttpClientTest extends TestCase {
 
+	private final static String URL_TWITTER_COM = "https://twitter.com/" ;
+	private final static String URL_GOOGLE_FR   = "https://www.google.fr" ;
+	
+	
 	private Map<String, String> getHeaders() {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Cache-Control",   "max-age=0");
@@ -44,8 +48,8 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 		
-		doGet(c, "http://myhttp.info/", headers, 200);
-		doGet(c, "https://www.google.fr", headers, 200);
+		doGet(c, URL_TWITTER_COM, headers, 200);
+		doGet(c, URL_GOOGLE_FR, headers, 200);
 	}
 	
 	public void doGet(HttpClient httpClient, String url, Map<String, String> headers, int expectedRetCode) throws Exception {
@@ -63,8 +67,8 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 		
-		doGet(c, "http://myhttp.info/", headers, 200);
-		doGet(c, "https://www.google.fr", headers, 200);
+		doGet(c, URL_TWITTER_COM, headers, 200);
+		doGet(c, URL_GOOGLE_FR, headers, 200);
 	}
 	
 	public void doGet(HttpClient httpClient, HttpRequest request, int expectedRetCode) throws Exception {
@@ -83,8 +87,8 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 		
-		doHead(c, "http://myhttp.info/", headers, 200);
-		doHead(c, "https://www.google.fr", headers, 200);
+		doHead(c, URL_TWITTER_COM, headers, 200);
+		doHead(c, URL_GOOGLE_FR, headers, 200);
 	}
 	
 	public void doHead(HttpClient httpClient, String url, Map<String, String> headers, int expectedRetCode) throws Exception {
@@ -103,8 +107,8 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 
-		doHead(c, new HttpRequest("http://myhttp.info/",   headers), 200);
-		doHead(c, new HttpRequest("https://www.google.fr", headers), 200);
+		doHead(c, new HttpRequest(URL_TWITTER_COM,   headers), 200);
+		doHead(c, new HttpRequest(URL_GOOGLE_FR, headers), 200);
 	}
 	
 	public void doHead(HttpClient httpClient, HttpRequest request, int expectedRetCode) throws Exception {
@@ -123,7 +127,8 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 		
-		doDelete(c, new HttpRequest("http://myhttp.info/", headers), 200);
+		//doDelete(c, new HttpRequest("http://myhttp.info/", headers), 200);
+		doDelete(c, new HttpRequest(URL_GOOGLE_FR, headers), 405); // HTTP 405 : Method not allowed
 	}
 	
 	public void doDelete(HttpClient httpClient, HttpRequest request, int expectedRetCode) throws Exception {
