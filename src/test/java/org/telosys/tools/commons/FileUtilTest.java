@@ -82,6 +82,28 @@ public class FileUtilTest extends TestCase {
 		}
 		assertTrue(exception);
 	}
+	
+	public void testCopyStringToFile() throws Exception {
+		
+		File destinationFile = TestsEnv.getTmpFile("foo/bar2/file-copy-from-string.txt");
+		System.out.println("Copy string content to '" + destinationFile.getAbsolutePath() + "'" );
+		
+		String content = "This is the first line \n" +
+				"line 2 aaaaaaa\n" +
+				"line 3 bbbbbb " ;
+			
+		FileUtil.copy(content, destinationFile, true);
+		assertTrue(destinationFile.exists());
+
+//	boolean exception = false ;
+//	try {
+//		FileUtil.copy(content, destinationFile, false);
+//	} catch (Exception e) {
+//		exception = true ;
+//	}
+//	assertFalse(exception);
+	}
+
 
 	public void testCopyFileToDirectory() throws IOException, Exception {
 		

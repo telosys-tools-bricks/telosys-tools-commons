@@ -15,6 +15,7 @@
  */
 package org.telosys.tools.commons ;
 
+import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,8 +36,12 @@ import java.net.URL;
  */
 public class FileUtil {
 	
-    private static final int BUFFER_SIZE = 4*1024 ; // 4 kb   
-    
+    private static final int     BUFFER_SIZE = 4*1024 ; // 4 kb   
+    private static final String  UTF_8 = "UTF-8" ;
+    /**
+     * Close the given stream without throwing exception
+     * @param stream
+     */
     public static void close(Closeable stream) {
     	if ( stream != null ) {
         	try {
@@ -122,8 +127,31 @@ public class FileUtil {
     public static void copy(File inputFile, File outputFile, boolean createFolder) throws Exception
     {
         //--- Open input file
-		FileInputStream fis = new FileInputStream(inputFile);
+		FileInputStream fileInputStream = new FileInputStream(inputFile);
         
+//        //--- Create output file folder is non existent 
+//        if ( createFolder ) {
+//        	createParentFolderIfNecessary(outputFile);
+//        }
+//    	
+//        //--- Open output file
+//		FileOutputStream fos = new FileOutputStream(outputFile);
+//        
+//        //--- Copy and close
+//        copyAndClose( fis, fos);
+    	copyInputStreamToFile(fileInputStream, outputFile, createFolder) ;
+    }
+
+    public static void copy(String inputContent, File outputFile, boolean createFolder) throws Exception
+    {
+    	//--- The input content is the string
+    	InputStream inputStream = new ByteArrayInputStream(inputContent.getBytes(UTF_8));
+    	
+    	copyInputStreamToFile(inputStream, outputFile, createFolder) ;
+    }
+    
+    private static void copyInputStreamToFile(InputStream is, File outputFile, boolean createFolder) throws Exception
+    {
         //--- Create output file folder is non existent 
         if ( createFolder ) {
         	createParentFolderIfNecessary(outputFile);
@@ -133,9 +161,9 @@ public class FileUtil {
 		FileOutputStream fos = new FileOutputStream(outputFile);
         
         //--- Copy and close
-        copyAndClose( fis, fos);
+        copyAndClose( is, fos);
     }
-
+    
     //----------------------------------------------------------------------------------------------------
     /**
      * Copy a file into a directory 
