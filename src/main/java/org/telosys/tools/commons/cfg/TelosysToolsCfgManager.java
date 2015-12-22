@@ -18,6 +18,7 @@ package org.telosys.tools.commons.cfg;
 import java.util.Properties;
 
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.PropertiesManager;
 import org.telosys.tools.commons.TelosysToolsException;
 
 /**
