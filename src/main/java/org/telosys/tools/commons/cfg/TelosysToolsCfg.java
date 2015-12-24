@@ -57,6 +57,7 @@ public class TelosysToolsCfg
 
 	//----------------------------------------------------------------------------------------
 	//--- Project folders default values
+	private final String _sTelosysToolsFolder ;
 	private final String _sModelsFolder ; 
 	private final String _sTemplatesFolder    ; 
 	private final String _sDownloadsFolder    ; 
@@ -95,10 +96,11 @@ public class TelosysToolsCfg
     {
     	// v 3.0.0
     	TelosysToolsEnv env = TelosysToolsEnv.getInstance();
-    	_sModelsFolder    = env.getModelsFolder() ; 
-    	_sTemplatesFolder = env.getTemplatesFolder() ; 
-    	_sDownloadsFolder = env.getDownloadsFolder() ; 
-    	_sLibrariesFolder = env.getLibrariesFolder() ;
+    	_sTelosysToolsFolder = env.getTelosysToolsFolder();
+    	_sModelsFolder       = env.getModelsFolder() ; 
+    	_sTemplatesFolder    = env.getTemplatesFolder() ; 
+    	_sDownloadsFolder    = env.getDownloadsFolder() ; 
+    	_sLibrariesFolder    = env.getLibrariesFolder() ;
     	
     	if ( projectAbsolutePath == null ) {
     		throw new IllegalArgumentException("projectAbsolutePath is null");
@@ -413,6 +415,24 @@ public class TelosysToolsCfg
     
 	//------------------------------------------------------------------------------------------------------
     /**
+     * Returns the 'TelosysTools' folder in the current project (relative path in the project) <br>
+     * ( e.g. 'TelosysTools' )
+     * @return
+     */
+    public String getTelosysToolsFolder() {
+    	return _sTelosysToolsFolder;
+	}
+    /**
+     * Returns the 'TelosysTools' folder absolute path <br>
+     * ( e.g. 'X:/dir/myproject/TelosysTools' )
+     * @return
+     */
+    public String getTelosysToolsFolderAbsolutePath() {
+    	return FileUtil.buildFilePath(_projectAbsolutePath, _sTelosysToolsFolder ) ;
+	}
+    
+	//------------------------------------------------------------------------------------------------------
+    /**
      * Returns the templates folder in the current project (relative path in the project) <br>
      * ( e.g. 'TelosysTools/templates' )
      * @return
@@ -457,6 +477,20 @@ public class TelosysToolsCfg
 		}
     	
 	}
+
+    /**
+     * Returns the absolute file name for the given model file name<br>
+     * e.g. : 'X:/dir/myproject/TelosysTools/aaa.model' for 'aaa.model'
+     * @param modelFileName the model file name ( e.g. 'foo.model' )
+     * @return
+     */
+    public String getDslModelFileAbsolutePath(String modelFileName) {
+    	if ( modelFileName == null ) {
+    		throw new IllegalArgumentException("model file name is null");
+    	}
+		return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), modelFileName.trim() );
+	}
+
 
 	//------------------------------------------------------------------------------------------------------
     /**

@@ -1,25 +1,34 @@
 package org.telosys.tools.commons.cfg;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Properties;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.variables.Variable;
 
-public class TelosysToolsCfgTest extends TestCase {
+public class TelosysToolsCfgTest {
 
-	public void printSeparator() {
+	private void printSeparator() {
 		System.out.println("==============================================================" );
 	}
-	public void print(File file) {
-		System.out.println("File   : " + file.toString());
-		System.out.println("Parent : " + file.getParent());
+//	private void print(File file) {
+//		System.out.println("File   : " + file.toString());
+//		System.out.println("Parent : " + file.getParent());
+//	}
+	
+	private final static String PROJECT_ABSOLUTE_PATH     = "X:/foo/bar/myproject" ;
+	private final static String CONFIG_FILE_ABSOLUTE_PATH = "X:/foo/bar/myproject/telosys-tools.cfg" ;
+	
+	private TelosysToolsCfg getTelosysToolsCfg() {
+		TelosysToolsCfg telosysToolsCfg = new TelosysToolsCfg(PROJECT_ABSOLUTE_PATH, CONFIG_FILE_ABSOLUTE_PATH, null);
+		print(telosysToolsCfg);
+		return telosysToolsCfg ;
 	}
 	
-	public void print(TelosysToolsCfg telosysToolsCfg) {
+	private void print(TelosysToolsCfg telosysToolsCfg) {
 		System.out.println( "getProjectAbsolutePath = " + telosysToolsCfg.getProjectAbsolutePath() );
 		System.out.println( "getCfgFileAbsolutePath = " + telosysToolsCfg.getCfgFileAbsolutePath() );
 		System.out.println( "getDatabasesDbCfgFile             = " + telosysToolsCfg.getDatabasesDbCfgFile());
@@ -30,14 +39,14 @@ public class TelosysToolsCfgTest extends TestCase {
 		print(telosysToolsCfg.getProperties());
 	}
 	
-	public void print(Variable[] variables) {
+	private void print(Variable[] variables) {
 		System.out.println("VARIABLES : ");
 		for ( Variable v : variables ) {
 			System.out.println(" . " + v.getName() + " = " + v.getValue() + " ( " + v.getSymbolicName() + " )");
 		}
 	}
 	
-	public void print(Properties properties) {
+	private void print(Properties properties) {
 		System.out.println("PROPERTIES : ");
 		Set<Object> keys = properties.keySet();
 		for ( Object k : keys ) {
@@ -45,26 +54,14 @@ public class TelosysToolsCfgTest extends TestCase {
 		}
 	}
 	
-	public String toString(String[] array) {
-		StringBuffer sb = new StringBuffer();
-		for ( String s : array ) {
-			sb.append("'");
-			sb.append(s);
-			sb.append("' ");
-		}
-		return sb.toString();
-	}
-	
-	public void test1() throws TelosysToolsException {
+	@Test
+	public void testDefaultPackages() throws TelosysToolsException {
 		printSeparator();
 		
-		String projectFolderAbsolutePath = "X:/foo/bar/myproject" ;
-		String telosysToolCfgAbsolutePath = "X:/foo/bar/myproject/telosys-tools.cfg" ;
+		TelosysToolsCfg telosysToolsCfg = getTelosysToolsCfg() ;
 		
-		TelosysToolsCfg telosysToolsCfg = new TelosysToolsCfg(projectFolderAbsolutePath, telosysToolCfgAbsolutePath, null);
-		
-		assertEquals(projectFolderAbsolutePath, telosysToolsCfg.getProjectAbsolutePath() );
-		assertEquals(telosysToolCfgAbsolutePath, telosysToolsCfg.getCfgFileAbsolutePath() );
+		assertEquals(PROJECT_ABSOLUTE_PATH,     telosysToolsCfg.getProjectAbsolutePath() );
+		assertEquals(CONFIG_FILE_ABSOLUTE_PATH, telosysToolsCfg.getCfgFileAbsolutePath() );
 		
 		// Default packages
 		assertEquals("org.demo", telosysToolsCfg.getRootPackage() );
@@ -74,19 +71,40 @@ public class TelosysToolsCfgTest extends TestCase {
 		assertEquals(0, telosysToolsCfg.getSpecificVariables().length ); 
 		assertEquals(9, telosysToolsCfg.getAllVariables().length ); 
 		
-		assertEquals(projectFolderAbsolutePath + "/TelosysTools/templates", telosysToolsCfg.getTemplatesFolderAbsolutePath() );
-		assertEquals(projectFolderAbsolutePath + "/TelosysTools/templates/mybundle", 
-				telosysToolsCfg.getTemplatesFolderAbsolutePath("mybundle") );
-		
 	}
 
+	@Test
+	public void testTelosysToolsFolders() throws TelosysToolsException {
+		printSeparator();
+		
+		TelosysToolsCfg telosysToolsCfg = getTelosysToolsCfg() ;
+		
+		assertEquals("TelosysTools",            telosysToolsCfg.getTelosysToolsFolder() );
+		assertEquals("TelosysTools/downloads",  telosysToolsCfg.getDownloadsFolder() );
+		assertEquals("TelosysTools/templates",  telosysToolsCfg.getTemplatesFolder() );
+		assertEquals("TelosysTools/lib",        telosysToolsCfg.getLibrariesFolder() );
+		assertEquals("TelosysTools",            telosysToolsCfg.getModelsFolder() );
+
+		assertEquals("TelosysTools/databases.dbcfg", telosysToolsCfg.getDatabasesDbCfgFile() );
+
+		assertEquals(PROJECT_ABSOLUTE_PATH,  telosysToolsCfg.getProjectAbsolutePath() );
+		assertEquals(CONFIG_FILE_ABSOLUTE_PATH, telosysToolsCfg.getCfgFileAbsolutePath() );
+
+		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools",            telosysToolsCfg.getTelosysToolsFolderAbsolutePath() );
+		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools/downloads",  telosysToolsCfg.getDownloadsFolderAbsolutePath() );
+		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools/templates",  telosysToolsCfg.getTemplatesFolderAbsolutePath() );
+		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools/lib",        telosysToolsCfg.getLibrariesFolderAbsolutePath() );
+		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools",            telosysToolsCfg.getModelsFolderAbsolutePath() );
+
+		assertEquals(PROJECT_ABSOLUTE_PATH + "/TelosysTools/templates/mybundle", telosysToolsCfg.getTemplatesFolderAbsolutePath("mybundle") );
+		assertEquals(PROJECT_ABSOLUTE_PATH + "/TelosysTools/foo.model", telosysToolsCfg.getDslModelFileAbsolutePath("foo.model") );
+	}
+
+	@Test
 	public void testDestinationFolder() throws TelosysToolsException {
 		printSeparator();
 		
-		String projectFolderAbsolutePath  = "X:/foo/bar/myproject" ;
-		String telosysToolCfgAbsolutePath = "X:/foo/bar/myproject/telosys-tools.cfg" ;
-		
-		TelosysToolsCfg telosysToolsCfg = new TelosysToolsCfg(projectFolderAbsolutePath, telosysToolCfgAbsolutePath, null);
+		TelosysToolsCfg telosysToolsCfg = getTelosysToolsCfg() ;
 		
 		//--- Without specific destination
 		System.out.println("specific destination folder = " + telosysToolsCfg.getSpecificDestinationFolder() );

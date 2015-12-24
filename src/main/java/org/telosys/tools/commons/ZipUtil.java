@@ -19,8 +19,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
 
@@ -92,6 +95,88 @@ public class ZipUtil {
 			log("IOException : " + ex.getMessage() );
 			throw new Exception("UnZip Error (IOException)", ex);
 		}
+	}
+	
+	//---------------------------------------------------------------------------------------------
+	/**
+	 * Zip the given directory
+	 * @param directory
+	 * @param zipFile
+	 * @throws Exception
+	 */
+	public static void zipDirectory( final File directory, final File zipFile ) throws Exception {
+		if ( directory.isDirectory() == false ) {
+			throw new IllegalArgumentException("The given file is not a directory");
+		}
+		//--- Build the list of files
+		List<String> fileNames = DirUtil.getDirectoryFiles(directory, true) ;
+		List<File> files = new LinkedList<File>() ;
+		for ( String fileAbsolutePath : fileNames ) {
+			files.add( new File(fileAbsolutePath) ) ;
+		}
+		//--- Zip the files
+		zip(files, zipFile, directory);
+	}
+	
+	/**
+	 * Zip the given files in the given zip file name
+	 * @param files
+	 * @param zipFile
+	 * @param baseDir
+	 * @throws Exception
+	 */
+	public static void zip( List<File> files, File zipFile, File baseDir ) throws Exception {
+
+		if ( baseDir.isDirectory() == false ) {
+			throw new IllegalArgumentException("The base directory is not a directory");
+		}
+		
+		FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
+		ZipOutputStream zout = new ZipOutputStream(fileOutputStream);
+		
+		//--- Zip each given file
+		for ( File file : files ) {
+			if ( file.isDirectory() ) {
+				// TODO : recursive 
+				zip(file, zout, baseDir);
+			}
+			else {
+				zip(file, zout, baseDir);
+			}
+		}
+		
+		zout.close();
+	}
+
+	/**
+	 * Zip the given file in the given ZipOutputStream
+	 * @param file
+	 * @param zout
+	 * @throws Exception
+	 */
+	private static void zip(final File file, final ZipOutputStream zout, File baseDir ) throws Exception {
+		
+		String baseDirAbsolutePath = baseDir.getCanonicalPath();
+		System.out.println("baseDirAbsolutePath = " + baseDirAbsolutePath );
+		
+		byte[] buffer = new byte[1024];
+		
+		FileInputStream fileInputStream = new FileInputStream(file);
+		//--- Step 1 : create a zip entry 
+		String fileAbsolutePath = file.getCanonicalPath();
+		System.out.println("fileAbsolutePath = " + fileAbsolutePath );
+		String fileEntryName = fileAbsolutePath.substring(baseDirAbsolutePath.length()+1);
+		System.out.println("fileEntryName = " + fileEntryName );
+		
+		ZipEntry zipEntry = new ZipEntry(fileEntryName);
+		zout.putNextEntry(zipEntry);
+		//--- Step 2 : zip the file
+		int length ;
+		while( ( length = fileInputStream.read(buffer) ) > 0 ) {
+			zout.write(buffer, 0, length);
+		}
+		zout.closeEntry();
+		fileInputStream.close();
 	}
 	
 	//---------------------------------------------------------------------------------------------
