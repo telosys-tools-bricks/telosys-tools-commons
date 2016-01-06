@@ -462,6 +462,22 @@ public final class StrUtil
 		}
 	}
 	
+	/**
+	 * Removes a given string if present at the end of the original string <br>
+	 * 
+	 * @param originalString the original string ( e.g. 'abcd' )
+	 * @param stringToBeRemoved the string to be removed ( e.g. 'cd' )
+	 * @return the original string without the end ( e.g. 'ab' )
+	 */
+	public static String removeEnd(String originalString, String stringToBeRemoved) {
+	      if ( originalString == null || stringToBeRemoved == null ) {
+	          return originalString;
+	      }
+	      if (originalString.endsWith(stringToBeRemoved)) {
+	          return originalString.substring(0, originalString.length() - stringToBeRemoved.length());
+	      }
+	      return originalString;
+	  }
 	//-------------------------------------------------------------------------------
 	/**
 	 * Returns true if s1 equals s2 or if s1 and s2 are both null

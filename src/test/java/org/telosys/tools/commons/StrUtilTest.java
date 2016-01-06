@@ -1,10 +1,13 @@
 package org.telosys.tools.commons;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
-import org.telosys.tools.commons.StrUtil;
+import org.junit.Test;
 
-public class StrUtilTest extends TestCase {
+public class StrUtilTest {
 
 	public void testDifferent() {
 		assertTrue( StrUtil.different("aa", "bb") ) ;
@@ -26,6 +29,7 @@ public class StrUtilTest extends TestCase {
 		assertEquals(expectedResult, result);
 	}
 	
+	@Test
 	public void testReplaceVar() {
 		replaceVar("aaaaabbbccccc",   "bbb",     "BBB",      "aaaaaBBBccccc") ;
 		replaceVar("aaaaa[x]ccccc",   "[x]",     "X",        "aaaaaXccccc") ;
@@ -35,6 +39,7 @@ public class StrUtilTest extends TestCase {
 		replaceVar("aaaaa$bbb",       "$",       "DOLLAR",   "aaaaaDOLLARbbb") ;
 	}
 
+	@Test
 	public void testIdentical() {
 		assertTrue( StrUtil.identical(null, null) ) ;
 		assertTrue( StrUtil.identical("", "") ) ;
@@ -51,6 +56,7 @@ public class StrUtilTest extends TestCase {
 		assertFalse( StrUtil.identical(" ", null) ) ;
 	}
 
+	@Test
 	public void testGetIntegerObject() {
 		assertNull( StrUtil.getIntegerObject(null) ) ;
 		assertNull( StrUtil.getIntegerObject("") ) ;
@@ -70,5 +76,20 @@ public class StrUtilTest extends TestCase {
 		//--- Check reverse conversion
 		assertEquals( "123", (new Integer(123)).toString() ) ;
 		assertEquals( "-123", (new Integer(-123)).toString() ) ;
+	}
+
+	@Test
+	public void testRemodeEnd() {
+		assertEquals( "ab",  StrUtil.removeEnd("abcd",      "cd"     ) ) ;
+		assertEquals( "abc", StrUtil.removeEnd("abcd",      "d") ) ;
+		assertEquals( "foo", StrUtil.removeEnd("foo_model", "_model" ) ) ;
+
+		assertEquals( "abcd", StrUtil.removeEnd("abcd", ""  ) ) ;
+		assertEquals( "abcd", StrUtil.removeEnd("abcd", null) ) ;
+		assertEquals( "abcd", StrUtil.removeEnd("abcd", "ab") ) ;
+		assertEquals( "",     StrUtil.removeEnd("abcd", "abcd") ) ;
+		
+		assertNull( StrUtil.removeEnd(null, "a") ) ;
+		assertNull( StrUtil.removeEnd(null, null) ) ;
 	}
 }
