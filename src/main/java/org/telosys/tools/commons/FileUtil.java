@@ -308,7 +308,7 @@ public class FileUtil {
      * Creates the parent folder for the given file if it doesn't exist
      * @param file 
      */
-    private static void createParentFolderIfNecessary( File file) {
+    public static void createParentFolderIfNecessary( File file) {
     	//File file = new File(fullFileName) ;
     	File parent = file.getParentFile() ;
     	if ( parent != null ) {
