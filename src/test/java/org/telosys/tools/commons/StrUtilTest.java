@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -92,4 +93,48 @@ public class StrUtilTest {
 		assertNull( StrUtil.removeEnd(null, "a") ) ;
 		assertNull( StrUtil.removeEnd(null, null) ) ;
 	}
+
+	@Test
+	public void testSplit1() {
+		String[] tokens = StrUtil.split("aa;b;ccc;", ';');
+		assertNotNull( tokens ) ;
+		assertEquals( 4,  tokens.length ) ;
+		assertEquals( "aa",  tokens[0] ) ;
+		assertEquals( "b",  tokens[1] ) ;
+		assertEquals( "ccc",  tokens[2] ) ;
+		assertEquals( "",  tokens[3] ) ;
+	}		
+
+	@Test
+	public void testSplit2() {
+		String[] tokens = StrUtil.split("", ';');
+		assertNotNull( tokens ) ;
+		assertEquals( 1,  tokens.length ) ;
+	}
+	
+	@Test
+	public void testSplit3() {
+		String[] tokens = StrUtil.split("aaa", ';');
+		assertNotNull( tokens ) ;
+		assertEquals( 1,  tokens.length ) ;
+		assertEquals( "aaa",  tokens[0] ) ;
+	}
+
+	@Test
+	public void testSplit4() {
+		String[] tokens = StrUtil.split(null, ';');
+		assertNotNull( tokens ) ;
+		assertEquals( 0,  tokens.length ) ;
+	}
+
+	@Test
+	public void testSplit5() {
+		String[] tokens = StrUtil.split(";b;;", ';');
+		assertNotNull( tokens ) ;
+		assertEquals( 4,  tokens.length ) ;
+		assertEquals( "",  tokens[0] ) ;
+		assertEquals( "b",  tokens[1] ) ;
+		assertEquals( "",  tokens[2] ) ;
+		assertEquals( "",  tokens[3] ) ;
+	}		
 }
