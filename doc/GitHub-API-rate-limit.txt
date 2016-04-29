@@ -1,0 +1,41 @@
+{
+  "message": "API rate limit exceeded for 193.57.249.1. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)",
+  "documentation_url": "https://developer.github.com/v3/#rate-limiting"
+}
+
+----------------------------------------------------------------
+https://developer.github.com/v3/#rate-limiting :
+
+ For requests using Basic Authentication or OAuth, you can make up to 5,000 requests per hour. 
+ For unauthenticated requests, the rate limit allows you to make up to 60 requests per hour. 
+ Unauthenticated requests are associated with your IP address, and not the user making requests. 
+ Note that the Search API has custom rate limit rules.
+
+ You can check the returned HTTP headers of any API request to see your current rate limit status:
+   curl -i https://api.github.com/users/whatever
+   HTTP/1.1 200 OK
+   Date: Mon, 01 Jul 2013 17:27:06 GMT
+   Status: 200 OK
+   X-RateLimit-Limit: 60
+   X-RateLimit-Remaining: 56
+   X-RateLimit-Reset: 1372700873
+ 
+   - X-RateLimit-Limit	    The maximum number of requests that the consumer is permitted to make per hour.
+   - X-RateLimit-Remaining	The number of requests remaining in the current rate limit window.
+   - X-RateLimit-Reset	    The time at which the current rate limit window resets in UTC epoch seconds.
+  
+ Once you go over the rate limit you will receive an error response:
+ 
+   HTTP/1.1 403 Forbidden
+   Date: Tue, 20 Aug 2013 14:50:41 GMT
+   Status: 403 Forbidden
+   X-RateLimit-Limit: 60
+   X-RateLimit-Remaining: 0
+   X-RateLimit-Reset: 1377013266
+
+   {
+     "message": "API rate limit exceeded for xxx.xxx.xxx.xxx. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)",
+     "documentation_url": "https://developer.github.com/v3/#rate-limiting"
+   }
+   
+    
