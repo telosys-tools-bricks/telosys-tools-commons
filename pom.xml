@@ -6,13 +6,19 @@
     <parent>
         <groupId>org.telosys</groupId>
         <artifactId>telosys-tools-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.0-SNAPSHOT</version>
         <relativePath>../telosys-tools-parent/pom.xml</relativePath>
     </parent>
 
 	<name>telosys-tools-commons</name>
 	<artifactId>telosys-tools-commons</artifactId>
 	<packaging>jar</packaging>
+	
+	
+	<!-- TEMPORARELY -->
+<!-- 	<properties>
+		<skip-license>true</skip-license> 
+	</properties> -->
 
 	<dependencies>
 		<!-- for compilation -->
