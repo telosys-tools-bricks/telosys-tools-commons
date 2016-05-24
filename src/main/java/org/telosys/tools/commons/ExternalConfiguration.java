@@ -25,6 +25,7 @@ public class ExternalConfiguration {
 	 *  1) Java System Property <br>
 	 *  2) JNDI Object <br>
 	 *  3) Environment Variable <br>
+	 * Return the value found or NULL if not found
 	 * @param name
 	 * @return
 	 */
