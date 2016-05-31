@@ -37,12 +37,12 @@ import org.telosys.tools.commons.variables.Variable;
 public class EnvironmentManager {
 	
 	private final TelosysToolsEnv telosysToolsEnv ;
-	private final String          environmentDirectory ;
+	private final String          environmentDirectory ; // project folder full path
 	
 	//-----------------------------------------------------------------------------------------------------
 	/**
 	 * Constructor
-	 * @param environmentDirectory the directory where the environment is located (OS full path)
+	 * @param environmentDirectory the directory where the environment is located (project folder OS full path)
 	 */
 	public EnvironmentManager(String environmentDirectory) {
 		super();
@@ -133,11 +133,12 @@ public class EnvironmentManager {
 	//-----------------------------------------------------------------------------------------------------	
 	/**
 	 * Returns the TelosysTools configuration file path (OS full path)<br>
-	 * ( e.g. 'X:/dir/myproject/telosys-tools.cfg' )
+	 * ( e.g. 'X:/dir/myproject/TelosysTools/telosys-tools.cfg' )
 	 * @return
 	 */
 	protected String getTelosysToolsConfigFileFullPath() {
-		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsConfigFileName()) ;
+//		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsConfigFileName()) ;
+		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsConfigFilePath()) ; // v 3.0.0
 	}
 
 	//-----------------------------------------------------------------------------------------------------	

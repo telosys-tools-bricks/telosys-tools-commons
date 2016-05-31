@@ -19,6 +19,7 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 	}
 	public void print(File file) {
 		System.out.println("File   : " + file.toString());
+		System.out.println("exists ? " + file.exists() );
 		System.out.println("Parent : " + file.getParent());
 	}
 	
@@ -65,7 +66,7 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 	 */
 	private File getTelosysToolCfgFile() throws TelosysToolsException {
 		//return FileUtil.getFileByClassPath("/cfg/telosys-tools.cfg");
-		String fileName = TestsEnv.getTmpRootFolderFullPath() + "/telosys-tools.cfg" ;
+		String fileName = TestsEnv.getTmpRootFolderFullPath() + "/TelosysTools/telosys-tools.cfg" ;
 		File file = new File(fileName) ;
 		if ( file.exists() ) {
 			file.delete() ;
@@ -93,11 +94,15 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 	public void testLoadUpdateSave() throws TelosysToolsException {
 		printSeparator();
 		File file = getTelosysToolCfgFile();
-		String projectFolder = file.getParent();
+		System.out.println("config file    : " + file.getAbsolutePath() );
+		String projectFolder = file.getParentFile().getParent();
+		System.out.println("project folder : " + projectFolder );
 		print(file);
 		
 		TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectFolder);
-		
+
+		System.out.println("config manager file path : " + cfgManager.getCfgFileAbsolutePath() );
+		 
 		System.out.println("Load");
 		TelosysToolsCfg telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
 		assertEquals("", telosysToolsCfg.getSpecificDestinationFolder() );

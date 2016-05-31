@@ -40,12 +40,15 @@ public class TelosysToolsEnv
     //==============================================================================
 	
 	private final static String TELOSYS_TOOLS_FOLDER = "TelosysTools" ;
+	
 	private final static String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER ; 
 	private final static String TEMPLATES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/templates" ; 
 	private final static String DOWNLOADS_FOLDER     = TELOSYS_TOOLS_FOLDER + "/downloads" ; 
 	private final static String LIBRARIES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/lib" ; 
 	
 	private final static String TELOSYS_TOOLS_CFG_FILE_NAME = "telosys-tools.cfg" ;
+	private final static String TELOSYS_TOOLS_CFG_FILE_PATH = TELOSYS_TOOLS_FOLDER + "/telosys-tools.cfg" ;
+	
 	private final static String DATABASES_DBCFG_FILE_NAME   = "databases.dbcfg";
 	private final static String DATABASES_DBCFG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.dbcfg";
 	
@@ -66,6 +69,16 @@ public class TelosysToolsEnv
 	 */
     public String getTelosysToolsConfigFileName() {
 		return TELOSYS_TOOLS_CFG_FILE_NAME ;
+	}
+
+	/**
+	 * Returns the TelosysTools configuration file path in the current project (relative path in the project) <br>
+	 * ( e.g. 'TelosysTools/telosys-tools.cfg' )
+	 * @return
+	 */
+//  v 3.0.0
+    public String getTelosysToolsConfigFilePath() {
+		return TELOSYS_TOOLS_CFG_FILE_PATH ;
 	}
 
     /**

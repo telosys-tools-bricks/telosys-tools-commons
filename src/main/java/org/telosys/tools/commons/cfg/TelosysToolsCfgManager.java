@@ -20,6 +20,7 @@ import java.util.Properties;
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.PropertiesManager;
 import org.telosys.tools.commons.TelosysToolsException;
+import org.telosys.tools.commons.env.TelosysToolsEnv;
 
 /**
  * Projects configuration manager <br>
@@ -28,16 +29,16 @@ import org.telosys.tools.commons.TelosysToolsException;
  */
 public class TelosysToolsCfgManager {
 
-    private final static String TELOSYS_TOOLS_CFG_FILE = "telosys-tools.cfg";
+//    private final static String TELOSYS_TOOLS_CFG_FILE = "telosys-tools.cfg";
 
     private final String projectAbsolutePath ;
     private final String cfgFileAbsolutePath ;
     
-	//-------------------------------------------------------------------------------------------------
-	public static String getConfigFileName() 
-	{
-		return TELOSYS_TOOLS_CFG_FILE ;
-	}
+//	//-------------------------------------------------------------------------------------------------
+//	public static String getConfigFileName() 
+//	{
+//		return TELOSYS_TOOLS_CFG_FILE ;
+//	}
 
 	//-------------------------------------------------------------------------------------------------
 	/**
@@ -48,9 +49,14 @@ public class TelosysToolsCfgManager {
 		super();
 		if ( projectAbsolutePath == null ) {
 			throw new IllegalArgumentException("Project path is null");
-		}		
+		}
+		// 'telosys-tools.cfg' file path in the project
+//		String telosysToolsCfgFilePathInProject = TelosysToolsEnv.getInstance().getTelosysToolsConfigFileName(); // v 3.0.0
+		String telosysToolsCfgFilePathInProject = TelosysToolsEnv.getInstance().getTelosysToolsConfigFilePath(); // v 3.0.0
+		
 		this.projectAbsolutePath = projectAbsolutePath;
-		this.cfgFileAbsolutePath = FileUtil.buildFilePath(projectAbsolutePath, TELOSYS_TOOLS_CFG_FILE);
+//		this.cfgFileAbsolutePath = FileUtil.buildFilePath(projectAbsolutePath, TELOSYS_TOOLS_CFG_FILE);
+		this.cfgFileAbsolutePath = FileUtil.buildFilePath(projectAbsolutePath, telosysToolsCfgFilePathInProject);
 	}
 	
 	//--------------------------------------------------------------------------------------------
