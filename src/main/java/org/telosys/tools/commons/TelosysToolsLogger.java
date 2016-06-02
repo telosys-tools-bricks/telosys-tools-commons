@@ -31,6 +31,6 @@ public interface TelosysToolsLogger
 	
 	public void info (String s) ;
 
-	public void exception (Throwable exception) ;
+//	public void exception (Throwable exception) ;
 	
 }

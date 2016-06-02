@@ -23,7 +23,6 @@ import java.net.URLClassLoader;
 import java.sql.Driver;
 import java.util.Hashtable;
 
-import org.telosys.tools.commons.GenericTool;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.TelosysToolsLogger;
 
@@ -32,8 +31,33 @@ import org.telosys.tools.commons.TelosysToolsLogger;
  * 
  * @author Laurent GUERIN *  */
 
-public class DriverLoader extends GenericTool
+public class DriverLoader //extends GenericTool
 {
+	protected final TelosysToolsLogger  logger ;
+	//----------------------------------------------------------------------------------
+	private void log(String s) {
+		if (logger != null ) {
+			logger.log(s);
+		}
+	}
+	//----------------------------------------------------------------------------------
+	private final void throwException (String msg) throws TelosysToolsException
+	{
+    	if ( logger != null ) {
+    		logger.error(msg);
+    	}
+    	throw new TelosysToolsException(msg);
+	}
+	//----------------------------------------------------------------------------------
+	private final void throwException (String msg, Throwable e) throws TelosysToolsException
+	{
+    	if ( logger != null ) {
+    		logger.error(msg);
+    	}
+    	throw new TelosysToolsException(msg,e);
+	}
+	//----------------------------------------------------------------------------------
+
     //-----------------------------------------------------------------------------
     // Specific Class Loader ( Inner class )
     //-----------------------------------------------------------------------------
@@ -64,7 +88,9 @@ public class DriverLoader extends GenericTool
      */
     public DriverLoader( TelosysToolsLogger logger ) 
     {
-    	super(logger);
+//    	super(logger);
+    	this.logger = logger ;
+
     	// No libraries => void array
     	_libraries = new String[0] ; 
     	
@@ -80,7 +106,8 @@ public class DriverLoader extends GenericTool
      */
     public DriverLoader( String[] libraries, TelosysToolsLogger logger ) throws TelosysToolsException
     {
-    	super(logger);
+//    	super(logger);
+    	this.logger = logger ;
     	
     	log ( "DriverLoader constructor ... " );
         if ( libraries == null )

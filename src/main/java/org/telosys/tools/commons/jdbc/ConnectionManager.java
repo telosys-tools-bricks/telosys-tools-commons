@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Set;
 
-import org.telosys.tools.commons.GenericTool;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.TelosysToolsLogger;
 import org.telosys.tools.commons.dbcfg.DatabaseConfiguration;
@@ -31,9 +30,36 @@ import org.telosys.tools.commons.dbcfg.DatabaseConfiguration;
  * 
  * @author Laurent GUERIN *  */
 
-public class ConnectionManager extends GenericTool
+public class ConnectionManager // extends GenericTool
 {
-//    private final String[]     _libraries ;
+	protected final TelosysToolsLogger  logger ;
+	private void log(String s) {
+		if (logger != null ) {
+			logger.log(s);
+		}
+	}
+	//----------------------------------------------------------------------------------
+	private final void logError(String s) {
+    	if ( logger != null ) {
+    		logger.error(s);
+    	}
+	}
+
+	//----------------------------------------------------------------------------------
+	private final void logInfo(String s) {
+    	if ( logger != null ) {
+    		logger.info(s);
+    	}
+	}
+	//----------------------------------------------------------------------------------
+	private final void throwException (String msg) throws TelosysToolsException
+	{
+    	if ( logger != null ) {
+    		logger.error(msg);
+    	}
+    	throw new TelosysToolsException(msg);
+	}
+	//----------------------------------------------------------------------------------
 
     private final DriverLoader _driverLoader ;
 
@@ -47,7 +73,8 @@ public class ConnectionManager extends GenericTool
      */
     public ConnectionManager ( TelosysToolsLogger logger ) throws TelosysToolsException
     {
-    	super(logger);
+    	//super(logger);
+    	this.logger = logger ;
     	log ( "ConnectionManager constructor ... " );
     	
     	// Driver loader based on standard class loader
@@ -67,7 +94,8 @@ public class ConnectionManager extends GenericTool
      */
     public ConnectionManager ( String[] libraries, TelosysToolsLogger logger ) throws TelosysToolsException
     {
-    	super(logger);
+    	//super(logger);
+    	this.logger = logger ;
     	
     	log ( "ConnectionManager constructor ... " );
 
