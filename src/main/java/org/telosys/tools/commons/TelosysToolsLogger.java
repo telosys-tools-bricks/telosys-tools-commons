@@ -23,14 +23,29 @@ package org.telosys.tools.commons;
  */
 public interface TelosysToolsLogger
 {
-	public void log(Object object, String s) ;
+	/**
+	 * Logs a message from the given instance
+	 * @param instance the instance that call the method
+	 * @param s
+	 */
+	public void log(Object instance, String s) ;
 	
+	/**
+	 * Logs a message
+	 * @param s
+	 */
 	public void log(String s) ;
 
+	/**
+	 * Logs an error message
+	 * @param s
+	 */
 	public void error (String s) ;
 	
+	/**
+	 * Logs an information message
+	 * @param s
+	 */
 	public void info (String s) ;
 
-//	public void exception (Throwable exception) ;
-	
 }

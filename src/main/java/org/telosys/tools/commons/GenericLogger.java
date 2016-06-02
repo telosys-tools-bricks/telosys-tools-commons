@@ -29,7 +29,11 @@ public abstract class GenericLogger implements TelosysToolsLogger
 
 	//----------------------------------------------------------------------------------
 	public final void log(Object object, String s) {
-		print("[LOG] " + s + " : " + object);
+		String className = "???" ;
+		if ( object != null ) {
+			className = object.getClass().getSimpleName();
+		}
+		print("[LOG] (" + className + ") : " + s);
 	}
 	
 	//----------------------------------------------------------------------------------
@@ -48,7 +52,7 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	}
 	
 	//----------------------------------------------------------------------------------
-	public final void exception (Throwable e) {
+	public final void logStackTrace (Throwable e) {
 		print( "----- "  );
 		print( " Exception : " + e.getClass().getName() );
 		print( " Message   : " + e.getMessage() );
