@@ -16,7 +16,7 @@
 package org.telosys.tools.commons;
 
 /**
- * Interface for basic logging (only for debug)
+ * Interface for basic logging 
  * 
  * @author Laurent GUERIN
  *
@@ -48,4 +48,9 @@ public interface TelosysToolsLogger
 	 */
 	public void info (String s) ;
 
+	/**
+	 * Logs the stack trace for the given exception
+	 * @param e
+	 */
+	public void logStackTrace(Throwable e);
 }

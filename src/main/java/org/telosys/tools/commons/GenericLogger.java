@@ -28,6 +28,7 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	protected abstract void print(String s) ;
 
 	//----------------------------------------------------------------------------------
+	@Override
 	public final void log(Object object, String s) {
 		String className = "???" ;
 		if ( object != null ) {
@@ -37,21 +38,25 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	}
 	
 	//----------------------------------------------------------------------------------
+	@Override
 	public final void log(String s) {
 		print("[LOG] " + s);
 	}
 
 	//----------------------------------------------------------------------------------
+	@Override
 	public final void error(String s) {
 		print("[ERROR] " + s);
 	}
 
 	//----------------------------------------------------------------------------------
+	@Override
 	public final void info(String s) {
 		print("[INFO] " + s );
 	}
 	
 	//----------------------------------------------------------------------------------
+	@Override
 	public final void logStackTrace (Throwable e) {
 		print( "----- "  );
 		print( " Exception : " + e.getClass().getName() );
@@ -71,26 +76,8 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	}
 
 	//----------------------------------------------------------------------------------
-//	private static final int STACK_MAX_CALLERS = 1000 ;
-	
     private void printStackTrace(Throwable ex)
     {
-//        StackTraceElement stackTrace[] = ex.getStackTrace();
-//        StackTraceElement stackTraceElement = null;
-//        if ( stackTrace.length > 0 )
-//        {
-//            //--- Callers stack ( 1 to N )
-//	        for ( int i = 0 ; i < stackTrace.length && i < STACK_MAX_CALLERS+1 ; i++ )
-//	        {
-//	            stackTraceElement = stackTrace[i];
-//	            int iLineNumber = stackTraceElement.getLineNumber();
-//	            String sLineNumber = "" ;
-//	            if ( iLineNumber > 0 ) sLineNumber = " (line " + iLineNumber + ")" ;
-//	            print( " . " + stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + sLineNumber );
-//	        }
-//        }    	
-        
         print ( ExceptionUtil.getStackTraceAsString(ex) ) ;
     }
-	
 }
