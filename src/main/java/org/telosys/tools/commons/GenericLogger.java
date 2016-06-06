@@ -30,17 +30,21 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	//----------------------------------------------------------------------------------
 	@Override
 	public final void log(Object object, String s) {
-		String className = "???" ;
-		if ( object != null ) {
-			className = object.getClass().getSimpleName();
+		if ( LoggerConfig.LOG ) {
+			String className = "???" ;
+			if ( object != null ) {
+				className = object.getClass().getSimpleName();
+			}
+			print("[LOG] (" + className + ") : " + s);
 		}
-		print("[LOG] (" + className + ") : " + s);
 	}
 	
 	//----------------------------------------------------------------------------------
 	@Override
 	public final void log(String s) {
-		print("[LOG] " + s);
+		if ( LoggerConfig.LOG ) {
+			print("[LOG] " + s);
+		}
 	}
 
 	//----------------------------------------------------------------------------------
