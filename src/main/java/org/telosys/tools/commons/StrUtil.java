@@ -15,6 +15,8 @@
  */
 package org.telosys.tools.commons;
 
+import java.math.BigDecimal;
+
 /**
  * @author Laurent GUERIN
  * 
@@ -210,6 +212,26 @@ public final class StrUtil
             }
     	}
         return i; 
+    }
+
+    /**
+     * Returns an instance of BigDecimal for the given string value <br>
+     * @param sValue
+     * @return the instance or null if the given value is null or invalid
+     * @since v 3.0.0
+     */
+    public static BigDecimal getBigDecimalObject(final String sValue)
+    {
+    	BigDecimal r = null ;
+    	if ( sValue != null ) {
+        	try {
+            	r = new BigDecimal(sValue.trim()); 
+        	}
+            catch (NumberFormatException ex) {
+            	r = null ;
+            }
+    	}
+        return r; 
     }
 
     /**

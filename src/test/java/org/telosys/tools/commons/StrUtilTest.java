@@ -1,10 +1,12 @@
 package org.telosys.tools.commons;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.math.BigDecimal;
 
 import org.junit.Test;
 
@@ -77,6 +79,26 @@ public class StrUtilTest {
 		//--- Check reverse conversion
 		assertEquals( "123", (new Integer(123)).toString() ) ;
 		assertEquals( "-123", (new Integer(-123)).toString() ) ;
+	}
+
+	@Test
+	public void testGetBigDecimalObject() {
+		assertNull( StrUtil.getBigDecimalObject(null) ) ;
+		assertNull( StrUtil.getBigDecimalObject("") ) ;
+		assertNull( StrUtil.getBigDecimalObject("  ") ) ;
+		assertEquals( new BigDecimal("123"), StrUtil.getBigDecimalObject("123") ) ;
+		assertEquals( new BigDecimal("123"), StrUtil.getBigDecimalObject(" 123") ) ;
+		assertEquals( new BigDecimal("123"), StrUtil.getBigDecimalObject("123  ") ) ;
+		assertEquals( new BigDecimal("123"), StrUtil.getBigDecimalObject("  123  ") ) ;
+		assertEquals( new BigDecimal("-123"), StrUtil.getBigDecimalObject("-123  ") ) ;
+		assertEquals( new BigDecimal("-123"), StrUtil.getBigDecimalObject("  -123  ") ) ;
+		assertEquals( new BigDecimal("123.456"), StrUtil.getBigDecimalObject("  123.456  ") ) ;
+		assertEquals( new BigDecimal("-123.456"), StrUtil.getBigDecimalObject("  -123.456  ") ) ;
+		//--- Check reverse conversion
+		assertEquals( "123", (new BigDecimal("123")).toString() ) ;
+		assertEquals( "-123", (new BigDecimal("-123")).toString() ) ;
+		// new BigDecimal("  123  ") => NumberFormatException
+		// new BigDecimal("  -123  ") => NumberFormatException
 	}
 
 	@Test
