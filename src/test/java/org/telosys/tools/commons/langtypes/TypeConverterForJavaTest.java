@@ -10,6 +10,7 @@ import static org.telosys.tools.commons.langtypes.AttributeTypeInfo.SQL_TYPE;
 import static org.telosys.tools.commons.langtypes.AttributeTypeInfo.UNSIGNED_TYPE;
 
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
@@ -172,7 +173,98 @@ public class TypeConverterForJavaTest  {
 		check( getType(tc, NeutralType.DATE, SQL_TYPE ), java.sql.Date.class);	 // SQL Date	
 		check( getType(tc, NeutralType.DATE, NOT_NULL + SQL_TYPE ), java.sql.Date.class); // SQL Date	
 		check( getType(tc, NeutralType.DATE, OBJECT_TYPE + SQL_TYPE ), java.sql.Date.class); // SQL Date	
-		check( getType(tc, NeutralType.DATE, PRIMITIVE_TYPE + SQL_TYPE ), java.sql.Date.class); // // not compatible (no Prim type => SQL Date)	
+		check( getType(tc, NeutralType.DATE, PRIMITIVE_TYPE + SQL_TYPE ), java.sql.Date.class); // not compatible (no Prim type => SQL Date)	
+	}
+
+	@Test
+	public void testTime() {
+		System.out.println("--- ");
+		TypeConverter tc = new TypeConverterForJava() ;
+		
+		// Supposed to always return BigDecimal (in any cases) 
+		check( getType(tc, NeutralType.TIME, NONE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIME, NOT_NULL ), java.util.Date.class);
+		
+		check( getType(tc, NeutralType.TIME, PRIMITIVE_TYPE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIME, UNSIGNED_TYPE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIME, PRIMITIVE_TYPE + UNSIGNED_TYPE ), java.util.Date.class);
+		
+		check( getType(tc, NeutralType.TIME, OBJECT_TYPE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIME, NOT_NULL + OBJECT_TYPE ), java.util.Date.class);
+
+		check( getType(tc, NeutralType.TIME, SQL_TYPE ), java.sql.Time.class);	 // SQL Time	
+		check( getType(tc, NeutralType.TIME, NOT_NULL + SQL_TYPE ), java.sql.Time.class); // SQL Time	
+		check( getType(tc, NeutralType.TIME, OBJECT_TYPE + SQL_TYPE ), java.sql.Time.class); // SQL Time	
+		check( getType(tc, NeutralType.TIME, PRIMITIVE_TYPE + SQL_TYPE ), java.sql.Time.class); // not compatible (no Prim type => SQL Time)	
+	}
+
+	@Test
+	public void testTimestamp() {
+		System.out.println("--- ");
+		TypeConverter tc = new TypeConverterForJava() ;
+		
+		// Supposed to always return BigDecimal (in any cases) 
+		check( getType(tc, NeutralType.TIMESTAMP, NONE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIMESTAMP, NOT_NULL ), java.util.Date.class);
+		
+		check( getType(tc, NeutralType.TIMESTAMP, PRIMITIVE_TYPE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIMESTAMP, UNSIGNED_TYPE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIMESTAMP, PRIMITIVE_TYPE + UNSIGNED_TYPE ), java.util.Date.class);
+		
+		check( getType(tc, NeutralType.TIMESTAMP, OBJECT_TYPE ), java.util.Date.class);
+		check( getType(tc, NeutralType.TIMESTAMP, NOT_NULL + OBJECT_TYPE ), java.util.Date.class);
+
+		check( getType(tc, NeutralType.TIMESTAMP, SQL_TYPE ), java.sql.Timestamp.class);	 // SQL Time	
+		check( getType(tc, NeutralType.TIMESTAMP, NOT_NULL + SQL_TYPE ), java.sql.Timestamp.class); // SQL Time	
+		check( getType(tc, NeutralType.TIMESTAMP, OBJECT_TYPE + SQL_TYPE ), java.sql.Timestamp.class); // SQL Time	
+		check( getType(tc, NeutralType.TIMESTAMP, PRIMITIVE_TYPE + SQL_TYPE ), java.sql.Timestamp.class); // not compatible (no Prim type => SQL Time)	
+	}
+
+	@Test
+	public void testLongText() {
+		System.out.println("--- ");
+		TypeConverter tc = new TypeConverterForJava() ;
+		
+		// Supposed to always return BigDecimal (in any cases) 
+		check( getType(tc, NeutralType.LONGTEXT, NONE ), String.class);
+		check( getType(tc, NeutralType.LONGTEXT, NOT_NULL ), String.class);
+		
+		check( getType(tc, NeutralType.LONGTEXT, PRIMITIVE_TYPE ), String.class);
+		check( getType(tc, NeutralType.LONGTEXT, UNSIGNED_TYPE ), String.class);
+		check( getType(tc, NeutralType.LONGTEXT, PRIMITIVE_TYPE + UNSIGNED_TYPE ), String.class);
+		
+		check( getType(tc, NeutralType.LONGTEXT, OBJECT_TYPE ), String.class);
+		check( getType(tc, NeutralType.LONGTEXT, NOT_NULL + OBJECT_TYPE ), String.class);
+
+		check( getType(tc, NeutralType.LONGTEXT, SQL_TYPE ), java.sql.Clob.class);	 // SQL CLOB	
+		check( getType(tc, NeutralType.LONGTEXT, NOT_NULL + SQL_TYPE ), java.sql.Clob.class); // SQL CLOB	
+		check( getType(tc, NeutralType.LONGTEXT, OBJECT_TYPE + SQL_TYPE ), java.sql.Clob.class); // SQL CLOB	
+		
+		check( getType(tc, NeutralType.LONGTEXT, PRIMITIVE_TYPE + OBJECT_TYPE ), String.class); // not compatible (no Prim type => String)
+		check( getType(tc, NeutralType.LONGTEXT, PRIMITIVE_TYPE + SQL_TYPE ), java.sql.Clob.class); // not compatible (no Prim type => SQL CLOB)	
+	}
+
+	@Test
+	public void testBinary() {
+		System.out.println("--- ");
+		TypeConverter tc = new TypeConverterForJava() ;
+		
+		// Supposed to always return BigDecimal (in any cases) 
+		check( getType(tc, NeutralType.BINARY, NONE ), ByteBuffer.class);
+		check( getType(tc, NeutralType.BINARY, NOT_NULL ),  byte[].class);
+		
+		check( getType(tc, NeutralType.BINARY, PRIMITIVE_TYPE ),  byte[].class);
+		check( getType(tc, NeutralType.BINARY, UNSIGNED_TYPE ),  byte[].class);
+		check( getType(tc, NeutralType.BINARY, PRIMITIVE_TYPE + UNSIGNED_TYPE ),  byte[].class);
+		
+		check( getType(tc, NeutralType.BINARY, OBJECT_TYPE ),  ByteBuffer.class);
+		check( getType(tc, NeutralType.BINARY, NOT_NULL + OBJECT_TYPE ),  ByteBuffer.class);
+
+		check( getType(tc, NeutralType.BINARY, SQL_TYPE ), java.sql.Blob.class);	 // SQL BLOB	
+		check( getType(tc, NeutralType.BINARY, NOT_NULL + SQL_TYPE ), java.sql.Blob.class); // SQL BLOB	
+		check( getType(tc, NeutralType.BINARY, OBJECT_TYPE + SQL_TYPE ), java.sql.Blob.class); // SQL BLOB	
+		
+		check( getType(tc, NeutralType.BINARY, PRIMITIVE_TYPE + SQL_TYPE ), byte[].class); // not compatible (primitive type has priority)	
 	}
 
 }
