@@ -56,26 +56,26 @@ public class AttributeTypeInfo {
 	}
 
 	
-	/**
-	 * Constructor
-	 * @param neutralType
-	 * @param notNull
-	 * @param primitiveTypeExpected
-	 * @param objectTypeExpected
-	 * @param unsignedTypeExpected
-	 * @param sqlTypeExpected
-	 */
-	public AttributeTypeInfo(String neutralType, boolean notNull,
-			boolean primitiveTypeExpected, boolean objectTypeExpected,
-			boolean unsignedTypeExpected, boolean sqlTypeExpected) {
-		super();
-		this.neutralType = neutralType;
-		this.notNull = notNull;
-		this.primitiveTypeExpected = primitiveTypeExpected;
-		this.objectTypeExpected    = objectTypeExpected;
-		this.unsignedTypeExpected  = unsignedTypeExpected;
-		this.sqlTypeExpected       = sqlTypeExpected;
-	}
+//	/**
+//	 * Constructor
+//	 * @param neutralType
+//	 * @param notNull
+//	 * @param primitiveTypeExpected
+//	 * @param objectTypeExpected
+//	 * @param unsignedTypeExpected
+//	 * @param sqlTypeExpected
+//	 */
+//	public AttributeTypeInfo(String neutralType, boolean notNull,
+//			boolean primitiveTypeExpected, boolean objectTypeExpected,
+//			boolean unsignedTypeExpected, boolean sqlTypeExpected) {
+//		super();
+//		this.neutralType = neutralType;
+//		this.notNull = notNull;
+//		this.primitiveTypeExpected = primitiveTypeExpected;
+//		this.objectTypeExpected    = objectTypeExpected;
+//		this.unsignedTypeExpected  = unsignedTypeExpected;
+//		this.sqlTypeExpected       = sqlTypeExpected;
+//	}
 
 
 	public String getNeutralType() {
