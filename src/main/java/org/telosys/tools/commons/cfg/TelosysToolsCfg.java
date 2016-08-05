@@ -48,6 +48,7 @@ public class TelosysToolsCfg
 //	private final static String DOWNLOADS_FOLDER  = "DownloadsFolder";    
 //	private final static String LIBRARIES_FOLDER  = "LibrariesFolder";
 	private final static String SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
+	private final static String SPECIFIC_TEMPLATES_FOLDER    = "SpecificTemplatesFolder";
     
 	//----------------------------------------------------------------------------------------
 	private final String     _projectAbsolutePath ; 
@@ -78,6 +79,7 @@ public class TelosysToolsCfg
 	private String _TMP      =  "tmp" ;
 	
 	private String _specificDestinationFolder = "" ;  // v 3.0.0
+	private String _specificTemplatesFolder   = "" ;  // v 3.0.0
 	
 	//----------------------------------------------------------------------------------------
 	//--- Specific variables defined by the user for the current project
@@ -145,6 +147,7 @@ public class TelosysToolsCfg
 //	    	_sDownloadsFolder    = prop.getProperty(DOWNLOADS_FOLDER, _sDownloadsFolder);
 //	    	_sLibrariesFolder    = prop.getProperty(LIBRARIES_FOLDER, _sLibrariesFolder);
 	    	_specificDestinationFolder = prop.getProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder);
+	    	_specificTemplatesFolder   = prop.getProperty(SPECIFIC_TEMPLATES_FOLDER, _specificTemplatesFolder);
 	    	
 	    	//--- Packages 
 	    	_ROOT_PKG   = prop.getProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
@@ -216,6 +219,7 @@ public class TelosysToolsCfg
 //    	properties.setProperty(DOWNLOADS_FOLDER, _sDownloadsFolder);
 //    	properties.setProperty(LIBRARIES_FOLDER, _sLibrariesFolder);
     	properties.setProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder );
+    	properties.setProperty(SPECIFIC_TEMPLATES_FOLDER,   _specificTemplatesFolder );
     	
     	//--- Packages 
     	properties.setProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
@@ -620,9 +624,9 @@ public class TelosysToolsCfg
 	 * or void if not defined <br> 
 	 * ( e.g. "X:/foo/bar/myfolder" or "" if not set )
 	 * @return 
+     * @since v 3.0.0
 	 */
-	public String getSpecificDestinationFolder() 
-	{
+	public String getSpecificDestinationFolder() {
 		return _specificDestinationFolder ;
 	}
 	
@@ -630,9 +634,9 @@ public class TelosysToolsCfg
 	 * Set the specific destination folder for code generation <br>
 	 * ( e.g. "X:/foo/bar/myfolder" or "" for not defined )
 	 * @param rootPackage
+     * @since v 3.0.0
 	 */
-	public void setSpecificDestinationFolder(String specificDestinationFolder) 
-	{
+	public void setSpecificDestinationFolder(String specificDestinationFolder) {
 		if ( specificDestinationFolder == null ) {
 			_specificDestinationFolder = "" ;
 		}
@@ -641,6 +645,46 @@ public class TelosysToolsCfg
 		}
 	}
 	
+    //=======================================================================================================
+    // Specific templates folder  ( since v 3.0.0 )
+    //=======================================================================================================
+    /**
+     * Returns the specific templates folder (absolute path) <br>
+     * @return
+     * @since v 3.0.0
+     */
+    public String getSpecificTemplatesFolderAbsolutePath() {
+    	return _specificTemplatesFolder ;
+    }
+    
+	/**
+	 * Set the specific templates folder (absolute path) <br>
+	 * ( e.g. "X:/foo/bar/myfolder" or "" for not defined )
+	 * @param specificTemplatesFolder
+     * @since v 3.0.0
+	 */
+	public void setSpecificTemplatesFolderAbsolutePath(String specificTemplatesFolder) {
+		if ( specificTemplatesFolder == null ) {
+			_specificTemplatesFolder = "" ;
+		}
+		else {
+			_specificTemplatesFolder = specificTemplatesFolder.trim() ;
+		}
+	}
+	
+	/**
+	 * Returns true if a specific templates folder has been defined (false if none)
+	 * @return
+     * @since v 3.0.0
+	 */
+	public boolean hasSpecificTemplatesFolders() {
+		if ( StrUtil.nullOrVoid( _specificTemplatesFolder ) ) {
+			return false ;
+		}
+		else {
+			return true ;
+		}
+	}
 	
     //=======================================================================================================
     // Variables 
