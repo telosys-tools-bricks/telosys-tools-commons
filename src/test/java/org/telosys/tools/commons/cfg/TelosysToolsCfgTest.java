@@ -81,7 +81,7 @@ public class TelosysToolsCfgTest {
 		
 		assertEquals("TelosysTools",            telosysToolsCfg.getTelosysToolsFolder() );
 		assertEquals("TelosysTools/downloads",  telosysToolsCfg.getDownloadsFolder() );
-		assertEquals("TelosysTools/templates",  telosysToolsCfg.getTemplatesFolder() );
+//		assertEquals("TelosysTools/templates",  telosysToolsCfg.getTemplatesFolder() );
 		assertEquals("TelosysTools/lib",        telosysToolsCfg.getLibrariesFolder() );
 		assertEquals("TelosysTools",            telosysToolsCfg.getModelsFolder() );
 

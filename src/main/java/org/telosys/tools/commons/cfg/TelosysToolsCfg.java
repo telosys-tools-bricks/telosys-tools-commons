@@ -436,14 +436,14 @@ public class TelosysToolsCfg
 	}
     
 	//------------------------------------------------------------------------------------------------------
-    /**
-     * Returns the templates folder in the current project (relative path in the project) <br>
-     * ( e.g. 'TelosysTools/templates' )
-     * @return
-     */
-    public String getTemplatesFolder() {
-    	return _sTemplatesFolder;
-	}
+//    /**
+//     * Returns the templates folder in the current project (relative path in the project) <br>
+//     * ( e.g. 'TelosysTools/templates' )
+//     * @return
+//     */
+//    public String getTemplatesFolder() {
+//    	return _sTemplatesFolder;
+//	}
 //    /**
 //     * Set the templates folder in the current project (relative path in the project) <br>
 //     * @param templatesFolder
@@ -457,7 +457,15 @@ public class TelosysToolsCfg
      * @return
      */
     public String getTemplatesFolderAbsolutePath() {
-    	return FileUtil.buildFilePath(_projectAbsolutePath, _sTemplatesFolder ) ;
+    	//return FileUtil.buildFilePath(_projectAbsolutePath, _sTemplatesFolder ) ;
+    	if ( this.hasSpecificTemplatesFolders() ) {
+    		//--- Specific templates folder => use it  ( v 3.0.0 )
+    		return _specificTemplatesFolder ; 
+    	}
+    	else {
+    		//--- Default templates location (in the current project)
+    		return FileUtil.buildFilePath(_projectAbsolutePath, _sTemplatesFolder ) ;
+    	}    	
 	}
 
     /**
