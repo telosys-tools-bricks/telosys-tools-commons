@@ -129,4 +129,27 @@ public class DirUtil {
 	        }
 	    }
 	}
+	
+	/**
+	 * Checks the validity of the given directory path ( exists and is a directory )<br>
+	 * throws TelosysToolsException if invalid <br>
+	 * @param directoryAbsolutePath
+	 * @throws TelosysToolsException
+	 * @since v 3.0.0
+	 */
+	public static void checkIsValidDirectory(String directoryAbsolutePath) throws TelosysToolsException {
+		if ( StrUtil.nullOrVoid( directoryAbsolutePath ) ) {
+			throw new TelosysToolsException(" not defined");
+		}
+		
+		File file = new File(directoryAbsolutePath);
+		
+		if ( ! file.exists() ) {
+			throw new TelosysToolsException(" '" + directoryAbsolutePath + "' does not exist !");
+		}
+		if ( ! file.isDirectory() ) {
+			throw new TelosysToolsException(" '" + directoryAbsolutePath + "' is not a folder !");
+		}
+	}
+		
 }

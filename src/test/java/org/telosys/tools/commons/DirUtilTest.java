@@ -1,15 +1,22 @@
 package org.telosys.tools.commons;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import junit.env.telosys.tools.commons.TestsEnv;
-import junit.framework.TestCase;
 
-public class DirUtilTest extends TestCase {
+import org.junit.Test;
+
+public class DirUtilTest {
 
 	//---------------------------------------------------------------------------------------------
+	@Test
 	public void testCreateDirectory() throws IOException {
 		System.out.println("===== testCreateDirectory() ");
 		//TestsEnv.getTmpRootFolder() ;
@@ -44,6 +51,7 @@ public class DirUtilTest extends TestCase {
 	}
 
 	//---------------------------------------------------------------------------------------------
+	@Test
 	public void testDeleteDirectory() throws IOException  {
 		System.out.println("===== testDeleteDirectory() ");
 		
@@ -63,6 +71,7 @@ public class DirUtilTest extends TestCase {
 	}
 	
 	//---------------------------------------------------------------------------------------------
+	@Test
 	public void testGetDirectoryFiles() throws IOException  {
 		System.out.println("===== testGetDirectoryFiles() ");
 		
@@ -125,4 +134,24 @@ public class DirUtilTest extends TestCase {
 		System.out.println("creating void file " + file.getAbsolutePath() );
 		file.createNewFile();
 	}
+
+	@Test(expected=TelosysToolsException.class)
+	public void testCheckIsValidDirectoryNotOK1() throws TelosysToolsException  {
+		System.out.println("===== testCheckIsValidDirectoryNotOK() ");		
+		DirUtil.checkIsValidDirectory("/invalid/folder");
+	}	
+
+	@Test(expected=TelosysToolsException.class)
+	public void testCheckIsValidDirectoryNotOK2() throws TelosysToolsException  {
+		System.out.println("===== testCheckIsValidDirectoryNotOK() ");		
+		File f = TestsEnv.getTestFile("foo.txt");
+		DirUtil.checkIsValidDirectory(f.getAbsolutePath());
+	}	
+
+	@Test()
+	public void testCheckIsValidDirectoryOk() throws TelosysToolsException  {
+		System.out.println("===== testCheckIsValidDirectoryOk() ");		
+		File f = TestsEnv.getTestRootFolder();
+		DirUtil.checkIsValidDirectory(f.getAbsolutePath());
+	}	
 }
