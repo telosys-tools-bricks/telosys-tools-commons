@@ -694,6 +694,19 @@ public class TelosysToolsCfg
 		}
 	}
 	
+	/**
+	 * Returns true if a specific destination folder has been defined (false if none)
+	 * @return
+     * @since v 3.0.0
+	 */
+	public boolean hasSpecificDestinationFolder()  {
+		if ( StrUtil.nullOrVoid( _specificDestinationFolder ) ) {
+			return false ;
+		}
+		else {
+			return true ;
+		}
+	}
     //=======================================================================================================
     // Variables 
     //=======================================================================================================
