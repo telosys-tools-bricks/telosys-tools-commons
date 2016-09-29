@@ -151,5 +151,25 @@ public class DirUtil {
 			throw new TelosysToolsException(" '" + directoryAbsolutePath + "' is not a folder !");
 		}
 	}
+	
+	/**
+	 * Returns the user working directory <br>
+	 * ( retrieved from the "user.dir" system property ) <br>
+	 * It's the directory where the Java program was run from (where the JVM was started). <br>
+	 * It can be anywhere where the user has permission to run Java.<br>
+	 * @return
+	 */
+	public static String getUserWorkingDirectory() {
+		return System.getProperty("user.dir");
+	}
+	
+	/**
+	 * Returns the user "home" directory <br>
+	 * ( retrieved from the "user.home" system property ) <br>
+	 * @return
+	 */
+	public static String getUserHomeDirectory() {
+		return System.getProperty("user.home");
+	}
 		
 }
