@@ -105,4 +105,19 @@ public class SpecificClassLoaderTest {
 		System.out.println("Class loaded : " + clazz.getCanonicalName() );
 	}
 	
+	@Test
+	public void test8() throws ClassNotFoundException {
+		
+		String jarsPaths[] = SpecificClassLoaderHelper.getJarPaths( TestsEnv.getTestFolder("lib") ) ;
+        SpecificClassLoader loader = new SpecificClassLoader(jarsPaths);
+        print (loader.getURLs() ) ;
+
+        Class<?> clazz = loader.loadClass("javax.inject.Singleton");
+		Assert.assertNotNull(clazz);
+		System.out.println("Class loaded : " + clazz.getCanonicalName() );
+		
+		clazz = loader.loadClass("javax.inject.Inject");
+		Assert.assertNotNull(clazz);
+		System.out.println("Class loaded : " + clazz.getCanonicalName() );
+	}
 }
