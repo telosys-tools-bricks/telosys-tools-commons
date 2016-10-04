@@ -1,0 +1,18 @@
+<project name="My Project" default="compile"  basedir=".">
+
+	  <path id="compile.classpath">
+	    <fileset dir=".">
+		      <include name="*.jar"/>
+	   	<!--
+	      <include name="../lib/*.jar"/>
+	    -->
+	    </fileset>
+	  </path>
+
+	  <target name="compile" description="Compile Java classes" >
+	    <javac srcdir="." destdir="." target="1.5">
+	        <classpath refid="compile.classpath"/>
+	    </javac>
+	  </target>
+
+</project> 

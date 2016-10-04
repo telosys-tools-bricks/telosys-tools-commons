@@ -20,56 +20,59 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
 
 /**
- * Specific class loader
+ * Specific class loader with a specific classpath
  * 
  * @author Laurent GUERIN *  */
 
 public class SpecificClassLoader extends URLClassLoader
 {
-    /**
-     * Constructor
-     * @param jarsURLs
-     * @param parentLoader
-     */
-    public SpecificClassLoader (URL[] jarsURLs, java.lang.ClassLoader parentLoader )
-    {
-        //--- Call the URLClassLoader constructor
-        super(jarsURLs, parentLoader);
-    }
+//    /**
+//     * Constructor
+//     * @param jarsURLs
+//     * @param parentLoader
+//     */
+//    public SpecificClassLoader (URL[] jarsURLs, java.lang.ClassLoader parentLoader )
+//    {
+//        //--- Call the URLClassLoader constructor
+//        super(jarsURLs, parentLoader);
+//    }
 
     /**
      * Constructor without parent classloader <br>
      * Uses the 'system class loader as parent'
-     * @param jarsPaths
+     * @param classpath the specific classpath to be used
      */
-    public SpecificClassLoader (String[] jarsPaths )
+    public SpecificClassLoader (SpecificClassPath classpath )
     {
-        this(pathToURL(jarsPaths), ClassLoader.getSystemClassLoader() );
+    	super(pathToURL(classpath), ClassLoader.getSystemClassLoader() );
     }
 
     /**
      * Constructor
-     * @param jarsPaths
+     * @param classpath the specific classpath to be used
      * @param parentLoader
      */
-    public SpecificClassLoader (String[] jarsPaths, java.lang.ClassLoader parentLoader )
+    public SpecificClassLoader (SpecificClassPath classpath, java.lang.ClassLoader parentLoader )
     {
-        this(pathToURL(jarsPaths), parentLoader);
+    	super(pathToURL(classpath), parentLoader);
     }
 
 	//----------------------------------------------------------------------------------
 	/**
 	 * Converts jars paths (string) to jars URLs (URL) <br>
 	 * Throws a RuntimeException it the list contains an invalid path (null, void, mal formed, etc )
-	 * @param jarsPaths
+	 * @param classpath
 	 * @return
 	 */
-	private final static URL[] pathToURL(String[] jarsPaths) {
-        URL[] urls = new URL[jarsPaths.length]; // Size for all jars (valid or not valid)
+	private final static URL[] pathToURL(SpecificClassPath classpath) {
+		
+		List<String> classpathList = classpath.getClassPath() ;
+        URL[] urls = new URL[classpathList.size()]; // Size for all jars (valid or not valid)
         int n = 0 ;
-        for ( String jarPath : jarsPaths ) {
+        for ( String jarPath : classpathList ) {
             if ( jarPath == null ) {
             	// Invalid jar path 
             	throw new RuntimeException("Cannot convert null path to URL ");
