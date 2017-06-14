@@ -21,7 +21,7 @@ import org.telosys.tools.commons.http.HttpResponse;
  */
 public class HttpClientTest extends TestCase {
 
-	private final static String URL_TWITTER_COM = "https://twitter.com/" ;
+	//private final static String URL_TWITTER_COM = "https://twitter.com/" ;
 	private final static String URL_GOOGLE_FR   = "https://www.google.fr" ;
 	
 	
@@ -48,7 +48,7 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 		
-		doGet(c, URL_TWITTER_COM, headers, 200);
+		//doGet(c, URL_TWITTER_COM, headers, 200);
 		doGet(c, URL_GOOGLE_FR, headers, 200);
 	}
 	
@@ -67,7 +67,7 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 		
-		doGet(c, URL_TWITTER_COM, headers, 200);
+		//doGet(c, URL_TWITTER_COM, headers, 200);
 		doGet(c, URL_GOOGLE_FR, headers, 200);
 	}
 	
@@ -87,7 +87,7 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 		
-		doHead(c, URL_TWITTER_COM, headers, 200);
+		//doHead(c, URL_TWITTER_COM, headers, 200);
 		doHead(c, URL_GOOGLE_FR, headers, 200);
 	}
 	
@@ -107,7 +107,7 @@ public class HttpClientTest extends TestCase {
 		HttpClient c = getHttpClient();
 		Map<String, String> headers = getHeaders();
 
-		doHead(c, new HttpRequest(URL_TWITTER_COM,   headers), 200);
+		//doHead(c, new HttpRequest(URL_TWITTER_COM,   headers), 200);
 		doHead(c, new HttpRequest(URL_GOOGLE_FR, headers), 200);
 	}
 	
