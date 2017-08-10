@@ -19,7 +19,9 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.github.GitHubClient;
@@ -27,7 +29,7 @@ import org.telosys.tools.commons.github.GitHubRepository;
 
 
 /**
- * Utility class for GitHub
+ * Utility class for bundles management (including GitHub access)
  * 
  * @author L. Guerin
  *
@@ -220,4 +222,36 @@ public class BundlesManager {
 			return status ;
 		}
 	}
+
+	/**
+	 * Deletes the given bundle
+	 * @param bundleName
+	 * @return true if found and deleted, false if not found
+	 * @throws TelosysToolsException
+	 */
+	public boolean deleteBundle( String bundleName ) throws TelosysToolsException {
+		
+		// Build the folder full path for the given folder name
+		String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ; // v 3.0.0
+		
+		File file = new File(bundleFolder);
+		if ( file.exists() ) {
+			if ( file.isDirectory() ) {
+				// Bundle directory found => deleted it 
+				try {
+					DirUtil.deleteDirectory(file);
+					return true ;
+				} catch (Exception e) {
+					throw new TelosysToolsException("Cannot delete bundle '" + bundleName + "'", e);
+				}
+			}
+			else {
+				throw new TelosysToolsException("Bundle path '" + bundleFolder + "' is not a directory");
+			}
+		}
+		else {
+			return false ;
+		}
+	}
+	
 }
