@@ -116,7 +116,7 @@ public class BundlesManagerTest extends TestCase {
 		System.out.println("========== List of available bundles  ");
 
 		BundlesManager bm = getBundlesManager();
-		List<String> bundles = bm.getBundlesList("telosys-tools") ;
+		List<String> bundles = bm.getGitHubBundlesList("telosys-tools") ;
 		for ( String s : bundles ) {
 			System.out.println(" . " + s );
 		}

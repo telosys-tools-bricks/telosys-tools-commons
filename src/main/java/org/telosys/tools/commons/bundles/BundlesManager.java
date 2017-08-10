@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
@@ -35,6 +36,8 @@ import org.telosys.tools.commons.github.GitHubRepository;
  *
  */
 public class BundlesManager {
+
+	public final static String TEMPLATES_CFG = "templates.cfg" ;
 
 	private final TelosysToolsCfg telosysToolsCfg ;
 	
@@ -59,27 +62,27 @@ public class BundlesManager {
 		return telosysToolsCfg.getDownloadsFolderAbsolutePath() ;
 	}
 	
-//	//--------------------------------------------------------------------------------------------------
-//	/**
-//	 * Returns the BUNDLES folder's full path in the file system <br>
-//	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates' )
-//	 * @return
-//	 */
-//	public String getBundlesFolderFullPath() {
-//		return telosysToolsCfg.getTemplatesFolderAbsolutePath() ;
-//	}
-//	
-//	//--------------------------------------------------------------------------------------------------
-//	/**
-//	 * Returns the file system folder's full path for the given bundle name <br>
-//	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates/bundleName' )
-//	 * @param bundleName
-//	 * @return
-//	 */
-//	public String getBundleFolderFullPath( String bundleName ) {
-//		return FileUtil.buildFilePath( getBundlesFolderFullPath() , bundleName);
-//	}
-//	
+	/**
+	 * Returns a File object for the project's bundles folder <br>
+	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates' )<br>
+	 * There's no guarantee the returned file/directory exists
+	 * @return
+	 */
+	public File getBundlesFolder() {
+		return new File(telosysToolsCfg.getTemplatesFolderAbsolutePath()) ;
+	}
+
+	/**
+	 * Returns a File object for the given bundle's folder <br>
+	 * ( e.g. 'X:/dir/myproject/TelosysTools/templates/bundleName' )<br>
+	 * There's no guarantee the returned file/directory exists
+	 * @param bundleName
+	 * @return
+	 */
+	public File getBundleFolder(String bundleName) {
+		return new File(telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName)) ;
+	}
+	
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Returns true if the bundle is already installed (if the bundle's folder exists)
@@ -88,13 +91,35 @@ public class BundlesManager {
 	 */
 	public boolean isBundleAlreadyInstalled( String bundleName ) {
 //		File bundlesFolder = new File(getBundleFolderFullPath(bundleName)) ;
-		File bundlesFolder = new File(telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName)) ; // v 3.0.0
-		if ( bundlesFolder.exists() ) {
+//		File bundlesFolder = new File(telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName)) ; // v 3.0.0
+		File bundleFolder = getBundleFolder(bundleName) ; // v 3.0.0
+		if ( bundleFolder.exists() ) {
 			return true ;
 		}
 		else {
 			return false ;
 		}
+	}
+	
+	/**
+	 * Returns the 'templates.cfg' File object for the given bundle name <br>
+	 * There's no guarantee the returned file exists
+	 * @param bundleName
+	 * @return the File instance
+	 */
+	public File getBundleConfigFile(String bundleName) {
+		File bundleFolder = getBundleFolder(bundleName) ;
+		return new File( FileUtil.buildFilePath(bundleFolder.getAbsolutePath(), TEMPLATES_CFG ) ) ;
+	}
+	
+	/**
+	 * Returns true if the 'templates.cfg' file exists for the given bundle name
+	 * @param bundleName
+	 * @return
+	 */
+	public boolean isBundleConfigFileExists(String bundleName) {
+		File file = getBundleConfigFile(bundleName);
+		return ( file != null && file.exists() );
 	}
 	
 	//--------------------------------------------------------------------------------------------------
@@ -151,18 +176,15 @@ public class BundlesManager {
 	
 	//--------------------------------------------------------------------------------------------------
 	/**
-	 * @return
-	 */
-	/**
-	 * Return a list of bundles available on the given user's name on GitHub
-	 * @param userName the GitHub user name
+	 * Return a list of bundles available on GitHub for the given user's name
+	 * @param githubUserName the GitHub user name
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> getBundlesList( String userName ) throws Exception {
+	public List<String> getGitHubBundlesList( String githubUserName ) throws Exception {
 		List<String> bundles = new LinkedList<String>();
 		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
-		List<GitHubRepository> repositories = gitHubClient.getRepositories( userName );
+		List<GitHubRepository> repositories = gitHubClient.getRepositories( githubUserName );
 		for ( GitHubRepository repo : repositories ) {
 // Removed in ver 2.1.0 ( "size" is not reliable in the GitHub API ) 
 //							if ( repo.getSize() > 0 ) {
@@ -253,5 +275,88 @@ public class BundlesManager {
 			return false ;
 		}
 	}
+	
+	//--------------------------------------------------------------------------------------
+	// Methods moved here from TargetsManager ( 2017-08-10 )
+	//--------------------------------------------------------------------------------------
+	/**
+	 * Returns the list of bundles defined in the project <br>
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public List<String> getBundlesList() throws TelosysToolsException {
+		//File dir = new File(this.templatesFolderAbsolutePath);	
+		File dir = getBundlesFolder();
+		if ( dir.exists() ) {
+			if ( dir.isDirectory() ) {
+				List<String> bundles = new LinkedList<String>();
+				for ( File bundleDir : dir.listFiles() ) {
+					if ( bundleDir.isDirectory() ) {
+						//if ( this.specificTemplatesFolder ) {
+						if ( telosysToolsCfg.hasSpecificTemplatesFolders() ) {
+							// Can contains any kind of folders => check existence of "templates.cfg" 
+							//if ( isTemplatesCfgExist(bundleDir) ) {
+							if ( isBundleConfigFileExists( bundleDir.getName() ) ) {
+								bundles.add(bundleDir.getName());
+							}
+						}
+						else {
+							// No specific templates folder => just keep all folders
+							bundles.add(bundleDir.getName());
+						}
+					}
+				}
+				return bundles ;
+			}
+			else {
+				throw new TelosysToolsException("Templates folder '" + dir.getAbsolutePath() + "' is not a folder.");
+			}
+		}
+		else {
+			throw new TelosysToolsException("Templates folder '" +  dir.getAbsolutePath() + "' not found.");
+		}
+	}	
+	
+	/**
+	 * Returns the target definitions for the given bundle name
+	 * @param bundleName
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public TargetsDefinitions getTargetsDefinitions(String bundleName) throws TelosysToolsException
+	{
+		if ( StrUtil.nullOrVoid(bundleName) ) {
+			throw new TelosysToolsException("Invalid bundle name (null or void) : '" + bundleName + "'  ");
+		}
+
+//		String bundleFolderAbsolutePath = FileUtil.buildFilePath(templatesFolderAbsolutePath, bundleName.trim() );
+//		// templates.cfg full path  
+//		String templatesCfgAbsolutepath = FileUtil.buildFilePath(bundleFolderAbsolutePath, BundlesManager.TEMPLATES_CFG );
+		
+		File templatesCfgFile = getBundleConfigFile(bundleName);
+		
+//		TargetsFile targetsFile = new TargetsFile(templatesCfgAbsolutepath) ;
+		TargetsFile targetsFile = new TargetsFile(templatesCfgFile.getAbsolutePath()) ;
+		if ( targetsFile.exists() ) {
+			//--- Try to load the targets 
+			List<TargetDefinition> allTargetsList = targetsFile.load();
+			//--- Build the two lists of targets : templates targets and resources targets 
+			List<TargetDefinition> templatesTargets = new LinkedList<TargetDefinition>() ;
+			List<TargetDefinition> resourcesTargets = new LinkedList<TargetDefinition>() ;
+			for ( TargetDefinition t : allTargetsList ) {
+				if ( t.isResource() ) {
+					resourcesTargets.add(t) ;
+				}
+				else {
+					templatesTargets.add(t);
+				}
+			}
+			return new TargetsDefinitions(templatesTargets, resourcesTargets);
+		}
+		else {
+//			throw new TelosysToolsException("File not found '" + templatesCfgAbsolutepath + "'");
+			throw new TelosysToolsException("File not found '" + templatesCfgFile.getAbsolutePath() + "'");
+		}
+	}	
 	
 }
