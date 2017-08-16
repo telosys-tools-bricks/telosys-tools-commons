@@ -159,4 +159,11 @@ public class StrUtilTest {
 		assertEquals( "",  tokens[2] ) ;
 		assertEquals( "",  tokens[3] ) ;
 	}		
+
+	@Test
+	public void testBackslash() {
+		assertEquals( "a\\;b\\;c\\;ddd", StrUtil.backslash("a;b;c;ddd", ';') ) ;
+		assertEquals( "a\\\"b\\\"ccccc", StrUtil.backslash("a\"b\"ccccc", '"') ) ;
+		assertEquals( "a\\'b\\'ccccc", StrUtil.backslash("a'b'ccccc", '\'') ) ;
+	}		
 }

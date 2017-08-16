@@ -581,4 +581,22 @@ public final class StrUtil
 			return s2 != null ;
 		}
 	}
+
+	/**
+	 * Protect each occurrence of the given char with a backslash in the given string
+	 * @param s the string to be processed
+	 * @param c the character to be protected with a backslash
+	 * @return
+	 */
+	public final static String backslash (String s, char c ) {
+		StringBuffer sb = new StringBuffer();		
+		for ( int i = 0 ; i < s.length() ; i++ ) {
+			char charInString = s.charAt(i) ;
+			if ( charInString == c ) {
+				sb.append('\\');
+			}
+			sb.append(charInString);
+		}
+		return sb.toString();
+	}
 }
