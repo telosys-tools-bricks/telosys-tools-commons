@@ -35,7 +35,6 @@ public class TargetDefinition
 	private final String  _sTemplate ; // or resource ( since v 2.0.7 )
 
 	private final String  _sType ; // "1", "R", "*" or ""
-	//private final boolean  _bOnce ;
 
 	//-----------------------------------------------------------------------
 	/**
@@ -54,19 +53,18 @@ public class TargetDefinition
 		_sFolder = folder;
 		_sTemplate = template;
 		_sType = ( type != null ? type.trim() : "" ) ;
-		//_bOnce = getOnceFlag(type) ;
 	}
 	
-//	private boolean getOnceFlag(String sOnce) 
-//	{
-//		if ( sOnce != null ) {
-//			if ( sOnce.trim().equals("1") ) {
-//				return true ;
-//			}
-//		}
-//		return false ;
-//	}
-
+	//-----------------------------------------------------------------------
+	/**
+	 * Returns a string that can be used as a unique id for a target
+	 * @return
+	 */
+	public String getId()
+	{
+		return _sTemplate + ":" + _sType + ":" + _sFolder + ":" + _sFile ;
+	}
+	
 	//-----------------------------------------------------------------------
 	/**
 	 * Returns the target name ( the text displayed on the screen )
