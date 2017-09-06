@@ -166,4 +166,18 @@ public class StrUtilTest {
 		assertEquals( "a\\\"b\\\"ccccc", StrUtil.backslash("a\"b\"ccccc", '"') ) ;
 		assertEquals( "a\\'b\\'ccccc", StrUtil.backslash("a'b'ccccc", '\'') ) ;
 	}		
+
+	@Test
+	public void testRemoveQuotes() {
+		assertEquals( "abcd", StrUtil.removeQuotes("abcd", '"') ) ;
+		assertEquals( "\"abcd", StrUtil.removeQuotes("\"abcd", '"') ) ;
+		assertEquals( "abcd\"", StrUtil.removeQuotes("abcd\"", '"') ) ;
+		assertEquals( "abcd", StrUtil.removeQuotes("\"abcd\"", '"') ) ;
+		assertEquals( "'abcd'", StrUtil.removeQuotes("'abcd'", '"') ) ;
+		assertEquals( "", StrUtil.removeQuotes("", '"') ) ;
+		assertEquals( "", StrUtil.removeQuotes("\"\"", '"') ) ;
+		assertNull( StrUtil.removeQuotes(null, '"') ) ;
+
+		assertEquals( "abcd", StrUtil.removeQuotes("'abcd'", '\'') ) ;
+	}		
 }
