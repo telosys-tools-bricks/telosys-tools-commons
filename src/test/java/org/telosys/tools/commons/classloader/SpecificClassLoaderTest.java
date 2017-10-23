@@ -3,6 +3,7 @@ package org.telosys.tools.commons.classloader;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -14,21 +15,20 @@ import org.junit.Test;
 
 public class SpecificClassLoaderTest {
 	
-	private File getLoaderDir() {
-		return TestsEnv.getTestFolder("loader"); // Is a directory
-	}
+//	private File getLoaderDir() {
+//		return TestsEnv.getTestFolder("loader"); // Is a directory
+//	}
 	private File getLibDir() {
 		return TestsEnv.getTestFolder("loader/lib"); // Is a directory
 	}
 	private File getClassesDir() {
 		return TestsEnv.getTestFolder("loader/classes"); // Is a directory
 	}
-	private File getLibJar() {
-		return new File( TestsEnv.getTestFileAbsolutePath("loader/lib/javax.inject-1.jar")) ;
-	}
+//	private File getLibJar() {
+//		return new File( TestsEnv.getTestFileAbsolutePath("loader/lib/javax.inject-1.jar")) ;
+//	}
 	
 	private SpecificClassLoader buildClassLoader() {
-		SpecificClassPath classpath = buildClassPath();
 		SpecificClassLoader loader = new SpecificClassLoader(buildClassPath());
         print (loader.getURLs() ) ;
         Assert.assertEquals(3, loader.getURLs().length);
@@ -58,7 +58,7 @@ public class SpecificClassLoaderTest {
 	}
 	
 	@Test
-	public void test0() {
+	public void test0() throws IOException {
 //		//String jarsPaths[] = {};
 //		List<String> jarsPaths = new LinkedList<String>();
 //        ClassLoader parentLoader = ClassLoader.getSystemClassLoader();
@@ -68,6 +68,7 @@ public class SpecificClassLoaderTest {
 		SpecificClassLoader loader = new SpecificClassLoader(classpath);
         print (loader.getURLs() ) ;
         Assert.assertEquals(0, loader.getURLs().length);
+        loader.close();
 	}
 
 //	@Test(expected=RuntimeException.class)
@@ -82,7 +83,7 @@ public class SpecificClassLoaderTest {
 //	}
 
 	@Test
-	public void test2() {
+	public void test2() throws IOException {
 		//String jarsPaths[] = { "", "" };
 		
 //		List<String> jarsPaths = new LinkedList<String>();
@@ -97,10 +98,11 @@ public class SpecificClassLoaderTest {
 		SpecificClassLoader loader = new SpecificClassLoader(classpath);
         print (loader.getURLs() ) ;
         Assert.assertEquals(0, loader.getURLs().length);
+        loader.close();
 	}
 
 	@Test
-	public void test3() {
+	public void test3() throws IOException {
 		//String jarsPaths[] = { "aaaa.jar", "" };
 		
 //		List<String> jarsPaths = new LinkedList<String>();
@@ -116,10 +118,11 @@ public class SpecificClassLoaderTest {
         
         print (loader.getURLs() ) ;
         Assert.assertEquals(0, loader.getURLs().length);
+        loader.close();
 	}
 
 	@Test
-	public void test4() {
+	public void test4() throws IOException {
 		//String jarsPaths[] = { "aaaa.jar", "bbb.jar" };
 //		List<String> jarsPaths = new LinkedList<String>();
 //		jarsPaths.add("aaaa.jar");
@@ -135,10 +138,11 @@ public class SpecificClassLoaderTest {
 
         print (loader.getURLs() ) ;
         Assert.assertEquals(0, loader.getURLs().length);
+        loader.close();
 	}
 
 	@Test(expected=ClassNotFoundException.class)
-	public void test5() throws ClassNotFoundException {
+	public void test5() throws ClassNotFoundException, IOException {
 		//String jarsPaths[] = { "D:/aa/bb/ccc/ddd/aaaa.jar", "X:/xxx/yyy/zzzz/bbb.jar" };
 		
 //		List<String> jarsPaths = new LinkedList<String>();
@@ -158,10 +162,12 @@ public class SpecificClassLoaderTest {
 
         Class<?> clazz = loader.loadClass("org.demo.Foo");
 		Assert.assertNotNull(clazz);
+		
+        loader.close();
 	}
 	
 	@Test
-	public void test6() throws ClassNotFoundException {
+	public void test6() throws ClassNotFoundException, IOException {
 		
 //		String jarsPaths[] = { 
 //			TestsEnv.getTestFileAbsolutePath("lib/javax.inject-1.jar") // existing JAR
@@ -187,10 +193,11 @@ public class SpecificClassLoaderTest {
 		clazz = loader.loadClass("javax.inject.Inject");
 		Assert.assertNotNull(clazz);
 		System.out.println("Class loaded : " + clazz.getCanonicalName() );
+        loader.close();		
 	}
 	
 	@Test
-	public void test7() throws ClassNotFoundException {
+	public void test7() throws ClassNotFoundException, IOException {
 		
 //		String jarsPaths[] = { 
 //			"D:/aa/bb/ccc/ddd/aaaa.jar", 
@@ -217,6 +224,8 @@ public class SpecificClassLoaderTest {
 		clazz = loader.loadClass("javax.inject.Inject");
 		Assert.assertNotNull(clazz);
 		System.out.println("Class loaded : " + clazz.getCanonicalName() );
+		
+        loader.close();
 	}
 	
 	@Test
