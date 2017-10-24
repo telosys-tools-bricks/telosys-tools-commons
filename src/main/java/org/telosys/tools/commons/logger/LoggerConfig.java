@@ -13,19 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.telosys.tools.commons;
+package org.telosys.tools.commons.logger;
 
 
 /**
- * Basic utility class for system console logging (only for DEBUG) 
- * 
- * @author Laurent GUERIN
+ * Logging configuration
  *
  */
-public class ConsoleLogger extends GenericLogger
+public class LoggerConfig
 {
-	//----------------------------------------------------------------------------------
-	protected void print(String s) {
-		System.out.println(s);
-	}
+	// public static boolean DEBUG = false ;
+	
+	public static boolean LOG   = false ;
+	
 }

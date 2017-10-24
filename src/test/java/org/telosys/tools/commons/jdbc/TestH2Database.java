@@ -6,9 +6,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.telosys.tools.commons.ConsoleLogger;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.jdbc.DriverLoader;
+import org.telosys.tools.commons.logger.ConsoleLogger;
 
 public class TestH2Database {
 

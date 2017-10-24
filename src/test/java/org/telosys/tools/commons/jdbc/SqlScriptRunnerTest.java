@@ -13,10 +13,10 @@ import java.util.Properties;
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
 
-import org.telosys.tools.commons.ConsoleLogger;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.jdbc.ConnectionManager;
 import org.telosys.tools.commons.jdbc.SqlScriptRunner;
+import org.telosys.tools.commons.logger.ConsoleLogger;
 
 public class SqlScriptRunnerTest extends TestCase {
 

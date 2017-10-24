@@ -43,6 +43,12 @@ public interface TelosysToolsLogger
 	public void error (String s) ;
 	
 	/**
+	 * Logs an error message with the exception 
+	 * @param s
+	 */
+	public void error (String s, Throwable e) ;
+	
+	/**
 	 * Logs an information message
 	 * @param s
 	 */

@@ -7,11 +7,11 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.telosys.tools.commons.ConsoleLogger;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.dbcfg.DatabasesConfigurations;
 import org.telosys.tools.commons.dbcfg.DbConfigManager;
 import org.telosys.tools.commons.jdbc.ConnectionManager;
+import org.telosys.tools.commons.logger.ConsoleLogger;
 
 public class ConnectionManagerTest extends TestCase {
 

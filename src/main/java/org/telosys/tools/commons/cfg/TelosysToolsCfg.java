@@ -23,7 +23,9 @@ import java.util.Properties;
 
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.StrUtil;
+import org.telosys.tools.commons.TelosysToolsLogger;
 import org.telosys.tools.commons.env.TelosysToolsEnv;
+import org.telosys.tools.commons.logger.ConsoleLogger;
 import org.telosys.tools.commons.variables.Variable;
 import org.telosys.tools.commons.variables.VariablesNames;
 import org.telosys.tools.commons.variables.VariablesUtil;
@@ -38,15 +40,6 @@ import org.telosys.tools.commons.variables.VariablesUtil;
  */
 public class TelosysToolsCfg 
 {
-// v 3.0.0
-//	private final static String     DATABASES_DBCFG_FILE = "databases.dbcfg";  
-	
-// v 3.0.0
-//    //--- Properties Names for directories 
-//	private final static String REPOS_FOLDER      = "RepositoriesFolder";
-//	private final static String TEMPLATES_FOLDER  = "TemplatesFolder";
-//	private final static String DOWNLOADS_FOLDER  = "DownloadsFolder";    
-//	private final static String LIBRARIES_FOLDER  = "LibrariesFolder";
 	private final static String SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
 	private final static String SPECIFIC_TEMPLATES_FOLDER    = "SpecificTemplatesFolder";
     
@@ -83,7 +76,6 @@ public class TelosysToolsCfg
 	
 	//----------------------------------------------------------------------------------------
 	//--- Specific variables defined by the user for the current project
-	//private Variable[] _specificVariables = new Variable[0] ; // 
 	private LinkedList<Variable> _specificVariables = new LinkedList<Variable>() ; // v 3.0.0
 
 	//----------------------------------------------------------------------------------------
@@ -93,9 +85,7 @@ public class TelosysToolsCfg
      * @param cfgFileAbsolutePath the configuration file (full path)
      * @param prop the project configuration properties (if null default values will be used) 
      */
-    //public TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop )
-    protected TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop ) // v 3.0.0
-    {
+    protected TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop ) { // v 3.0.0
     	// v 3.0.0
     	TelosysToolsEnv env = TelosysToolsEnv.getInstance();
     	_sTelosysToolsFolder = env.getTelosysToolsFolder();
@@ -114,38 +104,12 @@ public class TelosysToolsCfg
     	_cfgFileAbsolutePath = cfgFileAbsolutePath ;
     	
     	_initializedFromFile = initFromProperties(prop);
-    	// _cfgFileProperties = prop ; // removed in v 3.0.0
     }
     
-// removed in v 3.0.0
-//    /**
-//     * Constructor 
-//     * @param projectAbsolutePath the project directory (full path) 
-//     */
-//    public TelosysToolsCfg ( String projectAbsolutePath )
-//    {
-//    	if ( projectAbsolutePath == null ) {
-//    		throw new IllegalArgumentException("projectAbsolutePath is null");
-//    	}
-//    	_projectAbsolutePath = projectAbsolutePath ;
-//    	
-//    	TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectAbsolutePath) ;
-//    	_cfgFileAbsolutePath = cfgManager.getCfgFileAbsolutePath();
-//    	
-//    	_initializedFromFile = false ;
-//    	//_cfgFileProperties = null ; // removed in v 3.0.0
-//    }
-    
 	//------------------------------------------------------------------------------------------------------
-    protected boolean initFromProperties(Properties prop)
-	{
+    protected boolean initFromProperties(Properties prop) {
     	if ( prop != null ) {    	
     		// v 3.0.0
-//	    	// Initialization with the given properties, use original values as default values
-//	    	_sRepositoriesFolder = prop.getProperty(REPOS_FOLDER,     _sRepositoriesFolder);
-//	    	_sTemplatesFolder    = prop.getProperty(TEMPLATES_FOLDER, _sTemplatesFolder);
-//	    	_sDownloadsFolder    = prop.getProperty(DOWNLOADS_FOLDER, _sDownloadsFolder);
-//	    	_sLibrariesFolder    = prop.getProperty(LIBRARIES_FOLDER, _sLibrariesFolder);
 	    	_specificDestinationFolder = prop.getProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder);
 	    	_specificTemplatesFolder   = prop.getProperty(SPECIFIC_TEMPLATES_FOLDER, _specificTemplatesFolder);
 	    	
@@ -164,7 +128,6 @@ public class TelosysToolsCfg
 	    	
 	    	//--- Project user defined variables
 	    	_specificVariables = VariablesUtil.getSpecificVariablesFromProperties( prop );
-	    	//_allVariables      = VariablesUtil.getAllVariablesFromProperties(prop); 
 	    	return true ;
     	}
     	else {
@@ -200,24 +163,9 @@ public class TelosysToolsCfg
      * Returns a set of properties containing the current configuration
      * @return
      */
-    public Properties getProperties()
-	{
-//    	Properties properties = null ; 
-//    	// v 2.1.1 (keep original properties if any and update)
-//    	if ( this._cfgFileProperties != null ) { 
-//    		// We have original properties => keep them
-//        	properties = this._cfgFileProperties ; 
-//    	}
-//    	else {
-//    		properties = new Properties(); 
-//    	}
+    public Properties getProperties() {
     	Properties properties = new Properties();  // v 3.0.0
     	
-//    	//--- General 
-//    	properties.setProperty(REPOS_FOLDER,     _sRepositoriesFolder);
-//    	properties.setProperty(TEMPLATES_FOLDER, _sTemplatesFolder);
-//    	properties.setProperty(DOWNLOADS_FOLDER, _sDownloadsFolder);
-//    	properties.setProperty(LIBRARIES_FOLDER, _sLibrariesFolder);
     	properties.setProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder );
     	properties.setProperty(SPECIFIC_TEMPLATES_FOLDER,   _specificTemplatesFolder );
     	
@@ -245,9 +193,18 @@ public class TelosysToolsCfg
      * Returns the file system project folder (absolute path)
      * @return
      */
-    public String getProjectAbsolutePath()
-	{
+    public String getProjectAbsolutePath() {
     	return _projectAbsolutePath ;
+	}
+    
+	//------------------------------------------------------------------------------------------------------
+    /**
+     * Returns the standard logger
+     * @return
+     */
+    public TelosysToolsLogger getLogger() {
+    	// TODO
+    	return new ConsoleLogger()  ; // To be replaced by the future "FileLogger" ( log files in "log" folder )
 	}
     
 	//------------------------------------------------------------------------------------------------------
@@ -257,8 +214,7 @@ public class TelosysToolsCfg
      * If a specific destination as been defined it replaces the project folder <br>
      * @return
      */
-    public String getDestinationFolderAbsolutePath()
-	{
+    public String getDestinationFolderAbsolutePath() {
     	if ( StrUtil.nullOrVoid( _specificDestinationFolder ) ) {
     		//--- No specific destination folder => use the project folder
     		return _projectAbsolutePath;
@@ -273,8 +229,7 @@ public class TelosysToolsCfg
      * Returns the absolute file name of the configuration file 
      * @return
      */
-    public String getCfgFileAbsolutePath()
-	{
+    public String getCfgFileAbsolutePath() {
     	return _cfgFileAbsolutePath;
 	}
 
@@ -287,7 +242,6 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDatabasesDbCfgFile() {
-    	//return FileUtil.buildFilePath(getRepositoriesFolder(), DATABASES_DBCFG_FILE);
     	// v 3.0.0
     	return FileUtil.buildFilePath(getModelsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}
@@ -296,9 +250,7 @@ public class TelosysToolsCfg
      * ( e.g. 'X:/dir/myproject/TelosysTools/databases.dbcfg' )
      * @return
      */
-    public String getDatabasesDbCfgFileAbsolutePath()
-	{
-    	//return FileUtil.buildFilePath(getRepositoriesFolderAbsolutePath(), DATABASES_DBCFG_FILE);
+    public String getDatabasesDbCfgFileAbsolutePath() {
     	// v 3.0.0
     	return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}
@@ -436,28 +388,12 @@ public class TelosysToolsCfg
 	}
     
 	//------------------------------------------------------------------------------------------------------
-//    /**
-//     * Returns the templates folder in the current project (relative path in the project) <br>
-//     * ( e.g. 'TelosysTools/templates' )
-//     * @return
-//     */
-//    public String getTemplatesFolder() {
-//    	return _sTemplatesFolder;
-//	}
-//    /**
-//     * Set the templates folder in the current project (relative path in the project) <br>
-//     * @param templatesFolder
-//     */
-//    public void setTemplatesFolder(String templatesFolder) {
-//    	_sTemplatesFolder = templatesFolder ;
-//	}
     /**
      * Returns the templates folder absolute path <br>
      * ( e.g. 'X:/dir/myproject/TelosysTools/templates' )
      * @return
      */
     public String getTemplatesFolderAbsolutePath() {
-    	//return FileUtil.buildFilePath(_projectAbsolutePath, _sTemplatesFolder ) ;
     	if ( this.hasSpecificTemplatesFolders() ) {
     		//--- Specific templates folder => use it  ( v 3.0.0 )
     		return _specificTemplatesFolder ; 
@@ -513,13 +449,7 @@ public class TelosysToolsCfg
     public String getDownloadsFolder() {
     	return _sDownloadsFolder;
     }
-//    /**
-//     * Set the downloads folder in the current project (relative path in the project)<br>
-//     * @param downloadsFolder
-//     */
-//    public void setDownloadsFolder(String downloadsFolder) {
-//    	_sDownloadsFolder = downloadsFolder ;
-//    }
+
     /**
      * Returns the download folder absolute path <br>
      * ( e.g. 'X:/dir/myproject/TelosysTools/downloads' )
@@ -538,13 +468,7 @@ public class TelosysToolsCfg
     public String getLibrariesFolder() {
     	return _sLibrariesFolder ;
     }
-//    /**
-//     * Set the libraries folder in the current project (relative path in the project)<br>
-//     * @param librariesFolder
-//     */
-//    public void setLibrariesFolder(String librariesFolder) {
-//    	_sLibrariesFolder = librariesFolder ;
-//    }
+
     /**
      * Returns the download folder absolute path <br>
      * ( e.g. 'X:/dir/myproject/TelosysTools/lib' )
@@ -560,18 +484,10 @@ public class TelosysToolsCfg
      * ( e.g. 'TelosysTools' )
      * @return
      */
-    public String getModelsFolder()
-	{
+    public String getModelsFolder() {
     	return _sModelsFolder ;
 	}
-//    /**
-//     * Set the repositories folder in the current project (relative path in the project) <br>
-//     * @param repositoriesFolder
-//     */
-//    public void setRepositoriesFolder(String repositoriesFolder)
-//	{
-//    	_sRepositoriesFolder = repositoriesFolder ;
-//	}
+
     /**
      * Returns the models folder absolute path <br>
      * ( e.g. 'X:/dir/myproject/TelosysTools' )
@@ -589,8 +505,7 @@ public class TelosysToolsCfg
 	 * ( e.g. "org.demo.bean" )
 	 * @return 
 	 */
-	public String getEntityPackage() 
-	{
+	public String getEntityPackage() {
 		return _ENTITY_PKG ;
 	}
 	/**
@@ -598,11 +513,9 @@ public class TelosysToolsCfg
 	 * ( e.g. "org.demo.bean" )
 	 * @param entityPackage
 	 */
-	public void setEntityPackage(String entityPackage) 
-	{
+	public void setEntityPackage(String entityPackage)  {
 		_ENTITY_PKG = entityPackage ;
 	}
-	
 	
 	//------------------------------------------------------------------------------------------------------
 	/**
@@ -610,8 +523,7 @@ public class TelosysToolsCfg
 	 * ( e.g. "org.demo" )
 	 * @return 
 	 */
-	public String getRootPackage() 
-	{
+	public String getRootPackage() {
 		return _ROOT_PKG ;
 	}
 	/**
@@ -619,8 +531,7 @@ public class TelosysToolsCfg
 	 * ( e.g. "org.demo" )
 	 * @param rootPackage
 	 */
-	public void setRootPackage(String rootPackage) 
-	{
+	public void setRootPackage(String rootPackage) {
 		_ROOT_PKG = rootPackage ;
 	}
 	
@@ -714,9 +625,7 @@ public class TelosysToolsCfg
 	 * Returns the specific variables defined for the current project  
 	 * @return array of variables (never null, void array if none)
 	 */
-	public Variable[] getSpecificVariables()
-	{
-		// return _specificVariables ;
+	public Variable[] getSpecificVariables() {
 		return _specificVariables.toArray(new Variable[0]); // v 3.0.0
 	}
 	
@@ -725,9 +634,8 @@ public class TelosysToolsCfg
 	 * @param variableName
 	 * @return the variable or null if the variable is not defined
 	 */
-	public Variable getSpecificVariable(String variableName) // v 3.0.0
-	{
-		for ( Variable var : _specificVariables ) {
+	public Variable getSpecificVariable(String variableName) { // v 3.0.0
+		for ( Variable var : _specificVariables ) { 
 			if ( var.getName().equals(variableName) ) {
 				return var ;
 			}
@@ -740,27 +648,12 @@ public class TelosysToolsCfg
 	 * @return
 	 */
 	public boolean hasSpecificVariables() {
-		//if ( _specificVariables != null && _specificVariables.length > 0 ) {
 		if ( _specificVariables != null && _specificVariables.size() > 0 ) { // v 3.0.0
 			return true;
 		}
 		return false ; 
 	}
 	
-// removed in v 3.0.0
-//	/**
-//	 * Set the specific variables defined for the current project  
-//	 * @param variables
-//	 */
-//	public void setSpecificVariables(Variable[] variables)
-//	{
-//		if ( variables != null ) {
-//			_specificVariables = variables ;
-//		}
-//		else {
-//			_specificVariables = new Variable[0] ;
-//		}
-//	}	
 	/**
 	 * Set the specific variables defined for the current project  
 	 * @param variables
@@ -768,16 +661,12 @@ public class TelosysToolsCfg
 	public void setSpecificVariables(List<Variable> variables ) {
 		// v 3.0.0 : from Array to LinkedList
 		if ( variables != null ) {
-			//_specificVariables = new Variable[variables.size()] ;
 			_specificVariables = new LinkedList<Variable>() ;
-			//int i = 0 ;
 			for ( Variable var : variables ) {
-				//_specificVariables[i++] = var ;
 				_specificVariables.add(var);
 			}
 		}
 		else {
-			//_specificVariables = new Variable[0] ;
 			_specificVariables = new LinkedList<Variable>() ;
 		}
 	}	
@@ -801,9 +690,7 @@ public class TelosysToolsCfg
 	 * (standard variables + specific variables )
 	 * @return array of variables (never null, void array if none)
 	 */
-	public Variable[] getAllVariables()
-	{
-		//return _allVariables ;
+	public Variable[] getAllVariables() {
 		return buildAllVariablesArray() ;
 	}	
 	
@@ -829,15 +716,7 @@ public class TelosysToolsCfg
     	allVariables.put( VariablesNames.DOC,      _DOC      );
     	allVariables.put( VariablesNames.TMP,      _TMP      );
     	
-    	//--- 3) Get all variables to build the array
-//    	LinkedList<Variable> variablesList = new LinkedList<Variable>();
-//    	for ( String varName : allVariables.keySet() ) {
-//    		String varValue = allVariables.get(varName) ;
-//    		variablesList.add( new Variable( varName, varValue) ) ;
-//    	}
-//    	//--- Convert list to array
-//    	Variable[] allVariablesArray = variablesList.toArray( new Variable[variablesList.size()] );
-    	
+    	//--- 3) build the array
     	Variable[] allVariablesArray = new Variable[ allVariables.size() ];
     	int i = 0 ;
     	for ( Map.Entry<String, String> entry : allVariables.entrySet() ) {

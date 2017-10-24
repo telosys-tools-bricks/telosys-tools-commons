@@ -13,8 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.telosys.tools.commons;
+package org.telosys.tools.commons.logger;
 
+import org.telosys.tools.commons.ExceptionUtil;
+import org.telosys.tools.commons.TelosysToolsLogger;
 
 /**
  * Basic utility class for system console logging (only for DEBUG) 
@@ -51,6 +53,14 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	@Override
 	public final void error(String s) {
 		print("[ERROR] " + s);
+	}
+
+	//----------------------------------------------------------------------------------
+	@Override
+	public final void error(String s, Throwable e) {
+		print("[ERROR] : " + s );
+		//print("[ERROR EXCEPTION] : " + e.getClass().getSimpleName() + " " + e.getMessage() );
+		logStackTrace(e);
 	}
 
 	//----------------------------------------------------------------------------------
