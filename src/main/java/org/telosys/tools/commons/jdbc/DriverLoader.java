@@ -41,30 +41,33 @@ public class DriverLoader //extends GenericTool
 		}
 	}
 	//----------------------------------------------------------------------------------
-	private final void throwException (String msg) throws TelosysToolsException
-	{
+	private final void throwException (String msg) throws TelosysToolsException {
     	if ( logger != null ) {
     		logger.error(msg);
     	}
     	throw new TelosysToolsException(msg);
 	}
 	//----------------------------------------------------------------------------------
-	private final void throwException (String msg, Throwable e) throws TelosysToolsException
-	{
+	private final void throwException (String msg, Throwable e) throws TelosysToolsException {
     	if ( logger != null ) {
     		logger.error(msg);
     	}
     	throw new TelosysToolsException(msg,e);
 	}
-	//----------------------------------------------------------------------------------
 
+	//----------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
-    // Specific Class Loader ( Inner class )
-    //-----------------------------------------------------------------------------
-    private static class MyClassLoader extends URLClassLoader
-    {
-        public MyClassLoader (URL[] urls, java.lang.ClassLoader parentLoader )
-        {
+    /**
+     * Specific class loader ( Inner class )
+     *
+     */
+    private static class MySpecificClassLoader extends URLClassLoader {
+        /**
+         * Constructor
+         * @param urls
+         * @param parentLoader
+         */
+        public MySpecificClassLoader (URL[] urls, java.lang.ClassLoader parentLoader ) {
             //--- Call the URLClassLoader constructor
             super(urls, parentLoader);
         }
@@ -73,9 +76,9 @@ public class DriverLoader //extends GenericTool
     //-----------------------------------------------------------------------------
     // Attributes
     //-----------------------------------------------------------------------------
-    private final String[]                  _libraries ;
+    private final String[]                  specificLibraries ; 
 
-    private final MyClassLoader             _loader ; // Specific Class Loader instance
+    private final MySpecificClassLoader     specificClassLoader ; // Specific Class Loader instance
 
     private final Hashtable<String,Driver>  _drivers = new Hashtable<String,Driver>(); // Loaded drivers
     
@@ -86,15 +89,11 @@ public class DriverLoader //extends GenericTool
      * @param logger
      * @since 2.1.1
      */
-    public DriverLoader( TelosysToolsLogger logger ) 
-    {
-//    	super(logger);
+    public DriverLoader( TelosysToolsLogger logger ) {
     	this.logger = logger ;
-
     	// No libraries => void array
-    	_libraries = new String[0] ; 
-    	
-    	_loader = null ;
+    	this.specificLibraries = new String[0] ;
+    	this.specificClassLoader = null ;
     }
     
     //-----------------------------------------------------------------------------
@@ -104,44 +103,34 @@ public class DriverLoader //extends GenericTool
      * @param libraries
      * @param logger
      */
-    public DriverLoader( String[] libraries, TelosysToolsLogger logger ) throws TelosysToolsException
-    {
-//    	super(logger);
+    public DriverLoader( String[] libraries, TelosysToolsLogger logger ) throws TelosysToolsException {
     	this.logger = logger ;
     	
     	log ( "DriverLoader constructor ... " );
-        if ( libraries == null )
-        {
+        if ( libraries == null ) {
         	throwException( "DriverLoader constructor : 'libraries' is null !" );
         }
-        else if ( libraries.length == 0 )
-        {
+        else if ( libraries.length == 0 ) {
         	throwException( "DriverLoader constructor : 'libraries' is void !" );
         }
-    	_libraries = libraries ;
+        this.specificLibraries = libraries ;
         
-        ClassLoader parentLoader = ClassLoader.getSystemClassLoader();
         //--- Convert String[] to URL[] (eliminate void and malformed urls )
         logPaths(libraries);
         URL[] urls = new URL[libraries.length];
         int n = 0 ;
-        for ( int i = 0 ; i < libraries.length ; i++ )
-        {
-            if ( libraries[i] != null )
-            {
+        for ( int i = 0 ; i < libraries.length ; i++ ) {
+            if ( libraries[i] != null ) {
                 String sPath = libraries[i].trim();
-                if ( sPath.length() > 0 )
-                {                
-		            try
-		            {
+                if ( sPath.length() > 0 ) {                
+		            try {
 		                // urls[n] = new File(sPath).toURL(); // toURL deprecated since Java 5.0
 		                // The recommended new code ( see JavaDoc )
 		                URI uri = new File(sPath).toURI();
 		                urls[n] = uri.toURL();
 		                n++;
 		            } 
-		            catch (MalformedURLException e)
-		            {
+		            catch (MalformedURLException e) {
 		            	throwException("DriverLoader : Cannot convert path '" + sPath + "' to URL (MalformedURLException)", e);
 		            }
                 }
@@ -152,13 +141,13 @@ public class DriverLoader //extends GenericTool
         URL[] validURLs = new URL[n];
         System.arraycopy(urls, 0, validURLs, 0, n);
         logURLs(validURLs);
-        if ( validURLs.length == 0 )
-        {
+        if ( validURLs.length == 0 ) {
         	throwException( "No valid URL" );
         }
         
         //--- Create the specific class loader
-        _loader = new MyClassLoader ( validURLs, parentLoader );
+        ClassLoader parentLoader = ClassLoader.getSystemClassLoader();
+        specificClassLoader = new MySpecificClassLoader ( validURLs, parentLoader );
         log  ( "Specific Class Loader created." );
     }
     
@@ -168,7 +157,7 @@ public class DriverLoader //extends GenericTool
      * @return
      */
     public String[] getLibraries() {
-    	return this._libraries ;
+    	return this.specificLibraries ;
     }
     
     //-----------------------------------------------------------------------------
@@ -191,9 +180,9 @@ public class DriverLoader //extends GenericTool
         Class<?> driverClass = null;
         try
         {
-            if (_loader != null) {
+            if (specificClassLoader != null) {
                 log ("Loading with specific class loader ...");
-                driverClass = _loader.loadClass(sDriverClassName);
+                driverClass = specificClassLoader.loadClass(sDriverClassName);
             }
             else {
             	//throwException("Class loader is not initialized (_loader == null)");

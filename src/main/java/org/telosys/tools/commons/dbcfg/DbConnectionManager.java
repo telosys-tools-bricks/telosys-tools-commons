@@ -125,12 +125,19 @@ public class DbConnectionManager {
      * @return
      */
     private ConnectionManager createConnectionManager() throws TelosysToolsException {
-        if ( javaLibraries.getLibraries().size() == 0 ) {
-        	throw new TelosysToolsException("No library defined (size=0)");
-        }
+//        if ( javaLibraries.getLibraries().size() == 0 ) {
+//        	throw new TelosysToolsException("No library defined (size=0)");
+//        }
         ConnectionManager cm = null ;
 		try {
-			cm = new ConnectionManager( javaLibraries.getLibFilePaths(), telosysToolsCfg.getLogger() );
+			if ( javaLibraries.getLibraries().size() > 0 ) {
+				// ConnectionManager with specific libraries
+				cm = new ConnectionManager( javaLibraries.getLibFilePaths(), telosysToolsCfg.getLogger() );
+			}
+			else {
+				// ConnectionManager based on the standard ClassPath
+				cm = new ConnectionManager( telosysToolsCfg.getLogger() );
+			}
 		} catch (TelosysToolsException e) {
     		throw new TelosysToolsException("Cannot create ConnectionManager", e);
 		}
