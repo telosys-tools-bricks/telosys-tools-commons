@@ -23,12 +23,29 @@ import java.math.BigDecimal;
  */
 public final class StrUtil
 {
-    /** */
-    private StrUtil()
-    {
+    /**
+     * No public constructor (set of static methods)
+     */
+    private StrUtil() {
     }
     
-    //-----------------------------------------------------------------------------------
+	/**
+	 * Capitalizes the given string (changes the first letter to upper case)
+	 * 
+	 * @param str the string to be capitalized
+	 * @return
+	 */
+	public static String capitalize(String str) {
+		if(str == null || str.length() == 0) {
+			return str;
+		}
+		if(str.length() == 1) {
+			return str.toUpperCase();
+		}
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+
+	//-----------------------------------------------------------------------------------
     /**
      * Count the number of occurrence of the given chararcter in the given string
      * @param s

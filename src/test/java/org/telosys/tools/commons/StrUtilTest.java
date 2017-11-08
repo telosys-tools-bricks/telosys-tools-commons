@@ -12,6 +12,23 @@ import org.junit.Test;
 
 public class StrUtilTest {
 
+	@Test
+	public void testCapitalize() {
+		assertEquals("A", StrUtil.capitalize("a") );
+		assertEquals("A", StrUtil.capitalize("A") );
+
+		assertEquals("Abc", StrUtil.capitalize("abc") );
+		assertEquals("Abc", StrUtil.capitalize("Abc") );
+		assertEquals("ABC", StrUtil.capitalize("ABC") );
+		assertEquals("AbcDDD", StrUtil.capitalize("abcDDD") );
+
+		assertEquals("", StrUtil.capitalize("") );
+		assertEquals(" ", StrUtil.capitalize(" ") );
+		assertEquals(" a", StrUtil.capitalize(" a") );
+		assertNull(StrUtil.capitalize(null));
+		
+	}
+	
 	public void testDifferent() {
 		assertTrue( StrUtil.different("aa", "bb") ) ;
 		assertTrue( StrUtil.different(null, "bb") ) ;
