@@ -17,7 +17,6 @@ package org.telosys.tools.commons.dbcfg;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -177,17 +176,17 @@ public class DbConnectionManager {
 		logger.info("Test connection OK : catalog = '" + catalog + "', autocommit = " + autocommit );
     }
 
-    public DbInfo getDatabaseInfo(Connection con)  throws TelosysToolsException {
-        if ( con == null ) {
-        	throw new TelosysToolsException("Invalid parameter : Connection is null");
-        }
-        DatabaseMetaData dbmd ;
-        try {
-			dbmd = con.getMetaData();			
-		} catch (SQLException e) {
-			throw new TelosysToolsException("Cannot get metadata", e);
-		}
-        return new DbInfo(dbmd);
-    }
+//    public DbInfo getDatabaseInfo(Connection con)  throws TelosysToolsException {
+//        if ( con == null ) {
+//        	throw new TelosysToolsException("Invalid parameter : Connection is null");
+//        }
+//        DatabaseMetaData dbmd ;
+//        try {
+//			dbmd = con.getMetaData();			
+//		} catch (SQLException e) {
+//			throw new TelosysToolsException("Cannot get metadata", e);
+//		}
+//        return new DbInfo(dbmd);
+//    }
 
 }

@@ -36,10 +36,10 @@ public class DbConnectionManagerDerbyIT  {
 		System.out.println("testConnection()...");
 		dbConnectionManager.testConnection(con);
 		
-		System.out.println("getDatabaseInfo()...");
-		DbInfo dbInfo = dbConnectionManager.getDatabaseInfo(con);
-		System.out.println(" . database Product Name    : " + dbInfo.getDatabaseProductName() );
-		System.out.println(" . database Product Version : " + dbInfo.getDatabaseProductVersion() );
+//		System.out.println("getDatabaseInfo()...");
+//		DbInfo dbInfo = dbConnectionManager.getDatabaseInfo(con);
+//		System.out.println(" . database Product Name    : " + dbInfo.getDatabaseProductName() );
+//		System.out.println(" . database Product Version : " + dbInfo.getDatabaseProductVersion() );
 		
 		System.out.println("closeConnection()...");
 		dbConnectionManager.closeConnection(con);
