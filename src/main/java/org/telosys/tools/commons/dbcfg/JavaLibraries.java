@@ -20,13 +20,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.TelosysToolsLogger;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 
 public class JavaLibraries {
 
 	private final List<File> libraries ;
-	private final TelosysToolsLogger logger ;
 
 	/**
 	 * Constructor
@@ -34,7 +32,6 @@ public class JavaLibraries {
 	 * @throws TelosysToolsException
 	 */
 	public JavaLibraries(TelosysToolsCfg telosysToolsCfg) throws TelosysToolsException {
-		this.logger = telosysToolsCfg.getLogger();	// Set logger first !	
 		this.libraries = getLibrariesFromLibFolder(telosysToolsCfg) ;
 	}
 
@@ -46,6 +43,10 @@ public class JavaLibraries {
 		return libraries;
 	}
 
+	/**
+	 * Returns libraries paths
+	 * @return
+	 */
 	public String[] getLibFilePaths() {
 		String[] paths = new String[ libraries.size() ];
 		int i = 0 ;
@@ -72,7 +73,6 @@ public class JavaLibraries {
     protected List<File> getLibrariesFromLibFolder(TelosysToolsCfg telosysToolsCfg) throws TelosysToolsException {
 
 		String libFolderPath  = telosysToolsCfg.getLibrariesFolderAbsolutePath(); // v 3.0.0
-    	logger.log("get libraries from folder '" + libFolderPath + "'");    	
         
     	File libFolder = new File(libFolderPath);
     	if ( ! libFolder.exists() ) {
