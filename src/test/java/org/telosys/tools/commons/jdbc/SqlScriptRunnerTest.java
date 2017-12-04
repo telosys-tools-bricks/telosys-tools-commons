@@ -10,18 +10,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import org.telosys.tools.commons.TelosysToolsException;
+
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
-
-import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.jdbc.ConnectionManager;
-import org.telosys.tools.commons.jdbc.SqlScriptRunner;
-import org.telosys.tools.commons.logger.ConsoleLogger;
 
 public class SqlScriptRunnerTest extends TestCase {
 
 	private Connection getH2Connection() throws TelosysToolsException, SQLException {
-		ConnectionManager cm = new ConnectionManager( new ConsoleLogger() );
+		ConnectionManager cm = new ConnectionManager();
 		System.out.println("Getting connection for 'H2 in memory' ...");
 		Connection conn = cm.getConnection("org.h2.Driver", "jdbc:h2:~/test", new Properties());
 		assertNotNull(conn);

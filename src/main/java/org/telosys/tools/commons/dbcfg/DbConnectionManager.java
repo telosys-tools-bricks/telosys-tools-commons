@@ -113,11 +113,11 @@ public class DbConnectionManager {
 		try {
 			if ( ! javaLibraries.getLibraries().isEmpty() ) {
 				// ConnectionManager with specific libraries
-				cm = new ConnectionManager( javaLibraries.getLibFilePaths(), telosysToolsCfg.getLogger() );
+				cm = new ConnectionManager( javaLibraries.getLibFilePaths() );
 			}
 			else {
 				// ConnectionManager based on the standard ClassPath
-				cm = new ConnectionManager( telosysToolsCfg.getLogger() );
+				cm = new ConnectionManager();
 			}
 		} catch (TelosysToolsException e) {
     		throw new TelosysToolsException("Cannot create ConnectionManager", e);

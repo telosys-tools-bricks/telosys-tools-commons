@@ -26,7 +26,7 @@ public class DriverLoaderlTest extends TestCase {
 		System.out.println("get driver from file : '" + file + "'");
 		
 		String[] paths = { file } ;
-		DriverLoader driverLoader = new DriverLoader(paths, null);   
+		DriverLoader driverLoader = new DriverLoader(paths);   
 		assertNotNull(driverLoader);
 		System.out.println("DriverLoader created.");
 		

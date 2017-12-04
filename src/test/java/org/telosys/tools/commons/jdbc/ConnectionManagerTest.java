@@ -5,13 +5,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.dbcfg.DatabasesConfigurations;
 import org.telosys.tools.commons.dbcfg.DbConfigManager;
-import org.telosys.tools.commons.jdbc.ConnectionManager;
-import org.telosys.tools.commons.logger.ConsoleLogger;
+
+import junit.framework.TestCase;
 
 public class ConnectionManagerTest extends TestCase {
 
@@ -35,7 +33,7 @@ public class ConnectionManagerTest extends TestCase {
 	
 	public void test1() throws TelosysToolsException, SQLException  {
 		System.out.println("--- Test 1");
-		ConnectionManager cm = new ConnectionManager( new ConsoleLogger() );
+		ConnectionManager cm = new ConnectionManager();
 		String[] libraries = cm.getLibraries();
 		assertEquals(0, libraries.length);
 		
@@ -57,7 +55,7 @@ public class ConnectionManagerTest extends TestCase {
 
 	public void test3() throws TelosysToolsException, SQLException  {
 		System.out.println("--- Test 1");
-		ConnectionManager cm = new ConnectionManager( new ConsoleLogger() );
+		ConnectionManager cm = new ConnectionManager();
 		String[] libraries = cm.getLibraries();
 		assertEquals(0, libraries.length);
 		

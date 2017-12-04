@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.jdbc.DriverLoader;
-import org.telosys.tools.commons.logger.ConsoleLogger;
 
 public class TestH2Database {
 
@@ -93,7 +91,7 @@ public class TestH2Database {
 	}
 
 	public static void testH2ConnectionWithDriverLoader() throws TelosysToolsException, SQLException {
-		DriverLoader driverLoader = new DriverLoader( new ConsoleLogger() );
+		DriverLoader driverLoader = new DriverLoader();
 		Driver driver = driverLoader.getDriver("org.h2.Driver");
 		System.out.println("Driver loaded.");
 

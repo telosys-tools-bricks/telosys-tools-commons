@@ -19,50 +19,19 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.Set;
 
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.TelosysToolsLogger;
 import org.telosys.tools.commons.dbcfg.DatabaseConfiguration;
 
 /**
- * JDBC connection manager to get and test a connection
+ * JDBC connection manager<br>
+ * Used to get and test a connection
  * 
  * @author Laurent GUERIN *  */
 
-public class ConnectionManager // extends GenericTool
-{
-	protected final TelosysToolsLogger  logger ;
-	private void log(String s) {
-		if (logger != null ) {
-			logger.log(s);
-		}
-	}
-	//----------------------------------------------------------------------------------
-	private final void logError(String s) {
-    	if ( logger != null ) {
-    		logger.error(s);
-    	}
-	}
-
-	//----------------------------------------------------------------------------------
-	private final void logInfo(String s) {
-    	if ( logger != null ) {
-    		logger.info(s);
-    	}
-	}
-	//----------------------------------------------------------------------------------
-	private final void throwException (String msg) throws TelosysToolsException
-	{
-    	if ( logger != null ) {
-    		logger.error(msg);
-    	}
-    	throw new TelosysToolsException(msg);
-	}
-	//----------------------------------------------------------------------------------
-
-    private final DriverLoader _driverLoader ;
-
+public class ConnectionManager {
+	
+    private final DriverLoader driverLoader ;
 
     //-----------------------------------------------------------------------------
     /**
@@ -71,20 +40,9 @@ public class ConnectionManager // extends GenericTool
      * @param logger the logger to use
      * @since 2.1.1
      */
-    public ConnectionManager ( TelosysToolsLogger logger ) throws TelosysToolsException
-    {
-    	//super(logger);
-    	this.logger = logger ;
-    	log ( "ConnectionManager constructor ... " );
-    	
+    public ConnectionManager() throws TelosysToolsException {
     	// Driver loader based on standard class loader
-        _driverLoader = new DriverLoader(logger);     
-        if ( _driverLoader == null ) {
-        	throwException( "ConnectionManager constructor : Cannot create the driver loader" ) ;
-        }
-        else {
-        	log("Driver loader ready.");
-        }
+        driverLoader = new DriverLoader();     
     }
     //-----------------------------------------------------------------------------
     /**
@@ -92,20 +50,8 @@ public class ConnectionManager // extends GenericTool
      * @param libraries array of JAR files where to search the JDBC driver 
      * @param logger the logger to use
      */
-    public ConnectionManager ( String[] libraries, TelosysToolsLogger logger ) throws TelosysToolsException
-    {
-    	//super(logger);
-    	this.logger = logger ;
-    	
-    	log ( "ConnectionManager constructor ... " );
-
-        _driverLoader = new DriverLoader(libraries, logger);     
-        if ( _driverLoader == null ) {
-        	throwException( "ConnectionManager constructor : Cannot create the driver loader" ) ;
-        }
-        else {
-        	log("Driver loader ready.");
-        }
+    public ConnectionManager ( String[] libraries ) throws TelosysToolsException {
+        driverLoader = new DriverLoader(libraries);     
     }
 
     //-----------------------------------------------------------------------------
@@ -114,7 +60,7 @@ public class ConnectionManager // extends GenericTool
      * @return
      */
     public String[] getLibraries() {
-    	return this._driverLoader.getLibraries() ;
+    	return this.driverLoader.getLibraries() ;
     }
     
     //-----------------------------------------------------------------------------
@@ -129,13 +75,13 @@ public class ConnectionManager // extends GenericTool
     public Connection getConnection(String driverClassName, String jdbcURL, Properties properties ) throws TelosysToolsException
     {        	        
         //--- 1) Get the JDBC driver
-        if ( _driverLoader == null ) {
-        	throwException( "getConnection : Driver loader is null " );
+        if ( driverLoader == null ) {
+            throw new TelosysToolsException( "Driver loader is null");
         }
 
-        Driver driver = _driverLoader.getDriver(driverClassName);
+        Driver driver = driverLoader.getDriver(driverClassName);
         if ( driver == null ) {
-        	throwException( "getConnection : Cannot get JDBC driver from the driver loader " );
+            throw new TelosysToolsException( "Cannot get JDBC driver from the driver loader");
         }
         
         //--- 2) Create the connection
@@ -144,9 +90,7 @@ public class ConnectionManager // extends GenericTool
             con = driver.connect(jdbcURL, properties);
         }
         catch (SQLException e) {
-        	logError("getConnection : Cannot connect to the database (SQLException)");
-        	logError(e.getMessage() + " / ErrorCode = " + e.getErrorCode() + " / SQLState = " + e.getSQLState());
-            throw new TelosysToolsException ( "Cannot connect to the database (SQLException)", e);
+            throw new TelosysToolsException( "Cannot connect to the database (SQLException)", e);
         }
         return con ;
     }
@@ -160,7 +104,7 @@ public class ConnectionManager // extends GenericTool
     public Connection getConnection(DatabaseConfiguration databaseConfiguration) throws TelosysToolsException
     {
         if ( null == databaseConfiguration ) {
-        	throw new TelosysToolsException ( "DatabaseConfiguration parameter is null");
+        	throw new TelosysToolsException( "DatabaseConfiguration parameter is null");
         }
         
 		//--- Connection parameters, from DatabaseConfiguration
@@ -169,50 +113,7 @@ public class ConnectionManager // extends GenericTool
 		Properties prop = new Properties() ;
 		prop.put("user",     databaseConfiguration.getUser() ) ; 
 		prop.put("password", databaseConfiguration.getPassword() ) ;
-		// TODO : manage other set of properties for each database (more than user/password) ???
 		
-		log("Try to get a database connection...");
-		log(" . Driver class = " + quote(sDriverClass) );
-		log(" . JDBC URL     = " + quote(sJdbcUrl) );
-		log(" . Properties : " );
-		Set<Object> keys = prop.keySet();
-		for ( Object key : keys ) {
-			log("   . '" + key + "' = " + quote( (String) prop.get(key) ) );
-		}
-
 		return this.getConnection( sDriverClass, sJdbcUrl, prop );
     }
-	private String quote ( String s )
-	{
-		if ( s == null ) return "null" ;
-		return "'" + s + "'" ;
-	}
-    
-    //-----------------------------------------------------------------------------
-    /**
-     * Test the given connection by getting the current catalog
-     * @param con
-     * @return true if the test is OK
-     */
-    public boolean testConnection(Connection con)
-    {
-    	boolean ret = false ;
-        if ( con != null ) {
-            try {
-            	String catalog = con.getCatalog() ;
-            	ret = true ;
-                logInfo("Connection test OK : calalog = '" + catalog + "'");
-            } 
-            catch (SQLException e) {
-            	ret = false ;
-                logError("Cannot get catalog - SQLException : " + e.getMessage() );
-            }            
-        } 
-        else {
-        	ret = false ;
-        	logError("Connection is null !");
-        }
-        return ret ;
-    }
-    //-----------------------------------------------------------------------------
 }
