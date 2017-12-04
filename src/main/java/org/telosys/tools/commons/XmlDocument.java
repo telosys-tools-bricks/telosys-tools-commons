@@ -37,27 +37,19 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+/**
+ * XmlDocument utility 
+ * 
+ * @deprecated
+ *
+ */
 @Deprecated
 public class XmlDocument
 {	
-	private TelosysToolsLogger _logger = null ;
 	
     public XmlDocument() {
 		super();
-		_logger = null ;
 	}
-    
-    public XmlDocument(TelosysToolsLogger logger ) {
-		super();
-		_logger = logger ;
-	}
-
-    private void log(String s) 
-    {
-    	if ( _logger != null ) {
-    		_logger.log(s);
-    	}
-    }
     
 	private DocumentBuilder getDocumentBuilder() throws TelosysToolsException
     {
@@ -127,19 +119,16 @@ public class XmlDocument
     
     public void save(Document doc, String fileName) throws TelosysToolsException
     {
-		log("Xml.save(Document, String)... file name = " + fileName );
     	save ( doc, new StreamResult(fileName));
     }
     
     public void save(Document doc, File file) throws TelosysToolsException
     {
-		log("Xml.save(Document, File)... File = " + file );
     	save ( doc, new StreamResult(file));
     }
     
     private void save(Document doc, Result result) throws TelosysToolsException
     {
-		log("Xml.save(Document, Result)... ");
         //--- Write the XML document in XML file
         try {
             Source source = new DOMSource(doc);
