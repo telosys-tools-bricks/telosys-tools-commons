@@ -17,11 +17,12 @@ package org.telosys.tools.commons.dbcfg;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.TelosysToolsLogger;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.jdbc.ConnectionManager;
 
@@ -29,7 +30,6 @@ public class DbConnectionManager {
 
 	private final TelosysToolsCfg telosysToolsCfg ;
 	private final JavaLibraries javaLibraries ;
-	private final TelosysToolsLogger logger ;
 	
     /**
      * Constructor
@@ -37,7 +37,6 @@ public class DbConnectionManager {
      */
     public DbConnectionManager(TelosysToolsCfg telosysToolsCfg) throws TelosysToolsException {
 		super();
-		this.logger = telosysToolsCfg.getLogger();
 		this.telosysToolsCfg = telosysToolsCfg;
 		this.javaLibraries = new JavaLibraries(telosysToolsCfg);
 	}
@@ -59,6 +58,9 @@ public class DbConnectionManager {
 	 */
 	public Connection getConnection() throws TelosysToolsException {
     	DatabaseConfiguration databaseConfiguration = getDatabasesConfigurations().getDatabaseConfiguration() ;
+    	if ( databaseConfiguration == null ) {
+    		throw new TelosysToolsException("No configuration for default database");
+    	}
     	return openConnection(databaseConfiguration);
     }
 
@@ -68,8 +70,11 @@ public class DbConnectionManager {
      * @return
      * @throws TelosysToolsException
      */
-    public Connection getConnection(int databaseId ) throws TelosysToolsException {
+    public Connection getConnection(int databaseId) throws TelosysToolsException {
     	DatabaseConfiguration databaseConfiguration = getDatabasesConfigurations().getDatabaseConfiguration(databaseId) ;
+    	if ( databaseConfiguration == null ) {
+    		throw new TelosysToolsException("No configuration for database " + databaseId);
+    	}
     	return openConnection(databaseConfiguration);
     }
 
@@ -92,29 +97,9 @@ public class DbConnectionManager {
         try {
 			return connectionManager.getConnection(databaseConfiguration);
 		} catch (TelosysToolsException e) {
-			logger.error("Cannot get database connection", e);
 			throw e;
-//			Throwable cause = e.getCause();
-//			if ( cause != null && cause instanceof SQLException ) {
-//				SQLException sqlException = (SQLException)cause;
-//	            MsgBox.error("Cannot connect to the database ! "
-//	                      + "\n SQLException :"
-//	                      + "\n . Message   : " + sqlException.getMessage() 
-//	                      + "\n . ErrorCode : " + sqlException.getErrorCode() 
-//	                      + "\n . SQLState  : " + sqlException.getSQLState() 
-//	                      );
-//			}
-//			else {
-//				msgBoxErrorWithClassPath("Cannot connect to the database !", e, cm.getLibraries());
-//			}
-		} catch (Throwable e) {
-			logger.error("Cannot get database connection", e);
+		} catch (Exception e) {
 			throw new TelosysToolsException("Cannot get database connection", e);
-//			logException(e);
-//		    MsgBox.error("Cannot connect to the database ! "
-//		            + "\n Exception : " + e.getClass().getName()
-//		            + "\n . Message : " + e.getMessage() 
-//		            );
 		}
     }
     
@@ -124,12 +109,9 @@ public class DbConnectionManager {
      * @return
      */
     private ConnectionManager createConnectionManager() throws TelosysToolsException {
-//        if ( javaLibraries.getLibraries().size() == 0 ) {
-//        	throw new TelosysToolsException("No library defined (size=0)");
-//        }
         ConnectionManager cm = null ;
 		try {
-			if ( javaLibraries.getLibraries().size() > 0 ) {
+			if ( ! javaLibraries.getLibraries().isEmpty() ) {
 				// ConnectionManager with specific libraries
 				cm = new ConnectionManager( javaLibraries.getLibFilePaths(), telosysToolsCfg.getLogger() );
 			}
@@ -152,41 +134,44 @@ public class DbConnectionManager {
 		}
     }
 
-    public void testConnection(Connection con)  throws TelosysToolsException {
+    public DbConnectionStatus testConnection(Connection con)  throws TelosysToolsException {
         if ( con == null ) {
         	throw new TelosysToolsException("Invalid parameter : Connection is null");
         }
+        
+        String productName = "?";
+        String productVersion = "?";
         String catalog = "?";
+        String schema = "?";
         boolean autocommit ;
+        Properties clientInfo = new Properties();
+        
         String operation = "?" ;
 		try {
 			operation = "getCatalog()" ;
 			catalog = con.getCatalog() ;
 			
+			operation = "getSchema()" ;
+			schema = con.getSchema();
+			
 			operation = "getAutoCommit()" ;
 			autocommit = con.getAutoCommit() ;
 			
+			operation = "getClientInfo()" ;
+			clientInfo = con.getClientInfo();
+			
+			operation = "getMetaData()" ;
+			DatabaseMetaData dbmd =con.getMetaData();
+			
+			productName = dbmd.getDatabaseProductName();
+			productVersion = dbmd.getDatabaseProductVersion();
+			
 		} catch (SQLException e) {
-			logger.error("SQLException on '" + operation + "'", e);
 			throw new TelosysToolsException("SQLException on '" + operation + "'", e);
-		} catch (Throwable e) {
-			logger.error("Exception on '" + operation + "'", e);
+		} catch (Exception e) {
 			throw new TelosysToolsException("Exception on '" + operation + "'", e);
 		}
-		logger.info("Test connection OK : catalog = '" + catalog + "', autocommit = " + autocommit );
+		return new DbConnectionStatus(productName, productVersion, catalog, schema, autocommit, clientInfo) ;
     }
-
-//    public DbInfo getDatabaseInfo(Connection con)  throws TelosysToolsException {
-//        if ( con == null ) {
-//        	throw new TelosysToolsException("Invalid parameter : Connection is null");
-//        }
-//        DatabaseMetaData dbmd ;
-//        try {
-//			dbmd = con.getMetaData();			
-//		} catch (SQLException e) {
-//			throw new TelosysToolsException("Cannot get metadata", e);
-//		}
-//        return new DbInfo(dbmd);
-//    }
 
 }

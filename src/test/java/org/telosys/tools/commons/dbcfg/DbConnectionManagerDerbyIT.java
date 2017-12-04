@@ -2,16 +2,19 @@ package org.telosys.tools.commons.dbcfg;
 
 import java.io.File;
 import java.sql.Connection;
+import java.util.Properties;
 
 import org.junit.Test;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
 
+import static org.junit.Assert.fail;
+
 import junit.env.telosys.tools.commons.TestsEnv;
 
 public class DbConnectionManagerDerbyIT  {
-
+	
 	private DbConnectionManager getDbConnectionManager() throws TelosysToolsException {
 		File projectFolder = TestsEnv.getTestFolder("project2");
 		TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectFolder.getAbsolutePath());
@@ -34,13 +37,23 @@ public class DbConnectionManagerDerbyIT  {
 		}
 		System.out.println("Connection ready");
 		System.out.println("testConnection()...");
-		dbConnectionManager.testConnection(con);
+		DbConnectionStatus dbConnectionStatus = dbConnectionManager.testConnection(con);
 		
-//		System.out.println("getDatabaseInfo()...");
-//		DbInfo dbInfo = dbConnectionManager.getDatabaseInfo(con);
-//		System.out.println(" . database Product Name    : " + dbInfo.getDatabaseProductName() );
-//		System.out.println(" . database Product Version : " + dbInfo.getDatabaseProductVersion() );
+		System.out.println(". product name    : " + dbConnectionStatus.getProductName() ) ;
+		System.out.println(". product version : " + dbConnectionStatus.getProductVersion() ) ;
+		System.out.println(". catalog         : " + dbConnectionStatus.getCatalog() ) ;
+		System.out.println(". schema          : " + dbConnectionStatus.getSchema() ) ;
+		System.out.println(". auto-commit     : " + dbConnectionStatus.isAutocommit() ) ;
+		System.out.println(". client info     : " ) ;
 		
+		Properties clientInfo = dbConnectionStatus.getClientInfo();
+		if ( clientInfo.isEmpty() ) {
+			System.out.println("no client info (empty properties) " ) ;
+		}
+		else {
+			clientInfo.list(System.out);
+		}
+
 		System.out.println("closeConnection()...");
 		dbConnectionManager.closeConnection(con);
 	}
@@ -55,15 +68,24 @@ public class DbConnectionManagerDerbyIT  {
 		testConnection(1) ;
 	}
 
-	@Test(expected=Exception.class) // No driver
-	public void test2() throws TelosysToolsException {
-		testConnection(2) ; 
+	@Test 
+	public void test2() { // No JDBC driver
+		try {
+			testConnection(2) ;
+			fail("Exception expected");
+		} catch (TelosysToolsException e) {
+			System.out.println("Exception : " + e.getMessage() );
+		} 
 	}
 
-	@Test(expected=Exception.class) // No database 3
-	public void test3() throws TelosysToolsException {
-		testConnection(3) ; 
+	@Test 
+	public void test3() { // No configuration for database 3
+		try {
+			testConnection(3) ;
+			fail("Exception expected");
+		} catch (TelosysToolsException e) {
+			System.out.println("Exception : " + e.getMessage() );
+		} 
 	}
-
 
 }
