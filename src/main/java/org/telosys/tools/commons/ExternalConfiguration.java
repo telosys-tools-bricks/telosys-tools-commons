@@ -21,6 +21,12 @@ import javax.naming.NamingException;
 public class ExternalConfiguration {
 	
 	/**
+	 * Private constructor for static class
+	 */
+	public ExternalConfiguration() {	
+	}
+	
+	/**
 	 * Try to find an external configuration value in the following order : <br>
 	 *  1) Java System Property <br>
 	 *  2) JNDI Object <br>
@@ -55,31 +61,22 @@ public class ExternalConfiguration {
 	}
 
 	protected static String getEnvironmentVariable(String name) {
-		final String value = System.getenv(name);
-		//System.out.println("ENV VAR '"+ name + "' = '" + value + "'" );
-		return value;
+		return System.getenv(name);
 	}
 
 	protected static String getJavaSystemProperty(String name) {
-		final String value = System.getProperty(name);
-		//System.out.println("JAVA SYSTEM PROPERTY '"+ name + "' = '" + value + "'" );
-		return value;
+		return System.getProperty(name);
 	}
 
 	protected static String getJNDIStringObject(String name) {
 		try {
-//			String value = InitialContext.doLookup("java:comp/env/"+name);
 			Object value = InitialContext.doLookup("java:comp/env/"+name);
-			//System.out.println("JNDI OBJECT '"+ name + "' = '" + value + "'");
 			if ( value instanceof String ) {
 				return (String) value ;
 			}
-			else {
-			}
 		} catch (NamingException e) {
 			// Object not found or invalid type => considered as "not found"
-//			System.out.println("JNDI OBJECT ERROR : " + e.getMessage());
-//			e.printStackTrace();
+			return null ;
 		}
 		return null ;
 	}

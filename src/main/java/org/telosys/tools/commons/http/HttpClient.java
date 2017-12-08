@@ -143,14 +143,11 @@ public class HttpClient {
 		return post(request.getURL(), request.getHeadersMap(), request.getContent());
 	}
 	
-//	public HttpResponse post(String url, Map<String, String> headers, String data) throws Exception 
-//	{
-//		return post(getURL(url), headers, data.getBytes() );
-//	}
 	public HttpResponse post(String url, Map<String, String> headers, byte[] data) throws Exception 
 	{
 		return post(getURL(url), headers, data );
 	}
+
 	private HttpResponse post(URL url, Map<String, String> headers, byte[] data) throws Exception 
 	{
 		return process(url, "POST", headers, data);
@@ -163,10 +160,6 @@ public class HttpClient {
 	{
 		return put(request.getURL(), request.getHeadersMap(), request.getContent());
 	}
-//	public HttpResponse put(String url, Map<String, String> headers, String data) throws Exception 
-//	{
-//		return put(getURL(url), headers, data.getBytes() );
-//	}
 	public HttpResponse put(String url, Map<String, String> headers, byte[] data) throws Exception 
 	{
 		return put(getURL(url), headers, data );
@@ -245,29 +238,6 @@ public class HttpClient {
 	}
 
 	//---------------------------------------------------------------------
-//	public void disconnect() {
-//		connection.disconnect();
-//	}
-
-	//---------------------------------------------------------------------
-//	public void displayResponse() throws Exception {
-//		String line;
-//
-//		try {
-//			BufferedReader s = new BufferedReader(new InputStreamReader(
-//					connection.getInputStream()));
-//			line = s.readLine();
-//			while (line != null) {
-//				System.out.println(line);
-//				line = s.readLine();
-//			}
-//			s.close();
-//		} catch (Exception e) {
-//			throw new Exception("Unable to read input stream");
-//		}
-//	}
-//
-	//---------------------------------------------------------------------
 	private void postData(HttpURLConnection connection, byte[] data) throws Exception 
 	{
 		try {
@@ -280,19 +250,6 @@ public class HttpClient {
 		}
 	}
 	//---------------------------------------------------------------------
-//	private void postData(HttpURLConnection connection, String s) throws Exception 
-//	{
-//		try {
-//			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-//					connection.getOutputStream()));
-//			bw.write(s, 0, s.length());
-//			bw.flush();
-//			bw.close();
-//		} catch (Exception e) {
-//			throw new Exception("Cannot post date (unable to write in output stream)");
-//		}
-//	}
-	
 	/**
 	 * Downloads a file from the given URL to the given file name 
 	 * @param url the URL to be downloaded

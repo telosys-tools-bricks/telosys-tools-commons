@@ -43,19 +43,8 @@ public class PropUtil {
 	 * @param sValue
 	 * @return
 	 */
-	public static int update(String sFileName, String sKey, String sValue) 
-    {
-//		Date now = new Date();
-//		SimpleDateFormat ISOformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		String sNow = ISOformat.format(now);
-//        String sComment = "Property updated by Telosys plugin ( " + sNow + " )" ;
-//
-//		int iRet = update ( sFileName, sKey, sValue, sComment ) ;
-		
-		int iRet = update ( sFileName, sKey, sValue, null ) ;
-		
-//		System.out.println("ret = " + iRet );
-		return iRet ;
+	public static int update(String sFileName, String sKey, String sValue) {
+		return update ( sFileName, sKey, sValue, null ) ;
     }
 
 	/**
@@ -66,49 +55,23 @@ public class PropUtil {
 	 * @param sComment
 	 * @return
 	 */
-	public static int update(String sFileName, String sKey, String sNewValue, String sComment ) 
-    {
-//		System.out.println("update(" + sFileName + ")");
-		if ( sFileName == null )
-		{
+	public static int update(String sFileName, String sKey, String sNewValue, String sComment ) {
+		if ( sFileName == null ) {
 			throw new IllegalArgumentException("FileName argument is null");
 		}
-		if ( sKey == null )
-		{
+		if ( sKey == null ) {
 			throw new IllegalArgumentException("Key argument is null");
 		}
-		if ( sNewValue == null )
-		{
+		if ( sNewValue == null ) {
 			throw new IllegalArgumentException("Value argument is null");
 		}
 
 		int iChanges = 0 ;
         ByteArrayOutputStream output = new ByteArrayOutputStream(1024*16);
-//		byte[] content = null ;
 
 		FileReader fr = getFileReader(sFileName);
-//        if ( fr != null )
-//        {
-//        	//--- 1) Read properties file and update it in memory
-//            BufferedReader br = new BufferedReader(fr, BUFFER_SIZE);
-//            
-//            OutputStreamWriter osw = new OutputStreamWriter(output);
-//            BufferedWriter bw = new BufferedWriter(osw);
-//            try
-//            {
-//            	iRet = update(br, sKey, sNewValue, sComment, bw);
-//                bw.flush();
-//            } catch (IOException e)
-//            {
-//				MsgBox.error("File '" + sFileName + "' I.O. Exception");
-//            } finally
-//            {
-//                close(br);
-//            }
-//            close(fr);
-//        }
-//
-        //--- 1) Update the file (the result is in "content"
+
+		//--- 1) Update the file (the result is in "content"
         try {
 			iChanges = update(fr, sKey, sNewValue, sComment, output);
             close(fr);
@@ -118,61 +81,47 @@ public class PropUtil {
 		}
         
         //--- 2) Write the new properties file (if changes)
-        if ( iChanges > 0 )
-        {
-            //content = output.toString();
+        if ( iChanges > 0 )  {
         	byte[] content = output.toByteArray();
-            if ( content.length > 0 )
-            {
+            if ( content.length > 0 ) {
                 writeFileContent(sFileName, content );
             }
-            else
-            {
+            else {
                 throw new RuntimeException("new content to write is void");
             }
         }
-        
-//		System.out.println("----------" );
-//		System.out.println(content);
-//		System.out.println("----------" );
         return iChanges ;
     }
     
 	public static String currentDateTime() 
     {
 		Date now = new Date();
-		SimpleDateFormat ISOformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String sNow = ISOformat.format(now);
-		return sNow ;
+		SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return isoFormat.format(now);
     }
 	
 	private static void writeFileContent(String sFileName, byte[] content )
 	{
-		if ( sFileName == null )
-		{
+		if ( sFileName == null ) {
 			throw new IllegalArgumentException("FileName argument is null");
 		}
-		if ( content == null )
-		{
+		if ( content == null ) {
 			throw new IllegalArgumentException("Content argument is null");
 		}
         FileOutputStream fos = null ;
-        try
-        {
+        try {
             fos = new FileOutputStream(sFileName);
-        } catch (FileNotFoundException ex)
-        {
+        } 
+        catch (FileNotFoundException ex) {
             throw new RuntimeException("writeFile : cannot open file.", ex);
         }
-        if ( fos != null )
-        {
-            try
-            {
+        if ( fos != null ) {
+            try {
                 fos.write(content);
                 fos.flush();
                 fos.close();
-            } catch (IOException ioex)
-            {
+            } 
+            catch (IOException ioex) {
                 throw new RuntimeException("writeFile : write error.", ioex);
             }
         }	
@@ -206,8 +155,6 @@ public class PropUtil {
     
     private static int update(BufferedReader br, String sKey, String sNewValue, String sComment, BufferedWriter writer) throws IOException
     {
-    	
-//		System.out.println("update(BufferedReader)");
     	int iRet = 0 ;
         String sLine;
         String[] parts = null;
@@ -221,7 +168,6 @@ public class PropUtil {
                 	parts = StrUtil.split(sLine, '=');
                 	if ( parts.length >= 2 )
                 	{
-                		//System.out.println(" . " + parts[0] + " = " + parts[1] );
                 		if ( sKey.equals( parts[0].trim() ) )
                 		{
                 			//--- KEY found
@@ -236,7 +182,6 @@ public class PropUtil {
 	                            writer.write( "# Update " + currentDateTime() + " ( original property : " + sLine + " )");
 	                            writer.newLine();
 	                			// property found => change its value
-	                    		//System.out.println("  *** REPLACE BY '" + sNewValue+"'" );
 	                    		sLine = sKey + " = " + sNewValue ;
 	                    		iRet++ ;
                 			}
@@ -278,50 +223,37 @@ public class PropUtil {
      * Return a FileReader for the current file name or null if the file doesn't exist
      * @return
      */
-    private static FileReader getFileReader( String sFileName )
-    {
+    private static FileReader getFileReader( String sFileName ) {
     	FileReader fr = null ;
     	if ( sFileName != null )
     	{
             try {
 				fr = new FileReader(sFileName);
 			} catch (FileNotFoundException e) {
-				// Not an error // MsgBox.error("File '" + sFileName + "' not found");
+				// Not an error 
 				fr = null ;
 			}
     	}
     	return fr; 
     }
     
-    private static void close(FileReader fr)
-    {
-    	if ( fr != null )
-    	{
+    private static void close(FileReader fr) {
+    	if ( fr != null ) {
         	try {
     			fr.close();
     		} catch (IOException e) {
-    			// Nothing todo
+    			// Nothing to do
     		}
     	}
     }
     
-    private static void close(BufferedReader br)
-    {
-    	if ( br != null )
-    	{
+    private static void close(BufferedReader br) {
+    	if ( br != null ) {
         	try {
     			br.close();
     		} catch (IOException e) {
-    			// Nothing todo
+    			// Nothing to do
     		}
     	}
     }
-
-//    public static void main(String args[])
-//    {
-//    	update("D:/DevPluginEclipse/TelosysTools/workspace/TelosysTools/test/telosys.properties", 
-//    			"mapperclass", 
-//    			"new.vo.xml." + ConfigDefaults.DEFAULT_XML_MAPPER_CLASS_NAME );
-//    }
 }
-

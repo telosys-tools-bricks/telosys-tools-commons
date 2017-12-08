@@ -25,8 +25,20 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * NB : Work In Progress ( 'unzip' is OK, 'zip' is not yet finished )
+ * 
+ * @author Laurent GUERIN
+ *
+ */
 public class ZipUtil {
 
+	/**
+	 * Private constructor for static class
+	 */
+	private ZipUtil() {
+	}
+	
 	//---------------------------------------------------------------------------------------------
 	/**
 	 * Unzip the given ZIP file in the output folder, without the root folder part 
@@ -72,7 +84,6 @@ public class ZipUtil {
 					log("   install : " + zipEntryName );
 					log("        in : " + destinationFile.getAbsolutePath() );
 					if ( zipEntry.isDirectory() ) {
-						//destinationFile.mkdirs(); // create directory (including parents)
 						DirUtil.createDirectory(destinationFile); // v 3.0.0
 					}
 					else {
@@ -157,16 +168,16 @@ public class ZipUtil {
 	private static void zip(final File file, final ZipOutputStream zout, File baseDir ) throws Exception {
 		
 		String baseDirAbsolutePath = baseDir.getCanonicalPath();
-		System.out.println("baseDirAbsolutePath = " + baseDirAbsolutePath );
+		log("baseDirAbsolutePath = " + baseDirAbsolutePath );
 		
 		byte[] buffer = new byte[1024];
 		
 		FileInputStream fileInputStream = new FileInputStream(file);
 		//--- Step 1 : create a zip entry 
 		String fileAbsolutePath = file.getCanonicalPath();
-		System.out.println("fileAbsolutePath = " + fileAbsolutePath );
+		log("fileAbsolutePath = " + fileAbsolutePath );
 		String fileEntryName = fileAbsolutePath.substring(baseDirAbsolutePath.length()+1);
-		System.out.println("fileEntryName = " + fileEntryName );
+		log("fileEntryName = " + fileEntryName );
 		
 		ZipEntry zipEntry = new ZipEntry(fileEntryName);
 		zout.putNextEntry(zipEntry);
@@ -257,6 +268,6 @@ public class ZipUtil {
 //    }
 	//---------------------------------------------------------------------------------------------
 	private static void log(String msg) {
-		//System.out.println(msg);
+		// Log here if necessary
 	}
 }
