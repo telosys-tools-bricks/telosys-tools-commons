@@ -78,6 +78,19 @@ public class DbConnectionManager {
     	return openConnection(databaseConfiguration);
     }
 
+    /**
+     * Returns a connection for the given database configuration
+     * @param databaseConfiguration
+     * @return
+     * @throws TelosysToolsException
+     */
+    public Connection getConnection(DatabaseConfiguration databaseConfiguration) throws TelosysToolsException {
+    	if ( databaseConfiguration == null ) {
+    		throw new TelosysToolsException("Database configuration is null");
+    	}
+    	return openConnection(databaseConfiguration);
+    }
+
     private DatabasesConfigurations getDatabasesConfigurations() throws TelosysToolsException {
     	DbConfigManager dbConfigManager = new DbConfigManager(telosysToolsCfg) ;
     	DatabasesConfigurations databasesConfigurations = dbConfigManager.load();
