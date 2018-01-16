@@ -107,13 +107,22 @@ public class DbConnectionManager {
         
 		ConnectionManager connectionManager = createConnectionManager();
 
+		Connection con = null ;
         try {
-			return connectionManager.getConnection(databaseConfiguration);
+        	con = connectionManager.getConnection(databaseConfiguration);
 		} catch (TelosysToolsException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new TelosysToolsException("Cannot get database connection", e);
 		}
+        
+        //--- Check the connection
+        if ( con != null ) {
+            return con ;
+        }
+        else {
+            throw new TelosysToolsException( "Cannot get database connection (connection is null)");
+        }
     }
     
     /**

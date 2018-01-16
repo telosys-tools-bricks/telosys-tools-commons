@@ -92,7 +92,18 @@ public class ConnectionManager {
         catch (SQLException e) {
             throw new TelosysToolsException( "Cannot connect to the database (SQLException)", e);
         }
-        return con ;
+        catch (Exception e) {
+            throw new TelosysToolsException( "Cannot connect to the database (Exception)", e);
+        }
+        
+        //--- 3) Check the connection
+        if ( con != null ) {
+            return con ;
+        }
+        else {
+        	// Oracle driver can return null when it cannot connect 
+            throw new TelosysToolsException( "Cannot connect to the database. JDBC driver 'connect()' has returned null.");
+        }
     }
     
     /**
