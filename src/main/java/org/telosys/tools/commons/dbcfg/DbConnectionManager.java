@@ -155,8 +155,8 @@ public class DbConnectionManager {
 			throw new TelosysToolsException("Cannot close JDBC connection", e);
 		}
     }
-
-    public DbConnectionStatus testConnection(Connection con)  throws TelosysToolsException {
+    
+    public DbConnectionStatus getConnectionStatus(Connection con)  throws TelosysToolsException {
         if ( con == null ) {
         	throw new TelosysToolsException("Invalid parameter : Connection is null");
         }
@@ -174,13 +174,15 @@ public class DbConnectionManager {
 			catalog = con.getCatalog() ;
 			
 			operation = "getSchema()" ;
-			schema = con.getSchema();
+			//schema = con.getSchema(); // Doesn't work with Oracle : throwable Exception
+			schema = getSchema(con);
 			
 			operation = "getAutoCommit()" ;
 			autocommit = con.getAutoCommit() ;
 			
 			operation = "getClientInfo()" ;
-			clientInfo = con.getClientInfo();
+			//clientInfo = con.getClientInfo(); // Doesn't work with Oracle : throwable Exception
+			clientInfo = getClientInfo(con);
 			
 			operation = "getMetaData()" ;
 			DatabaseMetaData dbmd =con.getMetaData();
@@ -192,8 +194,47 @@ public class DbConnectionManager {
 			throw new TelosysToolsException("SQLException on '" + operation + "'", e);
 		} catch (Exception e) {
 			throw new TelosysToolsException("Exception on '" + operation + "'", e);
-		}
+		} catch ( Throwable e ) {
+			throw new TelosysToolsException("Throwable on '" + operation + "'", e);
+    	}
 		return new DbConnectionStatus(productName, productVersion, catalog, schema, autocommit, clientInfo) ;
     }
 
+    /**
+     * Specific method for 'getSchema' due to errors thrown by some drivers like Oracle
+     * @param con
+     * @return
+     */
+    private String getSchema(Connection con) {
+    	String result = "" ;
+    	try {
+   			result = con.getSchema();
+    	}
+    	catch ( SQLException e ) {
+    		result = "ERROR : SQLException : " + e.getMessage() ;
+    	}
+    	catch ( Exception e ) {
+    		result = "ERROR : Exception : " + e.getMessage() ;
+    	}
+    	catch ( Throwable e ) {
+    		result = "ERROR : Throwable : " + e.getMessage() ; // yes, it happends with Oracle !
+    	}
+    	return result ;
+    }
+    
+    /**
+     * Specific method for 'getClientInfo' due to errors thrown by some drivers like Oracle
+     * @param con
+     * @return
+     */
+    private Properties getClientInfo(Connection con) {
+    	Properties clientInfo ;
+    	try {
+    		clientInfo = con.getClientInfo();
+    	}
+    	catch ( Throwable e ) { // Top of the exceptions tree
+    		clientInfo = new Properties(); // Void properties
+    	}
+    	return clientInfo ;
+    }
 }

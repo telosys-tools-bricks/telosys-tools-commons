@@ -37,7 +37,7 @@ public class DbConnectionManagerDerbyIT  {
 		}
 		System.out.println("Connection ready");
 		System.out.println("testConnection()...");
-		DbConnectionStatus dbConnectionStatus = dbConnectionManager.testConnection(con);
+		DbConnectionStatus dbConnectionStatus = dbConnectionManager.getConnectionStatus(con);
 		
 		System.out.println(". product name    : " + dbConnectionStatus.getProductName() ) ;
 		System.out.println(". product version : " + dbConnectionStatus.getProductVersion() ) ;
