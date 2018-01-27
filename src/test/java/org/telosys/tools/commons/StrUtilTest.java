@@ -197,4 +197,26 @@ public class StrUtilTest {
 
 		assertEquals( "abcd", StrUtil.removeQuotes("'abcd'", '\'') ) ;
 	}		
+
+	@Test
+	public void testGetProtectedString() {
+		assertEquals( "", StrUtil.getProtectedString(null) ) ;
+		assertEquals( "", StrUtil.getProtectedString("") ) ;
+		assertEquals( " ", StrUtil.getProtectedString(" ") ) ;
+		assertEquals( "abcd", StrUtil.getProtectedString("abcd") ) ;
+		assertEquals( "&quot;abc&quot;", StrUtil.getProtectedString("\"abc\"") ) ;
+		assertEquals( "ab&quot;cd", StrUtil.getProtectedString("ab\"cd") ) ;
+		assertEquals( "&quot;", StrUtil.getProtectedString("\"") ) ;
+		assertEquals( "&quot;&quot;", StrUtil.getProtectedString("\"\"") ) ;
+	}		
+
+	@Test
+	public void testRepeat() {
+		assertEquals( "", StrUtil.repeat('a', -2)) ;
+		assertEquals( "", StrUtil.repeat('a', -1)) ;
+		assertEquals( "", StrUtil.repeat('a', 0)) ;
+		assertEquals( "a", StrUtil.repeat('a', 1)) ;
+		assertEquals( "aa", StrUtil.repeat('a', 2)) ;
+		assertEquals( "aaaa", StrUtil.repeat('a', 4)) ;
+	}		
 }
