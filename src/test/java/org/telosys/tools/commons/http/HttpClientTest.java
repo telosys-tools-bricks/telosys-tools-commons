@@ -145,7 +145,9 @@ public class HttpClientTest extends TestCase {
 		System.out.println("Test DOWNLOAD... ");
 		HttpClient c = getHttpClient();
 		
-		String urlString = "https://api.github.com/users/telosys/repos" ;
+		//String urlString = "https://api.github.com/users/telosys/repos" ;
+		// NB : https can raise an error ( javax.net.ssl.SSLException ) => use http  for tests
+		String urlString = "http://www.telosys.org/index.html";
 		//long r = c.downloadFile(urlString, "D:/tmp/download/file1.tmp");
 		String downloadFileName = TestsEnv.getTmpExistingFolderFullPath("download") + "/file1.tmp" ;
 		long r = c.downloadFile(urlString, downloadFileName);
