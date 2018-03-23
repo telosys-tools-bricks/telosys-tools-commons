@@ -13,8 +13,18 @@ import org.telosys.tools.commons.bundles.BundleStatus;
 import org.telosys.tools.commons.bundles.BundlesManager;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 
-public class BundlesManagerTest extends TestCase {
+/**
+ * This class is "IT" ( Integration Test) due to potential connection problem with https on GitHub
+ * javax.net.ssl.SSLException: Received fatal alert: protocol_version
+ * https://stackoverflow.com/questions/16541627/javax-net-ssl-sslexception-received-fatal-alert-protocol-version 
+ *  
+ * @author Laurent Guerin
+ *
+ */
+public class BundlesManagerIT extends TestCase {
 
+	private static final String GITHUB_STORE = "telosys-templates-v3" ;
+	
 	private TelosysToolsCfg telosysToolsCfg = null ;
 	
 	
@@ -116,7 +126,7 @@ public class BundlesManagerTest extends TestCase {
 		System.out.println("========== List of available bundles  ");
 
 		BundlesManager bm = getBundlesManager();
-		List<String> bundles = bm.getGitHubBundlesList("telosys-tools") ;
+		List<String> bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
 		for ( String s : bundles ) {
 			System.out.println(" . " + s );
 		}
@@ -134,7 +144,7 @@ public class BundlesManagerTest extends TestCase {
 		String bundleName = "persistence-jpa-TT210-R2" ;
 		BundlesManager bm = getBundlesManager();
 		System.out.println("Downloading bundle '" + bundleName + "'...");
-		BundleStatus status = bm.downloadBundle("telosys-tools", bundleName);
+		BundleStatus status = bm.downloadBundle(GITHUB_STORE, bundleName);
 		System.out.println("Satus message : " + status.getMessage() );
 		System.out.println("Satus is done ? : " + status.isDone() );
 		if ( status.getException() != null ) {
@@ -152,7 +162,7 @@ public class BundlesManagerTest extends TestCase {
 		BundlesManager bm = getBundlesManager();
 		System.out.println("Downloading bundle '" + bundleName + "'...");
 		TestsEnv.getTmpExistingFolder("myproject/TelosysTools/downloads2"); // Creates the folder if it doesn't exists yet
-		BundleStatus status = bm.downloadBundle("telosys-tools", bundleName, "TelosysTools/downloads2");
+		BundleStatus status = bm.downloadBundle(GITHUB_STORE, bundleName, "TelosysTools/downloads2");
 		System.out.println("Satus message : " + status.getMessage() );
 		System.out.println("Satus is done ? : " + status.isDone() );
 		if ( status.getException() != null ) {

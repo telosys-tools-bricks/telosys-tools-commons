@@ -7,6 +7,7 @@ import java.util.Set;
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
 
+import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
@@ -65,13 +66,21 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 	 * @throws TelosysToolsException
 	 */
 	private File getTelosysToolCfgFile() throws TelosysToolsException {
-		//return FileUtil.getFileByClassPath("/cfg/telosys-tools.cfg");
 		String fileName = TestsEnv.getTmpRootFolderFullPath() + "/TelosysTools/telosys-tools.cfg" ;
 		File file = new File(fileName) ;
 		if ( file.exists() ) {
 			file.delete() ;
 		}
 		return file ;
+	}
+	
+	private boolean createParentFolderIfNotExist(File file) throws TelosysToolsException {
+		File parent = file.getParentFile() ;
+		if ( ! DirUtil.isValidDirectory(parent) ) {
+			DirUtil.createDirectory(parent);
+			return true;
+		}
+		return false;
 	}
 	
 	public void testLoad0() throws TelosysToolsException {
@@ -93,12 +102,15 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 
 	public void testLoadUpdateSave() throws TelosysToolsException {
 		printSeparator();
+		System.out.println("Test : Load, Update, Save and ReLoad" );
 		File file = getTelosysToolCfgFile();
 		System.out.println("config file    : " + file.getAbsolutePath() );
 		String projectFolder = file.getParentFile().getParent();
 		System.out.println("project folder : " + projectFolder );
 		print(file);
-		
+		if ( createParentFolderIfNotExist(file) ) {
+			System.out.println("Parent directory created" );
+		}
 		TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectFolder);
 
 		System.out.println("config manager file path : " + cfgManager.getCfgFileAbsolutePath() );
@@ -122,88 +134,6 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
 		assertEquals("x:/foo/bar/dest", telosysToolsCfg.getSpecificDestinationFolder() );
 		
-		
 	}
 
-//	/**
-//	 * ONE database configuration
-//	 * @throws TelosysToolsException
-//	 */
-//	public void testLoad1() throws TelosysToolsException {
-//		
-//		printSeparator();
-//		//--- Load 
-//		File file = FileUtil.getFileByClassPath("/dbcfg/databases-test1.dbcfg");
-//		print(file);
-//		
-//		DbConfigManager dbDonfigManager = new DbConfigManager(file);
-//		DatabasesConfigurations databasesConfigurations = dbDonfigManager.load();
-//		
-//		print(databasesConfigurations);
-//		
-//		assertEquals(0, databasesConfigurations.getDatabaseDefaultId() ) ;
-//		assertEquals(4, databasesConfigurations.getDatabaseMaxId() ) ;
-//
-//		assertEquals(1, databasesConfigurations.getNumberOfDatabases() ) ;
-//		
-//		DatabaseConfiguration databaseConfiguration = databasesConfigurations.getDatabaseConfiguration(0);
-//		assertNotNull(databaseConfiguration);
-//		assertEquals(0, databaseConfiguration.getDatabaseId());
-//		
-//		//--- Update 
-//		System.out.println("UPDATED CONFIG : ");
-//		databaseConfiguration.setDatabaseName("New name");
-//		databaseConfiguration.setDriverClass("my.new.driver");
-//		databaseConfiguration.setUser(databaseConfiguration.getUser()+"-new") ;
-//		databaseConfiguration.setPassword(databaseConfiguration.getPassword()+"-new") ;
-//		print(databaseConfiguration) ;
-//		
-//		//--- Save 
-//		System.out.println("SAVING...");
-//		File out = FileUtil.getFileByClassPath("/dbcfg/databases-test1-out.dbcfg");
-//		print(out);
-//		
-//		dbDonfigManager = new DbConfigManager(out);
-//		dbDonfigManager.save(databasesConfigurations);
-//		System.out.println("SAVED.");
-//	}
-//	
-//	/**
-//	 * TWO databases configurations
-//	 * @throws TelosysToolsException
-//	 */
-//	public void testLoad2() throws TelosysToolsException {
-//		
-//		printSeparator();
-//		File file = FileUtil.getFileByClassPath("/dbcfg/databases-test2.dbcfg");
-//		print(file);
-//		
-//		DbConfigManager dbDonfigManager = new DbConfigManager(file);
-//		DatabasesConfigurations databasesConfigurations = dbDonfigManager.load();
-//		
-//		print(databasesConfigurations);
-//		
-//		assertEquals(0, databasesConfigurations.getDatabaseDefaultId() ) ;
-//		assertEquals(0, databasesConfigurations.getDatabaseMaxId() ) ;
-//
-//		assertEquals(2, databasesConfigurations.getNumberOfDatabases() ) ;
-//		
-//		DatabaseConfiguration databaseConfiguration = databasesConfigurations.getDatabaseConfiguration(1);
-//		assertNotNull(databaseConfiguration);
-//		assertEquals(1, databaseConfiguration.getDatabaseId());
-//		
-//		databaseConfiguration = databasesConfigurations.getDatabaseConfiguration(2);
-//		assertNotNull(databaseConfiguration);
-//		assertEquals(2, databaseConfiguration.getDatabaseId());
-//		
-//		//--- Save 
-//		System.out.println("SAVING...");
-//		File out = FileUtil.getFileByClassPath("/dbcfg/databases-test2-out.dbcfg");
-//		print(out);
-//		
-//		dbDonfigManager = new DbConfigManager(out);
-//		dbDonfigManager.save(databasesConfigurations);
-//		System.out.println("SAVED.");
-//	}
-	
 }

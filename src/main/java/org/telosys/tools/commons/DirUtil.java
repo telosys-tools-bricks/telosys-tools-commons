@@ -28,6 +28,12 @@ import java.util.List;
 public class DirUtil {
 	
 	/**
+	 * Full static class : no public constructor
+	 */
+	private DirUtil() {
+	}
+
+	/**
 	 * Creates the given directory if it doesn't exist <br>
 	 * All the required parent directories are created if necessary 
 	 * @param directory
@@ -98,7 +104,7 @@ public class DirUtil {
 	 * @return
 	 */
 	public static List<String> getDirectoryFiles(final File directory, final boolean recursively) {
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 	    if ( directory == null ) {
 	    	throw new IllegalArgumentException("directory argument is null");
 	    }
@@ -150,6 +156,16 @@ public class DirUtil {
 		if ( ! file.isDirectory() ) {
 			throw new TelosysToolsException(" '" + directoryAbsolutePath + "' is not a folder !");
 		}
+	}
+	
+	/**
+	 * Returns true if the given file exists and is a directory
+	 * @param directory
+	 * @return
+	 * @since v 3.0.0
+	 */
+	public static boolean isValidDirectory(File directory) {
+		return directory.exists() && directory.isDirectory() ;
 	}
 	
 	/**

@@ -28,11 +28,11 @@ import java.util.Properties;
 
 public class PropertiesManager {
 
-	private final static String ERR_CANNOT_LOAD = "Cannot load properties" ;
+	private static final String ERR_CANNOT_LOAD = "Cannot load properties" ;
 	
-	private final static String ERR_CANNOT_SAVE = "Cannot save properties" ;
+	private static final String ERR_CANNOT_SAVE = "Cannot save properties" ;
 	
-	private final File   _file ;	
+	private final File propertiesFile ;	
 	
 	//--------------------------------------------------------------------------------------------
 	/**
@@ -44,7 +44,7 @@ public class PropertiesManager {
 		if ( fileName == null ) {
 			throw new IllegalArgumentException("File name is null");
 		}
-		_file = new File(fileName);
+		propertiesFile = new File(fileName);
 	}
 	
 	//--------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ public class PropertiesManager {
 		if ( file == null ) {
 			throw new IllegalArgumentException("File is null");
 		}
-		_file = file ;
+		propertiesFile = file ;
 	}
 	
 	//--------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ public class PropertiesManager {
 	 * @return the properties loaded (or null if the file doesn't exist)
 	 */
 	public Properties load() {
-		return load( _file );
+		return load( propertiesFile );
 	}
 	
 	//--------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ public class PropertiesManager {
 	 * @param properties
 	 */
 	public void save(Properties properties) {
-		save(_file, properties, "");
+		save(propertiesFile, properties, "");
 	}
 	
 	//--------------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ public class PropertiesManager {
 	 * @param comments
 	 */
 	public void save(Properties properties, String comments) {
-		save(_file, properties, comments);
+		save(propertiesFile, properties, comments);
 	}
 	
 	//--------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ public class PropertiesManager {
 	 * @return
 	 */
 	public String getFileAbsolutePath() {
-		return _file.getAbsolutePath() ; 
+		return propertiesFile.getAbsolutePath() ; 
 	}
 	
 	//--------------------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ public class PropertiesManager {
 	 * @return
 	 */
 	public boolean fileExists() {
-		return _file.exists() ; 
+		return propertiesFile.exists() ; 
 	}
 	
 	//--------------------------------------------------------------------------------------------
@@ -120,21 +120,30 @@ public class PropertiesManager {
 
 		//--- The file exists => load it !  
 		Properties props = new Properties();
-		FileInputStream fis = null ;
-		try {
-			fis = new FileInputStream(file);
+//		FileInputStream fis = null ;
+//		try {
+//			fis = new FileInputStream(file);
+//			props.load(fis);
+//		} catch (IOException ioe) {
+//			String msg = ERR_CANNOT_LOAD + " " + ioe.getMessage();
+//			throw new RuntimeException(msg, ioe);
+//		} finally {
+//			try {
+//				if ( fis != null ) {
+//					fis.close();
+//				}
+//			} catch (IOException e) {
+//				// NOTHING TO DO
+//			}
+//		}
+		
+		try ( FileInputStream fis = new FileInputStream(file) ){
 			props.load(fis);
 		} catch (IOException ioe) {
-			throw new RuntimeException(ERR_CANNOT_LOAD, ioe);
-		} finally {
-			try {
-				if ( fis != null ) {
-					fis.close();
-				}
-			} catch (IOException e) {
-				// NOTHING TO DO
-			}
+			String msg = ERR_CANNOT_LOAD + " : " + ioe.getMessage();
+			throw new RuntimeException(msg, ioe);
 		}
+
 		return props;
 	}
 
@@ -149,21 +158,27 @@ public class PropertiesManager {
 			throw new IllegalArgumentException("Properties parameter is null" );
 		}
 		
-		FileOutputStream fos = null ;
-		try {
-			fos = new FileOutputStream(file);
-			//props.store(fos, "Telosys-Tools properties");
+//		FileOutputStream fos = null ;
+//		try {
+//			fos = new FileOutputStream(file);
+//			properties.store(fos, comments);
+//		} catch (IOException ioe) {
+//			throw new RuntimeException(ERR_CANNOT_SAVE, ioe );
+//		} finally {
+//			try {
+//				if ( fos != null ) {
+//					fos.close();
+//				}
+//			} catch (IOException e) {
+//				// NOTHING TO DO 
+//			}
+//		}
+		
+		try ( FileOutputStream fos = new FileOutputStream(file) ) {
 			properties.store(fos, comments);
 		} catch (IOException ioe) {
-			throw new RuntimeException(ERR_CANNOT_SAVE, ioe );
-		} finally {
-			try {
-				if ( fos != null ) {
-					fos.close();
-				}
-			} catch (IOException e) {
-				// NOTHING TO DO 
-			}
+			String msg = ERR_CANNOT_SAVE + " : " + ioe.getMessage();
+			throw new RuntimeException(msg, ioe );
 		}
 	}
 
