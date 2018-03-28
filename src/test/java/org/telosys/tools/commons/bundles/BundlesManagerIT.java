@@ -25,6 +25,8 @@ public class BundlesManagerIT extends TestCase {
 
 	private static final String GITHUB_STORE = "telosys-templates-v3" ;
 	
+	private static final String BUNDLE_NAME = "basic-templates-samples-T300" ;
+	
 	private TelosysToolsCfg telosysToolsCfg = null ;
 	
 	
@@ -141,10 +143,9 @@ public class BundlesManagerIT extends TestCase {
 
 	public void testDownloadBundle() throws TelosysToolsException {
 		System.out.println("========== Download  ");
-		String bundleName = "persistence-jpa-TT210-R2" ;
 		BundlesManager bm = getBundlesManager();
-		System.out.println("Downloading bundle '" + bundleName + "'...");
-		BundleStatus status = bm.downloadBundle(GITHUB_STORE, bundleName);
+		System.out.println("Downloading bundle '" + BUNDLE_NAME + "'...");
+		BundleStatus status = bm.downloadBundle(GITHUB_STORE, BUNDLE_NAME);
 		System.out.println("Satus message : " + status.getMessage() );
 		System.out.println("Satus is done ? : " + status.isDone() );
 		if ( status.getException() != null ) {
@@ -158,11 +159,10 @@ public class BundlesManagerIT extends TestCase {
 
 	public void testDownloadBundleInSpecificFolder() throws TelosysToolsException {
 		System.out.println("========== Download in specific folder ");
-		String bundleName = "basic-templates-TT210" ;
 		BundlesManager bm = getBundlesManager();
-		System.out.println("Downloading bundle '" + bundleName + "'...");
+		System.out.println("Downloading bundle '" + BUNDLE_NAME + "'...");
 		TestsEnv.getTmpExistingFolder("myproject/TelosysTools/downloads2"); // Creates the folder if it doesn't exists yet
-		BundleStatus status = bm.downloadBundle(GITHUB_STORE, bundleName, "TelosysTools/downloads2");
+		BundleStatus status = bm.downloadBundle(GITHUB_STORE, BUNDLE_NAME, "TelosysTools/downloads2");
 		System.out.println("Satus message : " + status.getMessage() );
 		System.out.println("Satus is done ? : " + status.isDone() );
 		if ( status.getException() != null ) {
@@ -176,10 +176,9 @@ public class BundlesManagerIT extends TestCase {
 
 	public void testDownloadBundleInNonExistentFolder() throws TelosysToolsException {
 		System.out.println("========== Download in non existent folder ");
-		String bundleName = "basic-templates-TT210" ;
 		BundlesManager bm = getBundlesManager();
-		System.out.println("Downloading bundle '" + bundleName + "'...");
-		BundleStatus status = bm.downloadBundle("telosys-tools", bundleName, "TelosysTools/downloads-inex");
+		System.out.println("Downloading bundle '" + BUNDLE_NAME + "'...");
+		BundleStatus status = bm.downloadBundle("telosys-tools", BUNDLE_NAME, "TelosysTools/downloads-inex");
 		System.out.println("Satus message : " + status.getMessage() );
 		System.out.println("Satus is done ? : " + status.isDone() );
 		if ( status.getException() != null ) {
