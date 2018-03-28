@@ -34,12 +34,13 @@ import org.telosys.tools.commons.http.HttpResponse;
  */
 public class GitHubClient {
 
-	public final static String GIT_HUB_HOST_URL = "https://api.github.com" ;
+	public static final String VERSION = "2" ; // Class version (for checking in CLI and Download)
 	
-	public final static String GIT_HUB_REPO_URL_PATTERN =  "https://github.com/${USER}/${REPO}/archive/master.zip" ;
+	public static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
+	
+	public static final String GIT_HUB_REPO_URL_PATTERN =  "https://github.com/${USER}/${REPO}/archive/master.zip" ;
 
 	
-//	private final String     gitHubURLPattern ;
 	private final Properties proxyProperties ;
 	
 	/**
@@ -50,11 +51,6 @@ public class GitHubClient {
 		super();
 		this.proxyProperties = proxyProperties;
 	}
-//	public GitHubClient(String gitHubURLPattern, Properties proxyProperties) {
-//		super();
-//		this.gitHubURLPattern = gitHubURLPattern ;
-//		this.proxyProperties = proxyProperties;
-//	}
 
 	/**
 	 * Returns the GitHub response in JSON format (REST API)
@@ -64,11 +60,6 @@ public class GitHubClient {
 	public String getRepositoriesJSON( String userName ) {
 
 		String urlString = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
-//		HttpClientConfig httpClientConfig = null ;
-//		if ( proxyProperties != null ) {
-//			httpClientConfig = new HttpClientConfig(proxyProperties);
-//		}
-//		HttpClient httpClient = new HttpClient(httpClientConfig);
 		HttpClient httpClient = new HttpClient(proxyProperties);
 		HttpResponse response;
 		try {
@@ -174,11 +165,6 @@ public class GitHubClient {
 
 		long bytesCount = 0 ;
 		HttpClient httpClient = new HttpClient(proxyProperties);
-//		try {
-//			bytesCount = httpClient.downloadFile(url, destinationFile);
-//		} catch (Exception e) {
-//			throw new Exception ("Cannot download file (http error)", e);
-//		}
 		bytesCount = httpClient.downloadFile(url, destinationFile);
 		return bytesCount ;
 	}
