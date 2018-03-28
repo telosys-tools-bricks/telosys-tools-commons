@@ -17,7 +17,6 @@ package org.telosys.tools.commons.http;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -26,6 +25,27 @@ import java.util.Map;
 import java.util.Properties;
 
 public class HttpClient {
+
+	public static final String VERSION = "3" ;
+
+	//------------------------------------------------------------------------------
+	// TLS ver 1.2 configuration ( TLS 1.2 not defined by default with Java 7 )  
+	// TLS 1.2 is required for GitHub https URLs
+	//------------------------------------------------------------------------------
+	private static final String HTTPS_PROTOCOLS = "https.protocols" ;
+	private static final String TLS_VER_1_2     = "TLSv1.2" ;
+
+	private static final void configTLSv2() {
+		String httpsProtocols = System.getProperty(HTTPS_PROTOCOLS);
+		if ( httpsProtocols != null && httpsProtocols.contains(TLS_VER_1_2) ) {
+			// TLS v 1.2 is already set in the system property
+			return ; // Nothing to do
+		}
+		else {
+			System.setProperty(HTTPS_PROTOCOLS, TLS_VER_1_2);
+		}
+	}
+	//------------------------------------------------------------------------------
 	
 	private final HttpClientConfig configuration ;
 	private boolean isConfigured = false ;
@@ -36,6 +56,7 @@ public class HttpClient {
 	public HttpClient() {
 		super();
 		this.configuration = null;
+		init();
 	}
 	
 	/**
@@ -45,6 +66,7 @@ public class HttpClient {
 	public HttpClient(HttpClientConfig configuration) {
 		super();
 		this.configuration = configuration;
+		init();
 	}
 	
 	/**
@@ -59,9 +81,13 @@ public class HttpClient {
 		else {
 			this.configuration = null ;
 		}
+		init();
 	}
 	
-	private final void config( HttpClientConfig configuration ) {
+	/**
+	 * Post construction initialization
+	 */
+	private final void init() {
 		if ( ! isConfigured ) {
 			if ( configuration != null ) {
 				if ( configuration.isUseSystemProxies() ) {
@@ -77,6 +103,7 @@ public class HttpClient {
 			}
 			isConfigured = true ;
 		}
+		configTLSv2();
 	}
 	
 	private void proxyConfig(HttpProxy proxy ) {
@@ -102,100 +129,93 @@ public class HttpClient {
 	//---------------------------------------------------------------------
 	// GET
 	//---------------------------------------------------------------------
-	public HttpResponse get(HttpRequest request)  throws Exception  
-	{
+	public HttpResponse get(HttpRequest request)  throws Exception {
 		return get(request.getURL(), request.getHeadersMap());
 	}
 	
-	public HttpResponse get(String url, Map<String, String> headers)  throws Exception  
-	{
+	public HttpResponse get(String url, Map<String, String> headers)  throws Exception {
 		return get(getURL(url), headers);
 	}
 	
-	private HttpResponse get(URL url, Map<String, String> headers) throws Exception 
-	{
+	private HttpResponse get(URL url, Map<String, String> headers) throws Exception {
 		return process(url, "GET", headers, null);
 	}
 
 	//---------------------------------------------------------------------
 	// HEAD
 	//---------------------------------------------------------------------
-	public HttpResponse head(HttpRequest request)  throws Exception  
-	{
+	public HttpResponse head(HttpRequest request)  throws Exception {
 		return head(request.getURL(), request.getHeadersMap());
 	}
 	
-	public HttpResponse head(String url, Map<String, String> headers)  throws Exception  
-	{
+	public HttpResponse head(String url, Map<String, String> headers)  throws Exception {
 		return head(getURL(url), headers);
 	}
 	
-	private HttpResponse head(URL url, Map<String, String> headers ) throws Exception 
-	{
+	private HttpResponse head(URL url, Map<String, String> headers ) throws Exception {
 		return process(url, "HEAD", headers, null);
 	}
 
 	//---------------------------------------------------------------------
 	// POST
 	//---------------------------------------------------------------------
-	public HttpResponse post(HttpRequest request)  throws Exception  
-	{
+	public HttpResponse post(HttpRequest request)  throws Exception {
 		return post(request.getURL(), request.getHeadersMap(), request.getContent());
 	}
 	
-	public HttpResponse post(String url, Map<String, String> headers, byte[] data) throws Exception 
-	{
+	public HttpResponse post(String url, Map<String, String> headers, byte[] data) throws Exception {
 		return post(getURL(url), headers, data );
 	}
 
-	private HttpResponse post(URL url, Map<String, String> headers, byte[] data) throws Exception 
-	{
+	private HttpResponse post(URL url, Map<String, String> headers, byte[] data) throws Exception {
 		return process(url, "POST", headers, data);
 	}
 
 	//---------------------------------------------------------------------
 	// PUT
 	//---------------------------------------------------------------------
-	public HttpResponse put(HttpRequest request)  throws Exception  
-	{
+	public HttpResponse put(HttpRequest request)  throws Exception {
 		return put(request.getURL(), request.getHeadersMap(), request.getContent());
 	}
-	public HttpResponse put(String url, Map<String, String> headers, byte[] data) throws Exception 
-	{
+	
+	public HttpResponse put(String url, Map<String, String> headers, byte[] data) throws Exception {
 		return put(getURL(url), headers, data );
 	}
-	private HttpResponse put(URL url, Map<String, String> headers, byte[] data) throws Exception 
-	{
+	
+	private HttpResponse put(URL url, Map<String, String> headers, byte[] data) throws Exception {
 		return process(url, "PUT", headers, data);
 	}
 
 	//---------------------------------------------------------------------
 	// DELETE
 	//---------------------------------------------------------------------
-	public HttpResponse delete(HttpRequest request)  throws Exception  
-	{
+	public HttpResponse delete(HttpRequest request)  throws Exception {
 		return delete(request.getURL(), request.getHeadersMap());
 	}
 	
-	public HttpResponse delete(String url, Map<String, String> headers ) throws Exception 
-	{
+	public HttpResponse delete(String url, Map<String, String> headers ) throws Exception {
 		return delete(getURL(url), headers);
 	}
-	private HttpResponse delete(URL url, Map<String, String> headers ) throws Exception 
-	{
+	
+	private HttpResponse delete(URL url, Map<String, String> headers ) throws Exception {
 		return process(url, "DELETE", headers, null);
 	}
 
 	//---------------------------------------------------------------------
 	// Private methods
 	//---------------------------------------------------------------------
-	private HttpResponse process(URL url, String method, Map<String, String> headers, byte[] data) throws Exception 
-	{
-		config(configuration);
-		
+	/**
+	 * Processes the given http method 
+	 * @param url the URL to be used
+	 * @param method the http method ( GET, POST, PUT, DELETE, HEAD, etc)
+	 * @param headers http headers 
+	 * @param data the data to be posted  
+	 * @return
+	 * @throws Exception
+	 */
+	private HttpResponse process(URL url, String method, Map<String, String> headers, byte[] data) throws Exception {
 		HttpURLConnection connection = connect(url, method, headers);
-		if ( data != null )
-		{
+		if ( data != null ) {
 			postData(connection, data);
 		}
 		HttpResponse response = new HttpResponse(connection);
@@ -238,8 +258,7 @@ public class HttpClient {
 	}
 
 	//---------------------------------------------------------------------
-	private void postData(HttpURLConnection connection, byte[] data) throws Exception 
-	{
+	private void postData(HttpURLConnection connection, byte[] data) throws Exception {
 		try {
 			OutputStream os = connection.getOutputStream();
 			os.write(data);
@@ -257,44 +276,81 @@ public class HttpClient {
 	 * @return the number of bytes (file size)
 	 */
 	public long downloadFile(String url, String destFileName ) throws Exception {
-		return downloadFile(getURL(url), destFileName );
+		return downloadFileV2(getURL(url), destFileName );
 	}
 	
-	private long downloadFile(URL url, String destFileName ) throws Exception {
+	private static final int BUFFER_SIZE = 128 * 1024 ; // 128 k
+	
+	/**
+	 * Dowloads a file from the given URL and store it in the given filename
+	 * @param url
+	 * @param destFileName
+	 * @return
+	 * @throws Exception, IOException
+	 */
+	private long downloadFileV2(URL url, String destFileName) throws Exception {
 
-		config(configuration);
 		checkDestination(destFileName);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		
+		connection.connect(); // If Java 7 without TLS v1.2 on GitHub URL : "SSL exception : Received fatal alert protocol_exception"
+		int responseCode = connection.getResponseCode(); 
+		
+		// check HTTP response code first
+		if ( responseCode != HttpURLConnection.HTTP_OK ) {
+			throw new Exception ("Unexpected HTTP Response Code " + responseCode);
+		}
+		
+		// String contentType = connection.getContentType();
 		
         long totalBytesRead = 0L;		
-        try {
-			url.openConnection();
-			InputStream reader = url.openStream();
+		try (	InputStream      inputStream  = connection.getInputStream(); 
+				FileOutputStream outputStream = new FileOutputStream(destFileName) ) {
 			
-	        FileOutputStream writer = new FileOutputStream(destFileName);
-	        int BUFFER_SIZE = 128 * 1024 ;
+			int bytesRead = -1;
 	        byte[] buffer = new byte[BUFFER_SIZE];
-	        int bytesRead = 0;
-	 
-	        while ((bytesRead = reader.read(buffer)) > 0)
-	        {  
-	           writer.write(buffer, 0, bytesRead);
-	           buffer = new byte[BUFFER_SIZE];
-	           totalBytesRead += bytesRead;
+	        while ( (bytesRead = inputStream.read(buffer)) != -1 ) {
+	            outputStream.write(buffer, 0, bytesRead);
+	            totalBytesRead += bytesRead;
 	        }
-
-	        writer.close();
-	        reader.close();
-	 
-		} catch (IOException e) {
-			throw new Exception ("IOException", e);
-		}
+		}		        
 		return totalBytesRead ;
 	}
+	
+//	private long downloadFileViaURL(URL url, String destFileName ) throws Exception {
+//
+//		checkDestination(destFileName);
+//		
+//        long totalBytesRead = 0L;		
+//        try {
+//			url.openConnection();
+//			InputStream reader = url.openStream();
+//			
+//	        FileOutputStream writer = new FileOutputStream(destFileName);
+//	        byte[] buffer = new byte[BUFFER_SIZE];
+//	        int bytesRead = 0;
+//	 
+//	        while ((bytesRead = reader.read(buffer)) > 0)
+//	        {  
+//	           writer.write(buffer, 0, bytesRead);
+//	           buffer = new byte[BUFFER_SIZE];
+//	           totalBytesRead += bytesRead;
+//	        }
+//
+//	        writer.close();
+//	        reader.close();
+//	 
+//		} catch (IOException e) {
+//			throw new Exception ("IOException", e);
+//		}
+//		return totalBytesRead ;
+//	}
 	
 	private void checkDestination(String destFileName) throws Exception {
 		File file = new File (destFileName) ;
 		File parent = file.getParentFile();
-		if ( parent.exists() == false ) {
+		if ( ! parent.exists() ) {
 			throw new Exception("Download folder doesn't exist '" + parent.getAbsolutePath() + "' ");
 		}
 	}
