@@ -26,7 +26,7 @@ import java.util.Properties;
 
 public class HttpClient {
 
-	//public static final String VERSION = "3" ;
+	public static final String VERSION = "4 (2018-04-09)" ;
 
 	// Default "User-Agent" value 
 	private static final String USER_AGENT       = "User-Agent" ;
