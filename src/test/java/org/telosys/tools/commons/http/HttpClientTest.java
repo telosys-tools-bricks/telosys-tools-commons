@@ -28,8 +28,7 @@ public class HttpClientTest extends TestCase {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Cache-Control",   "max-age=0");
 		headers.put("Accept-Encoding", "gzip,deflate");		
-		//headers.put("User-Agent",      "Apache-HttpClient/4.1.3 (java 1.5)");
-		headers.put("User-Agent",      "Telosys-HttpClient");
+		// headers.put("User-Agent",      "Telosys-HttpClient"); // Set by default
 		return headers ;
 	}
 

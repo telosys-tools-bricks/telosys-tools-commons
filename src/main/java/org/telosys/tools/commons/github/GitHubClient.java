@@ -57,7 +57,7 @@ public class GitHubClient {
 	 * @param userName
 	 * @return
 	 */
-	public String getRepositoriesJSON( String userName ) {
+	protected String getRepositoriesJSON( String userName ) throws Exception {
 
 		String urlString = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
 		HttpClient httpClient = new HttpClient(proxyProperties);
@@ -65,7 +65,12 @@ public class GitHubClient {
 		try {
 			response = httpClient.get(urlString, null);
 		} catch (Exception e) {
-			throw new RuntimeException ("Http error", e);
+			throw new Exception ("HTTP 'GET' error", e);
+		}
+		// Sometimes GitHub return a 403 status code 
+		// See : https://developer.github.com/v3/#user-agent-required
+		if ( response.getStatusCode() != 200 ) {
+			throw new Exception ("HTTP 'GET' error : Status Code = " + response.getStatusCode() + ")" );
 		}
 		return new String(response.getBodyContent());
 	}
@@ -75,7 +80,7 @@ public class GitHubClient {
 	 * @param userName
 	 * @return
 	 */
-	public List<GitHubRepository> getRepositories( String userName ) throws Exception{
+	public List<GitHubRepository> getRepositories( String userName ) throws Exception {
 
 		List<GitHubRepository> repositories = new LinkedList<GitHubRepository>();
 		String json = getRepositoriesJSON( userName );

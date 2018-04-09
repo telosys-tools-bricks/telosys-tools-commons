@@ -26,7 +26,11 @@ import java.util.Properties;
 
 public class HttpClient {
 
-	public static final String VERSION = "3" ;
+	//public static final String VERSION = "3" ;
+
+	// Default "User-Agent" value 
+	private static final String USER_AGENT       = "User-Agent" ;
+	private static final String USER_AGENT_VALUE = "Telosys-HttpClient" ;
 
 	//------------------------------------------------------------------------------
 	// TLS ver 1.2 configuration ( TLS 1.2 not defined by default with Java 7 )  
@@ -205,7 +209,7 @@ public class HttpClient {
 	// Private methods
 	//---------------------------------------------------------------------
 	/**
-	 * Processes the given http method 
+	 * Processes the given http method and returns the HttpResponse
 	 * @param url the URL to be used
 	 * @param method the http method ( GET, POST, PUT, DELETE, HEAD, etc)
 	 * @param headers http headers 
@@ -235,13 +239,28 @@ public class HttpClient {
 	}
 
 	//---------------------------------------------------------------------
+	/**
+	 * Establishes the network connection for the given URL and retursn a HttpURLConnection instance
+	 * @param url
+	 * @param method the http method to be used 
+	 * @param headers the headers to be set (can be null)
+	 * @return 
+	 * @throws Exception
+	 */
 	private HttpURLConnection connect(URL url, String method, Map<String, String> headers) throws Exception {
 		HttpURLConnection connection = null;
 		try {
+			// url.openConnection() :
+			//  Creates a new instance of URLConnection 
+			//  It should be noted that a URLConnection instance does not establish the actual network connection on creation. 
+			//  This will happen only when calling URLConnection.connect().
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
 			connection.setRequestMethod(method);
+			
+			//--- Set the default User-Agent value if not defined in the given headers
+			setDefaultUserAgentIfNecessary(connection, headers); 
 			
 			//--- Set http headers if any
 			if ( headers != null ) {
@@ -250,13 +269,32 @@ public class HttpClient {
 				}
 			}
 			
+			// connection.connect() : 
+			//  Opens a communications link to the resource referenced by the URL, 
+			//  if such a connection has not already been established. 
 			connection.connect();
 			return connection;
 		} catch (Exception e) {
 			throw new Exception("Connection failed");
 		}
 	}
-
+	
+	//---------------------------------------------------------------------
+	/**
+	 * Set the default User-Agent if not defined in the given headers
+	 * NB : for GitHub API the User-Agent is required : https://developer.github.com/v3/#user-agent-required 
+	 * @param connection
+	 * @param headers
+	 */
+	private void setDefaultUserAgentIfNecessary(HttpURLConnection connection, Map<String, String> headers) {
+		if ( headers != null && headers.containsKey(USER_AGENT) ) {
+			// User-Agent is defined in the given headers => nothing to do
+			return ;
+		}
+		// User-Agent is not defined in the given headers => set the default value
+		connection.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);		
+	}
+	
 	//---------------------------------------------------------------------
 	private void postData(HttpURLConnection connection, byte[] data) throws Exception {
 		try {
@@ -294,7 +332,13 @@ public class HttpClient {
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		
-		connection.connect(); // If Java 7 without TLS v1.2 on GitHub URL : "SSL exception : Received fatal alert protocol_exception"
+		setDefaultUserAgentIfNecessary(connection, null);
+		
+		// connection.connect() : 
+		//  Opens a communications link to the resource referenced by the URL, 
+		//  if such a connection has not already been established. 
+		//  NB : If Java 7 without TLS v1.2 on GitHub URL : "SSL exception : Received fatal alert protocol_exception"
+		connection.connect(); 
 		int responseCode = connection.getResponseCode(); 
 		
 		// check HTTP response code first
