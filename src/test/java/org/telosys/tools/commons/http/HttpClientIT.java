@@ -19,7 +19,7 @@ import org.telosys.tools.commons.http.HttpResponse;
  * @author L. Guerin
  *
  */
-public class HttpClientTest extends TestCase {
+public class HttpClientIT extends TestCase {
 
 	private final static String URL_GOOGLE_FR  = "https://www.google.fr" ;
 	private final static String URL_GITHUB_COM = "https://github.com/telosys-templates-v3" ;
@@ -114,7 +114,8 @@ public class HttpClientTest extends TestCase {
 	public void testDownload2() throws Exception {
 		System.out.println("Test DOWNLOAD 2 via HTTPS ... ");
 		
-		String urlString = "https://api.github.com/users/telosys/repos" ;
+		//String urlString = "https://api.github.com/users/telosys/repos" ;
+		String urlString = "http://www.telosys.org/index.html";
 		// NB : https can raise an error ( javax.net.ssl.SSLException ) => use http  for tests
 		String downloadFileName = TestsEnv.getTmpExistingFolderFullPath("download") + "/file2.tmp" ;
 
