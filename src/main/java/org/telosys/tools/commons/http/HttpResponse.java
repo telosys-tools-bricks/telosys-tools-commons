@@ -53,15 +53,14 @@ public class HttpResponse {
 		statusCode      = connection.getResponseCode();
 		statusMessage   = connection.getResponseMessage();
 			
-//		try {
-//			bodyContent = readResponseBody(connection);			
-//		} catch (IOException e) {
-//			throw new Exception("Cannot create HttpResponse", e); 
+		// Always try to read response body...
+//		if ( statusCode == HttpURLConnection.HTTP_OK ) {
+//			bodyContent = readResponseBody(connection);
+//			contentLength = bodyContent.length ;
 //		}
-		if ( statusCode == HttpURLConnection.HTTP_OK ) {
-			bodyContent = readResponseBody(connection);
-			contentLength = bodyContent.length ;
-		}
+		bodyContent = readResponseBody(connection);
+		contentLength = bodyContent.length ;
+		
 		headerFields = connection.getHeaderFields();
 	}
 	
@@ -76,12 +75,24 @@ public class HttpResponse {
 		return body;
 	}
 	
-	private InputStream getInputStream( HttpURLConnection connection ) //throws IOException
+	/**
+	 * Tries to get an InputStream to read the response body
+	 * @param connection
+	 * @return
+	 */
+	private InputStream getInputStream( HttpURLConnection connection ) 
 	{
 		InputStream is = null ;
 		try {
-			is = connection.getInputStream();
-			bodyContentAccessible = true ;
+			if ( connection.getResponseCode() >= 200 && connection.getResponseCode() <= 299 ) {
+				is = connection.getInputStream();
+				bodyContentAccessible = true ;
+			}
+			else {
+				// Try to get the body from "ErrorStream"
+				is = connection.getErrorStream(); // Typically for response code "4xx" 
+				bodyContentAccessible = true ;
+			}
 		} catch (Exception e) {
 			// Throws:
 			//    . IOException - if an I/O error occurs while creating the input stream.
@@ -138,14 +149,10 @@ public class HttpResponse {
 		return bodyContentAccessible ;
 	}
 	
-	public String getHeader(String name)
-	{
-		//return (String) headerFields.get(name);
+	public String getHeader(String name) {
 		List<String> values = headerFields.get(name);
-		if ( values != null ) {
-			if ( values.size() > 0 ) {
-				return values.get(0);
-			}
+		if ( values != null  && ! values.isEmpty() ) {
+			return values.get(0);
 		}
 		return null ;
 	}

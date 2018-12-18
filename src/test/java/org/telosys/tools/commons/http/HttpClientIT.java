@@ -1,14 +1,11 @@
 package org.telosys.tools.commons.http;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
-
-import org.telosys.tools.commons.http.HttpClient;
-import org.telosys.tools.commons.http.HttpRequest;
-import org.telosys.tools.commons.http.HttpResponse;
 
 /**
  * HttpClient test case.
@@ -39,6 +36,17 @@ public class HttpClientIT extends TestCase {
 	private void checkResponse(HttpResponse response, int expectedRetCode) {
 		assertEquals(expectedRetCode, response.getStatusCode());
 		System.out.println(" Ret Code = " +response.getStatusCode() );
+
+		
+		System.out.println("Header keys : ");
+		Map<String,List<String>> map = response.getHeaderMap();
+		for ( String key : map.keySet() ) {
+			System.out.println(" . '" + key + "'");
+		}
+		System.out.println(" Header 'cache-control' : " + response.getHeader("Cache-Control") );
+		System.out.println(" Header 'content-encoding' : " + response.getHeader("Content-Encoding") );
+		System.out.println(" Header 'xx-yy-zz' : " + response.getHeader("xx-yy-zz") );
+		
 		System.out.println(" ---------- " );
 	}
 	
