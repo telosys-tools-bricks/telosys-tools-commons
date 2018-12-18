@@ -58,10 +58,15 @@ public class GitHubClientIT {
 		printJavaVersion() ;
 
 		GitHubClient gitHubClient = new GitHubClient( properties );
-		String jsonResult = gitHubClient.getRepositoriesJSON(GITHUB_USER);
-		System.out.println(jsonResult);
 		
-		List<GitHubRepository> repositories = gitHubClient.getRepositories(GITHUB_USER);
+		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(GITHUB_USER);
+		
+//		String jsonResult = gitHubClient.getRepositoriesJSON(GITHUB_USER);
+//		System.out.println(jsonResult);
+		System.out.println( githubResponse.getResponseBody() );
+		
+//		List<GitHubRepository> repositories = gitHubClient.getRepositories(GITHUB_USER);
+		List<GitHubRepository> repositories = githubResponse.getRepositories();
 		System.out.println("Repositories (" + repositories.size() + ") : ");
 		for ( GitHubRepository repo : repositories ) {
 			System.out.println(" .  '" + repo.getName() + "' / " 
@@ -89,7 +94,7 @@ public class GitHubClientIT {
 	public void testGetRateLimit() throws Exception {
 
 		GitHubClient gitHubClient = new GitHubClient(null);
-		GitHubRateLimit rateLimit = gitHubClient.getRateLimit();
+		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
 		
 		System.out.println(rateLimit);
 		System.out.println("Response body : \n" + rateLimit.getResponseBody());

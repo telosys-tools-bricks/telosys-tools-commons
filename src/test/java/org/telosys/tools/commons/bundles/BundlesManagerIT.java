@@ -1,17 +1,14 @@
 package org.telosys.tools.commons.bundles;
 
 import java.io.File;
-import java.util.List;
 import java.util.Properties;
-
-import junit.env.telosys.tools.commons.TestsEnv;
-import junit.framework.TestCase;
 
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.bundles.BundleStatus;
-import org.telosys.tools.commons.bundles.BundlesManager;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+
+import junit.env.telosys.tools.commons.TestsEnv;
+import junit.framework.TestCase;
 
 /**
  * This class is "IT" ( Integration Test) due to potential connection problem with https on GitHub
@@ -128,10 +125,12 @@ public class BundlesManagerIT extends TestCase {
 		System.out.println("========== List of available bundles  ");
 
 		BundlesManager bm = getBundlesManager();
-		List<String> bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
-		for ( String s : bundles ) {
+		//List<String> bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
+		BundlesFromGitHub bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
+		for ( String s : bundles.getBundlesNames() ) {
 			System.out.println(" . " + s );
 		}
+		System.out.println("Message : " + bundles.getRateLimitMessage() );
 	}
 	
 	public void testIsBundleInstalled() throws TelosysToolsException {

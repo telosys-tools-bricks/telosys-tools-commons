@@ -17,8 +17,6 @@ package org.telosys.tools.commons.github;
 
 import java.util.Date;
 
-import org.telosys.tools.commons.http.HttpResponse;
-
 /**
  * This class holds GitHub "rate limit" information <br>
  * 
@@ -27,59 +25,53 @@ import org.telosys.tools.commons.http.HttpResponse;
  * @author Laurent Guerin
  *
  */
-public class GitHubRateLimit {
+public class GitHubRateLimitResponse {
 
-	/**
-	 * The maximum number of requests you're permitted to make per hour.
-	 */
-	private final String   limit ;
+	private final GitHubRateLimit rateLimit ;
 	
 	/**
-	 * The number of requests remaining in the current rate limit window.
+	 * Http response body in JSON
 	 */
-	private final String   remaining ;
-	
-	/**
-	 * The time at which the current rate limit window resets in UTC epoch seconds.
-	 */
-	private final String   reset ; 
+	private final String   responseBody ; 
 
-	public GitHubRateLimit(HttpResponse response) {
+	public GitHubRateLimitResponse(GitHubRateLimit rateLimit, String responseBody ) {
 		super();
-		this.limit     = response.getHeader("X-RateLimit-Limit");
-		this.remaining = response.getHeader("X-RateLimit-Remaining"); 
-		this.reset     = response.getHeader("X-RateLimit-Reset");
-	}
-
-	public GitHubRateLimit(String limit, String remaining, String reset) {
-		super();
-		this.limit = limit;
-		this.remaining = remaining;
-		this.reset = reset;
+		if ( rateLimit == null ) {
+			throw new IllegalStateException("GitHubRateLimit is null");
+		}
+		if ( responseBody == null ) {
+			throw new IllegalStateException("Response body is null");
+		}
+		this.rateLimit = rateLimit;
+		this.responseBody = responseBody;
 	}
 
 	public String getLimit() {
-		return limit;
+		return rateLimit.getLimit();
 	}
 
 	public String getRemaining() {
-		return remaining;
+		return rateLimit.getRemaining();
 	}
 
 	public String getReset() {
-		return reset;
+		return rateLimit.getReset();
 	}
 
 	public Date getResetDate() {
 		// RESET : The time at which the current rate limit window resets in UTC epoch seconds.
-		long seconds = Long.parseLong(this.reset);
+		long seconds = Long.parseLong(this.getReset());
 		long milliseconds = seconds * 1000 ;
 		return new Date(milliseconds);
 	}
 
+	public String getResponseBody() {
+		return responseBody;
+	}
+
 	@Override
 	public String toString() {
-		return "GitHubRateLimit [limit=" + limit + ", remaining=" + remaining + ", reset=" + reset + "]";
+		return rateLimit.toString();
 	}
 	
 }

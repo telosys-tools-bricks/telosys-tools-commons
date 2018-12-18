@@ -26,6 +26,8 @@ import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.github.GitHubClient;
+import org.telosys.tools.commons.github.GitHubRateLimit;
+import org.telosys.tools.commons.github.GitHubRepositoriesResponse;
 import org.telosys.tools.commons.github.GitHubRepository;
 
 
@@ -181,18 +183,30 @@ public class BundlesManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> getGitHubBundlesList( String githubUserName ) throws Exception {
-		List<String> bundles = new LinkedList<String>();
+//	public List<String> getGitHubBundlesList( String githubUserName ) throws Exception {
+//		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
+//		List<String> bundles = new LinkedList<String>();
+//		List<GitHubRepository> repositories = gitHubClient.getRepositories( githubUserName );
+//		for ( GitHubRepository repo : repositories ) {
+//			bundles.add( repo.getName() );
+//		}
+//		return bundles ;
+//	}
+	
+	public BundlesFromGitHub getGitHubBundlesList( String githubUserName ) throws Exception {
 		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
-		List<GitHubRepository> repositories = gitHubClient.getRepositories( githubUserName );
-		for ( GitHubRepository repo : repositories ) {
-// Removed in ver 2.1.0 ( "size" is not reliable in the GitHub API ) 
-//							if ( repo.getSize() > 0 ) {
-//								_listGitHubRepositories.add( repo.getName() );
-//							}
-			bundles.add( repo.getName() );
+		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(githubUserName);
+		// List of bundles names
+		List<String> bundlesNames = new LinkedList<>();
+		for ( GitHubRepository repo : githubResponse.getRepositories() ) {
+			bundlesNames.add( repo.getName() );
 		}
-		return bundles ;
+		// Rate limit message
+		GitHubRateLimit rateLimit = githubResponse.getRateLimit();
+		String rateLimitMessage = "API rate limit : " + rateLimit.getRemaining() + "/" + rateLimit.getLimit()
+				+ " (reset " + rateLimit.getResetDate() + ")" ;
+		// Result
+		return new BundlesFromGitHub(bundlesNames, rateLimitMessage)  ;
 	}
 	
 	//--------------------------------------------------------------------------------------------------
