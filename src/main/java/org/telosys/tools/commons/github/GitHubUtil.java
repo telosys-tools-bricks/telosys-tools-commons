@@ -29,13 +29,19 @@ import org.telosys.tools.commons.variables.VariablesManager;
  *
  */
 public class GitHubUtil {
+	
+	/**
+	 * Private constructor
+	 */
+	private GitHubUtil() {
+	}
 
 	/**
 	 * Sorts the given list of repositories (sort by name).
 	 * 
 	 * @param list
 	 */
-	public static void sortByName( List<GitHubRepository> list ) {
+	protected static void sortByName( List<GitHubRepository> list ) {
 		Collections.sort(list, new Comparator<GitHubRepository>() {
 
 			@Override
@@ -47,17 +53,6 @@ public class GitHubUtil {
 		});
 	}
 
-//	//--------------------------------------------------------------------------------------------------
-//	/**
-//	 * Returns the default GitHun URL pattern usable to download a repository <br>
-//	 * The pattern contains 2 variables : "${USER}" and "${REPO}" <br>
-//	 * e.g. "https://github.com/${USER}/${REPO}/archive/master.zip" 
-//	 * @return
-//	 */
-//	public static String getDefaultGitHubURLPattern() {
-//		return "https://github.com/${USER}/${REPO}/archive/master.zip" ;
-//	}
-	
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Builds the URL to be used to download a GitHub repository  <br>
@@ -68,13 +63,12 @@ public class GitHubUtil {
 	 * @param sGitHubURLPattern 
 	 * @return
 	 */
-	public static String buildGitHubURL( String userName, String repoName, String sGitHubURLPattern ) {
+	protected static String buildGitHubURL( String userName, String repoName, String sGitHubURLPattern ) {
 		
-		HashMap<String,String> hmVariables = new HashMap<String,String>();
+		HashMap<String,String> hmVariables = new HashMap<>();
 		hmVariables.put("${USER}", userName);
 		hmVariables.put("${REPO}", repoName);
 		VariablesManager variablesManager = new VariablesManager(hmVariables);
-		String sFileURL = variablesManager.replaceVariables(sGitHubURLPattern);
-		return sFileURL ;
+		return variablesManager.replaceVariables(sGitHubURLPattern);
 	}	
 }

@@ -34,7 +34,7 @@ import org.telosys.tools.commons.http.HttpResponse;
  */
 public class GitHubClient {
 
-	public static final String VERSION = "2" ; // Class version (for checking in CLI and Download)
+	public static final String VERSION = "2.1" ; // GitHub Client Version (for checking in CLI and Download)
 	
 	public static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
 	
@@ -82,7 +82,7 @@ public class GitHubClient {
 	 */
 	public List<GitHubRepository> getRepositories( String userName ) throws Exception {
 
-		List<GitHubRepository> repositories = new LinkedList<GitHubRepository>();
+		List<GitHubRepository> repositories = new LinkedList<>();
 		String json = getRepositoriesJSON( userName );
 		JSONParser parser = new JSONParser();
 		try {
@@ -159,9 +159,11 @@ public class GitHubClient {
 	}
 	
 	/**
-	 * Download a GitHub repository (zip file)
-	 * @param userName GitHub user name
-	 * @param repoName GitHub repository name
+	 * Downloads a GitHub repository (e.g. "https://github.com/telosys-templates-v3/{REPOSITORY}-master.zip" )<br>
+	 * Simple HTTP download, doesn't use the GitHub API <br>
+	 * 
+	 * @param userName GitHub user name or organization name ( e.g. "telosys-templates-v3" )
+	 * @param repoName GitHub repository name ( e.g. "php7-web-mvc" or "python-web-rest-bottle" )
 	 * @param destinationFile the full file name on the filesystem 
 	 * @return file size (bytes count)
 	 */
@@ -173,4 +175,40 @@ public class GitHubClient {
 		bytesCount = httpClient.downloadFile(url, destinationFile);
 		return bytesCount ;
 	}
+	
+	public GitHubRateLimit getRateLimit() throws Exception {
+		String url = GitHubClient.GIT_HUB_HOST_URL + "/rate_limit" ;
+		HttpClient httpClient = new HttpClient();
+		HttpResponse response;
+		try {
+			response = httpClient.get(url, null);
+		} catch (Exception e) {
+			throw new Exception ("HTTP 'GET' error", e);
+		}
+		
+		response.getHeader("X-xxxx");
+		
+		if ( response.getStatusCode() == 200 ) {
+			return new GitHubRateLimit(
+					response.getHeader("X-RateLimit-Limit"),
+					response.getHeader("X-RateLimit-Remaining") , 
+					response.getHeader("X-RateLimit-Reset"),
+					new String(response.getBodyContent()) );			
+		}
+		else {
+			throw new Exception ("Cannot get GitHub rate limit. HTTP status code = " + response.getStatusCode() );
+		}
+		// Example of response body :
+		//   {
+		//      "resources":
+		//         {
+		//            "core"   : { "limit":60, "remaining":0,  "reset":1545125728 },
+		//            "search" : { "limit":10, "remaining":10, "reset":1545124912 },
+		//            "graphql": { "limit":0,  "remaining":0,  "reset":1545128452 }
+		//         },
+		//
+		//      "rate": { "limit":60, "remaining":0, "reset":1545125728 }
+		//   }
+	}
+	
 }

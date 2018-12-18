@@ -3,11 +3,9 @@ package org.telosys.tools.commons.github;
 import java.util.List;
 import java.util.Properties;
 
-import junit.env.telosys.tools.commons.TestsEnv;
-import junit.framework.TestCase;
+import org.junit.Test;
 
-import org.telosys.tools.commons.github.GitHubClient;
-import org.telosys.tools.commons.github.GitHubRepository;
+import junit.env.telosys.tools.commons.TestsEnv;
 
 /**
  * This class is "IT" ( Integration Test) due to potential connection problem with https on GitHub
@@ -18,7 +16,7 @@ import org.telosys.tools.commons.github.GitHubRepository;
  * @author Laurent Guerin
  *
  */
-public class GitHubClientIT extends TestCase {
+public class GitHubClientIT {
 
 	private final static String GITHUB_USER = "telosys-tools" ;
 
@@ -41,19 +39,21 @@ public class GitHubClientIT extends TestCase {
 		System.out.println("Https protocols : " + System.getProperty("https.protocols"));
 	}
 
+	@Test
 	public void testGetRepositories() throws Exception  {
 		System.out.println("Getting repositories with properties ... ");
 		printJavaVersion() ;
 		getRepositories( TestsEnv.loadSpecificProxyProperties() );
 	}
 	
+	@Test
 	public void testGetRepositoriesWithoutProperties() throws Exception  {		
 		System.out.println("Getting repositories without properties (null argument) ... ");
 		printJavaVersion() ;
 		getRepositories( null );
 	}
 	
-	public void getRepositories( Properties properties ) throws Exception  {
+	private void getRepositories( Properties properties ) throws Exception  {
 		System.out.println("Getting repositories... ");
 		printJavaVersion() ;
 
@@ -69,6 +69,7 @@ public class GitHubClientIT extends TestCase {
 		}
 	}
 	
+	@Test
 	public void testDownloadRepository() throws Exception {
 
 		printJavaVersion() ;
@@ -83,4 +84,16 @@ public class GitHubClientIT extends TestCase {
 		gitHubClient.downloadRepository(GITHUB_USER, repoName, destinationFile);
 		System.out.println("Done.");		
 	}
+
+	@Test
+	public void testGetRateLimit() throws Exception {
+
+		GitHubClient gitHubClient = new GitHubClient(null);
+		GitHubRateLimit rateLimit = gitHubClient.getRateLimit();
+		
+		System.out.println(rateLimit);
+		System.out.println("Response body : \n" + rateLimit.getResponseBody());
+		System.out.println("Reset date : " + rateLimit.getResetDate()); 
+	}
+
 }
