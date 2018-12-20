@@ -70,7 +70,7 @@ public class GitHubClient {
 					"HTTP 'GET' error : " 
 					+ " Status '" + response.getStatusCode() + "' " 
 					+ " API rate limit : " + rateLimit.getRemaining() + " / " + rateLimit.getLimit() 
-					+ " (reset " + rateLimit.getResetDate() + ")" ;
+					+ " (next reset " + rateLimit.getResetAsDate() + ")" ;
 			throw new Exception(msg);
 		}
 		return response ;

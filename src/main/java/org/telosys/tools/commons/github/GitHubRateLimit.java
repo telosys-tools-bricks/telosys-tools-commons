@@ -58,28 +58,63 @@ public class GitHubRateLimit {
 		this.reset = reset;
 	}
 
+	/**
+	 * Returns the API 'limit' value as string (original http header recieved)
+	 * @return
+	 */
 	public String getLimit() {
 		return limit;
 	}
+	/**
+	 * Returns the API 'limit' value as int
+	 * @return
+	 */
+	public int getLimitAsInt() {
+		return Integer.parseInt(limit); // NumberFormatException acceptable here
+	}
 
+	/**
+	 * Returns the API 'remaining' value as string (original http header recieved)
+	 * @return
+	 */
 	public String getRemaining() {
 		return remaining;
 	}
+	/**
+	 * Returns the API 'remaining' value as int
+	 * @return
+	 */
+	public int getRemainingAsInt() {
+		return Integer.parseInt(remaining); // NumberFormatException acceptable here
+	}
 
+	/**
+	 * Returns the API 'reset' value as string (original http header recieved)
+	 * @return
+	 */
 	public String getReset() {
 		return reset;
 	}
 
-	public Date getResetDate() {
+	/**
+	 * Returns the API 'reset' value as date
+	 * @return
+	 */
+	public Date getResetAsDate() {
 		// RESET : The time at which the current rate limit window resets in UTC epoch seconds.
-		long seconds = Long.parseLong(this.reset);
+		long seconds = Long.parseLong(this.reset); // NumberFormatException acceptable here
 		long milliseconds = seconds * 1000 ;
 		return new Date(milliseconds);
 	}
 
+	public String getStandardMessage() {
+		return "API rate limit : " + remaining + "/" + limit
+		+ " (reset " + reset + ")" ;		
+	}
+
 	@Override
 	public String toString() {
-		return "GitHubRateLimit [limit=" + limit + ", remaining=" + remaining + ", reset=" + reset + "]";
+		return "GitHubRateLimit [limit='" + limit + "', remaining='" + remaining + "', reset='" + reset + "']";
 	}
 	
 }

@@ -127,7 +127,7 @@ public class BundlesManagerIT extends TestCase {
 		BundlesManager bm = getBundlesManager();
 		//List<String> bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
 		BundlesFromGitHub bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
-		for ( String s : bundles.getBundlesNames() ) {
+		for ( String s : bundles.getBundlesNames().getAll() ) {
 			System.out.println(" . " + s );
 		}
 		System.out.println("Message : " + bundles.getRateLimitMessage() );

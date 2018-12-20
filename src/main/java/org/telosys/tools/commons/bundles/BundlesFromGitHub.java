@@ -15,32 +15,46 @@
  */
 package org.telosys.tools.commons.bundles;
 
-import java.util.List;
+import java.util.Date;
+
+import org.telosys.tools.commons.github.GitHubRateLimit;
 
 public class BundlesFromGitHub {
 
-	private final List<String> bundlesNames ;
+	private final BundlesNames bundlesNames ;
 	
-	private final String       rateLimitMessage ;
-
-	public BundlesFromGitHub(List<String> bundlesNames, String rateLimitMessage) {
+	private final GitHubRateLimit githubRateLimit ;
+	
+	public BundlesFromGitHub(BundlesNames bundlesNames, GitHubRateLimit githubRateLimit) {
 		super();
 		if ( bundlesNames == null ) {
-			throw new IllegalStateException("bundlesNames is null");
+			throw new IllegalStateException("bundlesList is null");
 		}
-		if ( rateLimitMessage == null ) {
-			throw new IllegalStateException("rateLimitMessage is null");
+		if ( githubRateLimit == null ) {
+			throw new IllegalStateException("githubRateLimit is null");
 		}
-		this.bundlesNames = bundlesNames ;
-		this.rateLimitMessage = rateLimitMessage  ;
+		this.bundlesNames    = bundlesNames ;
+		this.githubRateLimit = githubRateLimit  ;
 	}
 
-	public List<String> getBundlesNames() {
+	public BundlesNames getBundlesNames() {
 		return bundlesNames;
 	}
 
+	public int getLimit() {
+		return githubRateLimit.getLimitAsInt();
+	}
+
+	public int getRemaining() {
+		return githubRateLimit.getRemainingAsInt();
+	}
+
+	public Date getReset() {
+		return githubRateLimit.getResetAsDate();
+	}
+	
 	public String getRateLimitMessage() {
-		return rateLimitMessage;
+		return githubRateLimit.getStandardMessage();
 	}
 	
 }

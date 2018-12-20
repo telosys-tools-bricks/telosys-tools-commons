@@ -30,16 +30,15 @@ import org.telosys.tools.commons.github.GitHubRateLimit;
 import org.telosys.tools.commons.github.GitHubRepositoriesResponse;
 import org.telosys.tools.commons.github.GitHubRepository;
 
-
 /**
  * Utility class for bundles management (including GitHub access)
  * 
- * @author L. Guerin
+ * @author Laurent GUERIN
  *
  */
 public class BundlesManager {
 
-	public final static String TEMPLATES_CFG = "templates.cfg" ;
+	public static final String TEMPLATES_CFG = "templates.cfg" ;
 
 	private final TelosysToolsCfg telosysToolsCfg ;
 	
@@ -92,8 +91,6 @@ public class BundlesManager {
 	 * @return
 	 */
 	public boolean isBundleAlreadyInstalled( String bundleName ) {
-//		File bundlesFolder = new File(getBundleFolderFullPath(bundleName)) ;
-//		File bundlesFolder = new File(telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName)) ; // v 3.0.0
 		File bundleFolder = getBundleFolder(bundleName) ; // v 3.0.0
 		if ( bundleFolder.exists() ) {
 			return true ;
@@ -194,19 +191,23 @@ public class BundlesManager {
 //	}
 	
 	public BundlesFromGitHub getGitHubBundlesList( String githubUserName ) throws Exception {
+		
+		// HTTP request to GitHub 
 		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
 		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(githubUserName);
+		
 		// List of bundles names
 		List<String> bundlesNames = new LinkedList<>();
 		for ( GitHubRepository repo : githubResponse.getRepositories() ) {
 			bundlesNames.add( repo.getName() );
 		}
-		// Rate limit message
+		BundlesNames bundlesList = new BundlesNames(bundlesNames);
+		
+		// API Rate limit
 		GitHubRateLimit rateLimit = githubResponse.getRateLimit();
-		String rateLimitMessage = "API rate limit : " + rateLimit.getRemaining() + "/" + rateLimit.getLimit()
-				+ " (reset " + rateLimit.getResetDate() + ")" ;
+		
 		// Result
-		return new BundlesFromGitHub(bundlesNames, rateLimitMessage)  ;
+		return new BundlesFromGitHub(bundlesList, rateLimit)  ;
 	}
 	
 	//--------------------------------------------------------------------------------------------------
@@ -221,8 +222,7 @@ public class BundlesManager {
 		String sFile = repoName + ".zip" ;
 		String pathInProject = FileUtil.buildFilePath(sDownloadFolder, sFile);
 		// file path in Operating System 
-		String fullPath = FileUtil.buildFilePath(telosysToolsCfg.getProjectAbsolutePath(), pathInProject);
-		return fullPath;
+		return FileUtil.buildFilePath(telosysToolsCfg.getProjectAbsolutePath(), pathInProject);
 	}
 	
 	//--------------------------------------------------------------------------------------------------
@@ -242,8 +242,7 @@ public class BundlesManager {
 			return status ;
 		}
 		else {
-//			String bundleFolder = getBundleFolderFullPath(bundleName) ;
-			String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ; // v 3.0.0
+			String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ;
 			status.log("-> Install '" + zipFileName + "' ");
 			status.log("   in '" + bundleFolder + "' ");
 			try {
@@ -290,26 +289,21 @@ public class BundlesManager {
 		}
 	}
 	
-	//--------------------------------------------------------------------------------------
-	// Methods moved here from TargetsManager ( 2017-08-10 )
-	//--------------------------------------------------------------------------------------
 	/**
 	 * Returns the list of bundles defined in the project <br>
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public List<String> getBundlesList() throws TelosysToolsException {
-		//File dir = new File(this.templatesFolderAbsolutePath);	
+//	public List<String> getBundlesList() throws TelosysToolsException {
+	public BundlesNames getProjectBundlesList() throws TelosysToolsException {
 		File dir = getBundlesFolder();
 		if ( dir.exists() ) {
 			if ( dir.isDirectory() ) {
-				List<String> bundles = new LinkedList<String>();
+				List<String> bundles = new LinkedList<>();
 				for ( File bundleDir : dir.listFiles() ) {
 					if ( bundleDir.isDirectory() ) {
-						//if ( this.specificTemplatesFolder ) {
 						if ( telosysToolsCfg.hasSpecificTemplatesFolders() ) {
 							// Can contains any kind of folders => check existence of "templates.cfg" 
-							//if ( isTemplatesCfgExist(bundleDir) ) {
 							if ( isBundleConfigFileExists( bundleDir.getName() ) ) {
 								bundles.add(bundleDir.getName());
 							}
@@ -320,7 +314,7 @@ public class BundlesManager {
 						}
 					}
 				}
-				return bundles ;
+				return new BundlesNames(bundles) ;
 			}
 			else {
 				throw new TelosysToolsException("Templates folder '" + dir.getAbsolutePath() + "' is not a folder.");
@@ -343,20 +337,15 @@ public class BundlesManager {
 			throw new TelosysToolsException("Invalid bundle name (null or void) : '" + bundleName + "'  ");
 		}
 
-//		String bundleFolderAbsolutePath = FileUtil.buildFilePath(templatesFolderAbsolutePath, bundleName.trim() );
-//		// templates.cfg full path  
-//		String templatesCfgAbsolutepath = FileUtil.buildFilePath(bundleFolderAbsolutePath, BundlesManager.TEMPLATES_CFG );
-		
 		File templatesCfgFile = getBundleConfigFile(bundleName);
 		
-//		TargetsFile targetsFile = new TargetsFile(templatesCfgAbsolutepath) ;
 		TargetsFile targetsFile = new TargetsFile(templatesCfgFile.getAbsolutePath()) ;
 		if ( targetsFile.exists() ) {
 			//--- Try to load the targets 
 			List<TargetDefinition> allTargetsList = targetsFile.load();
 			//--- Build the two lists of targets : templates targets and resources targets 
-			List<TargetDefinition> templatesTargets = new LinkedList<TargetDefinition>() ;
-			List<TargetDefinition> resourcesTargets = new LinkedList<TargetDefinition>() ;
+			List<TargetDefinition> templatesTargets = new LinkedList<>() ;
+			List<TargetDefinition> resourcesTargets = new LinkedList<>() ;
 			for ( TargetDefinition t : allTargetsList ) {
 				if ( t.isResource() ) {
 					resourcesTargets.add(t) ;
@@ -368,7 +357,6 @@ public class BundlesManager {
 			return new TargetsDefinitions(templatesTargets, resourcesTargets);
 		}
 		else {
-//			throw new TelosysToolsException("File not found '" + templatesCfgAbsolutepath + "'");
 			throw new TelosysToolsException("File not found '" + templatesCfgFile.getAbsolutePath() + "'");
 		}
 	}	
