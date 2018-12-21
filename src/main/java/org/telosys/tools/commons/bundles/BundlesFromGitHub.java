@@ -21,12 +21,31 @@ import org.telosys.tools.commons.github.GitHubRateLimit;
 
 public class BundlesFromGitHub {
 
+	/**
+	 * HTTP Status Code returned by GitHub
+	 */
+	private final int httpStatusCode ;
+	
+	/**
+	 * Bundles names retrieved from GitHub
+	 */
 	private final BundlesNames bundlesNames ;
 	
+	/**
+	 * API rate limit
+	 */
 	private final GitHubRateLimit githubRateLimit ;
 	
-	public BundlesFromGitHub(BundlesNames bundlesNames, GitHubRateLimit githubRateLimit) {
+	/**
+	 * Constructor
+	 * @param httpStatusCode
+	 * @param bundlesNames
+	 * @param githubRateLimit
+	 */
+	public BundlesFromGitHub(int httpStatusCode, BundlesNames bundlesNames, GitHubRateLimit githubRateLimit) {
 		super();
+		this.httpStatusCode = httpStatusCode ;
+		
 		if ( bundlesNames == null ) {
 			throw new IllegalStateException("bundlesList is null");
 		}
@@ -37,18 +56,42 @@ public class BundlesFromGitHub {
 		this.githubRateLimit = githubRateLimit  ;
 	}
 
+	/**
+	 * Returns the HTTP Status Code ( e.g. : 200, 403, etc)
+	 * @return
+	 */
+	public int getHttpStatusCode() {
+		return httpStatusCode;
+	}
+	
+	/**
+	 * Returns the bundles names object
+	 * @return
+	 */
 	public BundlesNames getBundlesNames() {
 		return bundlesNames;
 	}
 
+	/**
+	 * Returns GitHub API rate 'limit' 
+	 * @return
+	 */
 	public int getLimit() {
 		return githubRateLimit.getLimitAsInt();
 	}
 
+	/**
+	 * Returns GitHub API rate 'remaining' 
+	 * @return
+	 */
 	public int getRemaining() {
 		return githubRateLimit.getRemainingAsInt();
 	}
 
+	/**
+	 * Returns GitHub API rate 'reset' date-time
+	 * @return
+	 */
 	public Date getReset() {
 		return githubRateLimit.getResetAsDate();
 	}

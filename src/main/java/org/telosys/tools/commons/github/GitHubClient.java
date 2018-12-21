@@ -62,49 +62,27 @@ public class GitHubClient {
 			throw new Exception ("HTTP 'GET' error", e);
 		}
 		
-		// Sometimes GitHub return a 403 status code 
-		// See : https://developer.github.com/v3/#user-agent-required
-		if ( response.getStatusCode() != 200 ) {
-			GitHubRateLimit rateLimit = new GitHubRateLimit(response);
-			String msg = 
-					"HTTP 'GET' error : " 
-					+ " Status '" + response.getStatusCode() + "' " 
-					+ " API rate limit : " + rateLimit.getRemaining() + " / " + rateLimit.getLimit() 
-					+ " (next reset " + rateLimit.getResetAsDate() + ")" ;
-			throw new Exception(msg);
-		}
-		return response ;
-	}
-	
-//	/**
-//	 * Returns the GitHub response in JSON format (REST API)
-//	 * @param userName
-//	 * @return
-//	 */
-//	protected String getRepositoriesJSON( String userName ) throws Exception {
-//
-//		String urlString = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
-//		HttpClient httpClient = new HttpClient(proxyProperties);
-//		HttpResponse response;
-//		try {
-//			response = httpClient.get(urlString, null);
-//		} catch (Exception e) {
-//			throw new Exception ("HTTP 'GET' error", e);
-//		}
+// No exception due to http status code
 //		// Sometimes GitHub return a 403 status code 
 //		// See : https://developer.github.com/v3/#user-agent-required
 //		if ( response.getStatusCode() != 200 ) {
-//			throw new Exception ("HTTP 'GET' error : Status Code = " + response.getStatusCode() + ")" );
+//			GitHubRateLimit rateLimit = new GitHubRateLimit(response);
+//			String msg = 
+//					"HTTP 'GET' error : " 
+//					+ " Status '" + response.getStatusCode() + "' " 
+//					+ " API rate limit : " + rateLimit.getRemaining() + " / " + rateLimit.getLimit() 
+//					+ " (next reset " + rateLimit.getResetAsDate() + ")" ;
+//			throw new Exception(msg);
 //		}
-//		return new String(response.getBodyContent());
-//	}
+		return response ;
+	}
 	
 	/**
 	 * @param json response body in JSON format
 	 * @return
 	 * @throws Exception
 	 */
-	private List<GitHubRepository> getRepositoriesList(String responseBody) throws Exception {
+	private List<GitHubRepository> getRepositoriesFromJSON(String responseBody) throws Exception {
 
 		// JSON parsing
 		List<GitHubRepository> repositories = new LinkedList<>();
@@ -140,12 +118,22 @@ public class GitHubClient {
 	 */
 	public GitHubRepositoriesResponse getRepositories(String userName) throws Exception {
 
+		// Call GitHub API via HTTP
 		HttpResponse response = getApiHttpResponse(userName);
+		
+		GitHubRateLimit rateLimit = new GitHubRateLimit(response);
+		
 		String responseBody = new String(response.getBodyContent());
 		
-		List<GitHubRepository> repositories = getRepositoriesList(responseBody);
-		GitHubRateLimit rateLimit = new GitHubRateLimit(response);
-		return new GitHubRepositoriesResponse(repositories, rateLimit, responseBody);
+		List<GitHubRepository> repositories = new LinkedList<>();
+		if ( response.getStatusCode() == 200 ) { 
+			// Parse the response body (repositories list in JSON format) 
+			repositories = getRepositoriesFromJSON(responseBody);
+		}
+		// If status is 403 : noting to do (the ratelimit is provided in the result)
+
+		// Return the result
+		return new GitHubRepositoriesResponse(response.getStatusCode(), repositories, rateLimit, responseBody);
 	}
 
 	/**

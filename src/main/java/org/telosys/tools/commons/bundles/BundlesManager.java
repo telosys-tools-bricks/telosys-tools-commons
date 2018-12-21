@@ -26,7 +26,6 @@ import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.github.GitHubClient;
-import org.telosys.tools.commons.github.GitHubRateLimit;
 import org.telosys.tools.commons.github.GitHubRateLimitResponse;
 import org.telosys.tools.commons.github.GitHubRepositoriesResponse;
 import org.telosys.tools.commons.github.GitHubRepository;
@@ -93,12 +92,7 @@ public class BundlesManager {
 	 */
 	public boolean isBundleAlreadyInstalled( String bundleName ) {
 		File bundleFolder = getBundleFolder(bundleName) ; // v 3.0.0
-		if ( bundleFolder.exists() ) {
-			return true ;
-		}
-		else {
-			return false ;
-		}
+		return bundleFolder.exists();
 	}
 	
 	/**
@@ -187,18 +181,15 @@ public class BundlesManager {
 		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
 		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(githubUserName);
 		
-		// List of bundles names
-		List<String> bundlesNames = new LinkedList<>();
+		// Build list of bundles names (can be void)
+		List<String> bundlesList = new LinkedList<>();
 		for ( GitHubRepository repo : githubResponse.getRepositories() ) {
-			bundlesNames.add( repo.getName() );
+			bundlesList.add( repo.getName() );
 		}
-		BundlesNames bundlesList = new BundlesNames(bundlesNames);
-		
-		// API Rate limit
-		GitHubRateLimit rateLimit = githubResponse.getRateLimit();
+		BundlesNames bundlesNames = new BundlesNames(bundlesList);
 		
 		// Result
-		return new BundlesFromGitHub(bundlesList, rateLimit)  ;
+		return new BundlesFromGitHub(githubResponse.getHttpStatusCode(), bundlesNames, githubResponse.getRateLimit() );
 	}
 
 	/**

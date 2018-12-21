@@ -29,6 +29,11 @@ import java.util.List;
 public class GitHubRepositoriesResponse {
 
 	/**
+	 * HTTP Status Code returned by GitHub
+	 */
+	private final int httpStatusCode ;
+	
+	/**
 	 * List of GitHub repositories 
 	 */
 	private final List<GitHubRepository> repositories ;
@@ -45,12 +50,14 @@ public class GitHubRepositoriesResponse {
 
 	/**
 	 * Constructor
+	 * @param httpStatusCode
 	 * @param repositories
 	 * @param rateLimit
 	 * @param responseBody
 	 */
-	public GitHubRepositoriesResponse(List<GitHubRepository> repositories, GitHubRateLimit rateLimit, String responseBody) {
+	public GitHubRepositoriesResponse(int httpStatusCode, List<GitHubRepository> repositories, GitHubRateLimit rateLimit, String responseBody) {
 		super();
+		this.httpStatusCode = httpStatusCode;
 		this.repositories = repositories;
 		GitHubUtil.sortByName(this.repositories);
 		
@@ -58,6 +65,14 @@ public class GitHubRepositoriesResponse {
 		this.responseBody = responseBody ;
 	}
 
+	/**
+	 * Returns the HTTP Status Code ( e.g. : 200, 403, etc)
+	 * @return
+	 */
+	public int getHttpStatusCode() {
+		return httpStatusCode;
+	}
+	
 	/**
 	 * Returns a list containing all the GitHubRepository objects
 	 * @return
