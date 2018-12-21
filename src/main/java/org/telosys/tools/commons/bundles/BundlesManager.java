@@ -27,6 +27,7 @@ import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.github.GitHubClient;
 import org.telosys.tools.commons.github.GitHubRateLimit;
+import org.telosys.tools.commons.github.GitHubRateLimitResponse;
 import org.telosys.tools.commons.github.GitHubRepositoriesResponse;
 import org.telosys.tools.commons.github.GitHubRepository;
 
@@ -180,16 +181,6 @@ public class BundlesManager {
 	 * @return
 	 * @throws Exception
 	 */
-//	public List<String> getGitHubBundlesList( String githubUserName ) throws Exception {
-//		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
-//		List<String> bundles = new LinkedList<String>();
-//		List<GitHubRepository> repositories = gitHubClient.getRepositories( githubUserName );
-//		for ( GitHubRepository repo : repositories ) {
-//			bundles.add( repo.getName() );
-//		}
-//		return bundles ;
-//	}
-	
 	public BundlesFromGitHub getGitHubBundlesList( String githubUserName ) throws Exception {
 		
 		// HTTP request to GitHub 
@@ -208,6 +199,18 @@ public class BundlesManager {
 		
 		// Result
 		return new BundlesFromGitHub(bundlesList, rateLimit)  ;
+	}
+
+	/**
+	 * Returns the current GitHub API rate limit for the current IP address
+	 * @return
+	 * @throws Exception
+	 */
+	public GitHubRateLimitResponse getGitHubRateLimit() throws Exception {
+		
+		// HTTP request to GitHub 
+		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
+		return gitHubClient.getRateLimit();
 	}
 	
 	//--------------------------------------------------------------------------------------------------
@@ -294,7 +297,6 @@ public class BundlesManager {
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-//	public List<String> getBundlesList() throws TelosysToolsException {
 	public BundlesNames getProjectBundlesList() throws TelosysToolsException {
 		File dir = getBundlesFolder();
 		if ( dir.exists() ) {
