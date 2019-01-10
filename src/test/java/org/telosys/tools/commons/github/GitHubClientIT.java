@@ -61,11 +61,8 @@ public class GitHubClientIT {
 		
 		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(GITHUB_USER);
 		
-//		String jsonResult = gitHubClient.getRepositoriesJSON(GITHUB_USER);
-//		System.out.println(jsonResult);
 		System.out.println( githubResponse.getResponseBody() );
 		
-//		List<GitHubRepository> repositories = gitHubClient.getRepositories(GITHUB_USER);
 		List<GitHubRepository> repositories = githubResponse.getRepositories();
 		System.out.println("Repositories (" + repositories.size() + ") : ");
 		for ( GitHubRepository repo : repositories ) {
@@ -93,8 +90,23 @@ public class GitHubClientIT {
 	@Test
 	public void testGetRateLimit() throws Exception {
 
+		GitHubUser.clear();
+
 		GitHubClient gitHubClient = new GitHubClient(null);
 		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
+		
+		System.out.println(rateLimit);
+		System.out.println("Response body : \n" + rateLimit.getResponseBody());
+		System.out.println("Reset date : " + rateLimit.getResetDate()); 
+	}
+
+	@Test(expected=Exception.class)
+	public void testGetRateLimitWithBadUser() throws Exception {
+
+		GitHubUser.set("bad-user", "xxxxx");
+		
+		GitHubClient gitHubClient = new GitHubClient(null);
+		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(); // Staus code 401 --> Exception
 		
 		System.out.println(rateLimit);
 		System.out.println("Response body : \n" + rateLimit.getResponseBody());

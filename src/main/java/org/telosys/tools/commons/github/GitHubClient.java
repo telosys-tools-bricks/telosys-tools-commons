@@ -15,14 +15,17 @@
  */
 package org.telosys.tools.commons.github;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.telosys.tools.commons.http.Base64;
 import org.telosys.tools.commons.http.HttpClient;
 import org.telosys.tools.commons.http.HttpResponse;
 
@@ -51,29 +54,31 @@ public class GitHubClient {
 		super();
 		this.proxyProperties = proxyProperties;
 	}
-
-	private HttpResponse getApiHttpResponse( String userName ) throws Exception {
-		String urlString = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
+	
+	private Map<String, String> buildRequestHeaders() {
+		if ( GitHubUser.isSet() ) {
+			Map<String, String> headers = new HashMap<>();
+			// Build User-Password string - Base64 encoded
+			String userPassword = GitHubUser.getUser() + ":" + GitHubUser.getPassword() ;
+			String userPasswordBase64 = Base64.encode(userPassword);
+			// Set "Authorization" header in the map
+			headers.put("Authorization", "Basic " + userPasswordBase64);
+			return headers ;
+		}
+		else {
+			return null ;
+		}
+	}
+	
+	private HttpResponse httpGet( String url ) throws Exception {
 		HttpClient httpClient = new HttpClient(proxyProperties);
 		HttpResponse response;
 		try {
-			response = httpClient.get(urlString, null);
+			// Sometimes GitHub return a 403 status code 
+			response = httpClient.get(url, buildRequestHeaders() );
 		} catch (Exception e) {
 			throw new Exception ("HTTP 'GET' error", e);
 		}
-		
-// No exception due to http status code
-//		// Sometimes GitHub return a 403 status code 
-//		// See : https://developer.github.com/v3/#user-agent-required
-//		if ( response.getStatusCode() != 200 ) {
-//			GitHubRateLimit rateLimit = new GitHubRateLimit(response);
-//			String msg = 
-//					"HTTP 'GET' error : " 
-//					+ " Status '" + response.getStatusCode() + "' " 
-//					+ " API rate limit : " + rateLimit.getRemaining() + " / " + rateLimit.getLimit() 
-//					+ " (next reset " + rateLimit.getResetAsDate() + ")" ;
-//			throw new Exception(msg);
-//		}
 		return response ;
 	}
 	
@@ -119,7 +124,10 @@ public class GitHubClient {
 	public GitHubRepositoriesResponse getRepositories(String userName) throws Exception {
 
 		// Call GitHub API via HTTP
-		HttpResponse response = getApiHttpResponse(userName);
+		//HttpResponse response = getApiHttpResponse(userName);
+		String url = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
+		HttpResponse response = httpGet(url);
+
 		
 		GitHubRateLimit rateLimit = new GitHubRateLimit(response);
 		
@@ -203,15 +211,13 @@ public class GitHubClient {
 		return bytesCount ;
 	}
 	
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	public GitHubRateLimitResponse getRateLimit() throws Exception {
 		String url = GitHubClient.GIT_HUB_HOST_URL + "/rate_limit" ;
-		HttpClient httpClient = new HttpClient();
-		HttpResponse response;
-		try {
-			response = httpClient.get(url, null);
-		} catch (Exception e) {
-			throw new Exception ("HTTP 'GET' error", e);
-		}
+		HttpResponse response = httpGet(url);
 		
 		if ( response.getStatusCode() == 200 ) {
 			return new GitHubRateLimitResponse(new GitHubRateLimit(response), new String(response.getBodyContent() ));

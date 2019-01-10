@@ -38,6 +38,7 @@ public class HttpClientBasicAuthIT extends TestCase {
 
 	public void test(String user, String password, int expectedStatusCode ) throws Exception {
 		System.out.println("--- Test http GET with Basic Auth --- ");	
+		
 		String userPassword = user + ":" + password ;
 		String userPasswordBase64 = Base64.encode(userPassword);
 		
