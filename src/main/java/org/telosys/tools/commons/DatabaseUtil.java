@@ -33,19 +33,22 @@ public final class DatabaseUtil
 	//-------------------------------------------------------------------------------------
     /**
      * Returns the database native type name with its size if the size make sense.<br>
-     * Examples : INTEGER, VARCHAR(24), NUMBER, CHAR(3), etc... 
-     * @param nativeTypeName
-     * @param nativeTypeSize
+     * Examples : INTEGER, VARCHAR(24), NUMBER(8,2), CHAR(3), etc... 
+     * @param databaseTypeName
+     * @param databaseTypeSize
      * @param jdbcTypeCode
      * @return
      */
-    public static String getNativeTypeWithSize(String nativeTypeName, int nativeTypeSize, int jdbcTypeCode)
+    public static String getNativeTypeWithSize(String databaseTypeName, String databaseTypeSize, int jdbcTypeCode)
     {
         if ( jdbcTypeCode == Types.VARCHAR || jdbcTypeCode == Types.CHAR ) {
-        	return nativeTypeName + "(" + nativeTypeSize + ")" ;
+        	return databaseTypeName + "(" + databaseTypeSize + ")" ;
+        }
+        else if ( jdbcTypeCode == Types.DECIMAL || jdbcTypeCode == Types.NUMERIC ) {
+        	return databaseTypeName + "(" + databaseTypeSize + ")" ;
         }
         else {
-        	return nativeTypeName ;
+        	return databaseTypeName ;
         }
     }
     
