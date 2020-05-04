@@ -18,7 +18,29 @@ public class GitHubRateLimitIT {
 		System.out.println(msg);
 	}
 	
-	protected void getRateLimit( String urlString ) throws Exception {
+	private void print(HttpResponse response) {
+		print("getStatusCode    : " + response.getStatusCode() ) ;
+		print("getStatusMessage : " + response.getStatusMessage() ) ;
+		
+		print("getContentEncoding : " + response.getContentEncoding() ) ;
+		print("getContentType     : " + response.getContentType() ) ;
+		print("getContentLength   : " + response.getContentLength() ) ;
+
+		// OLD HEADER NAMES ( not work since May 2020  ? )
+		print("Header 'X-RateLimit-Limit'     OLD : " + response.getHeader("X-RateLimit-Limit") ) ;
+		print("Header 'X-RateLimit-Remaining' OLD : " + response.getHeader("X-RateLimit-Remaining") ) ;
+		print("Header 'X-RateLimit-Reset'     OLD : " + response.getHeader("X-RateLimit-Reset") ) ;
+		
+		// Try with ""X-Ratelimit" ( "l" lowercase ) : new names since May 2020 ??? : OK 
+		print("Header 'X-Ratelimit-Limit'     NEW : " + response.getHeader("X-Ratelimit-Limit") ) ;
+		print("Header 'X-Ratelimit-Remaining' NEW : " + response.getHeader("X-Ratelimit-Remaining") ) ;
+		print("Header 'X-Ratelimit-Reset'     NEW : " + response.getHeader("X-Ratelimit-Reset") ) ;
+		
+		print("----- BODY ----- : ") ;
+		print(new String(response.getBodyContent())) ;
+	}
+
+	private void getRateLimit( String urlString ) throws Exception {
 
 		HttpClient httpClient = new HttpClient();
 		HttpResponse response;
@@ -28,21 +50,16 @@ public class GitHubRateLimitIT {
 		} catch (Exception e) {
 			throw new Exception ("HTTP 'GET' error", e);
 		}
+		print(response);
+		GitHubRateLimit gitHubRateLimit = new GitHubRateLimit(response);
 		
-		print("getStatusCode    : " + response.getStatusCode() ) ;
-		print("getStatusMessage : " + response.getStatusMessage() ) ;
-		
-		print("getContentEncoding : " + response.getContentEncoding() ) ;
-		print("getContentType     : " + response.getContentType() ) ;
-		print("getContentLength   : " + response.getContentLength() ) ;
-
-		print("Header 'X-RateLimit-Limit'     : " + response.getHeader("X-RateLimit-Limit") ) ;
-		print("Header 'X-RateLimit-Remaining' : " + response.getHeader("X-RateLimit-Remaining") ) ;
-		print("Header 'X-RateLimit-Reset'     : " + response.getHeader("X-RateLimit-Reset") ) ;
-		
-		print("----- BODY ----- : ") ;
-		print(new String(response.getBodyContent())) ;
-		
+		print("GitHubRateLimit : " + gitHubRateLimit.getLimit() ) ;
+		print(" . getLimit()     -> " + gitHubRateLimit.getLimit() ) ;
+		print(" . getRemaining() -> " + gitHubRateLimit.getRemaining()) ;
+		print(" . getReset()     -> " + gitHubRateLimit.getReset()) ;
+		print(" . getLimitAsInt()     -> " + gitHubRateLimit.getLimitAsInt() ) ;
+		print(" . getRemainingAsInt() -> " + gitHubRateLimit.getRemainingAsInt() ) ;
+		print(" . getResetAsDate()    -> " + gitHubRateLimit.getResetAsDate() ) ;
 	}
 	
 	@Test

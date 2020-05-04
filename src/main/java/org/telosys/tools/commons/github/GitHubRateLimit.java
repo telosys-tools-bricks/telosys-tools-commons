@@ -44,14 +44,48 @@ public class GitHubRateLimit {
 	 */
 	private final String   reset ; 
 
+	/**
+	 * Constructor from HTTP response
+	 * @param response
+	 */
 	public GitHubRateLimit(HttpResponse response) {
 		super();
-		this.limit     = response.getHeader("X-RateLimit-Limit");
-		this.remaining = response.getHeader("X-RateLimit-Remaining"); 
-		this.reset     = response.getHeader("X-RateLimit-Reset");
+		this.limit     = getLimitFromHeader(response);
+		this.remaining = getRemainingFromHeader(response); 
+		this.reset     = getResetFromHeader(response);
+	}
+	private String getLimitFromHeader(HttpResponse response) {
+		// Header can be "X-RateLimit-Limit" or "X-Ratelimit-Limit"
+		String s = response.getHeader("X-RateLimit-Limit"); // OLD
+		if ( s == null ) {
+			s = response.getHeader("X-Ratelimit-Limit"); // NEW
+		}
+		return s;
+	}
+	private String getRemainingFromHeader(HttpResponse response) {
+		// Header can be "X-RateLimit-Remaining" or "X-Ratelimit-Remaining"
+		String s = response.getHeader("X-RateLimit-Remaining"); // OLD
+		if ( s == null ) {
+			s = response.getHeader("X-Ratelimit-Remaining"); // NEW
+		}
+		return s;
+	}
+	private String getResetFromHeader(HttpResponse response) {
+		// Header can be "X-RateLimit-Reset" or "X-Ratelimit-Reset"
+		String s = response.getHeader("X-RateLimit-Reset"); // OLD
+		if ( s == null ) {
+			s = response.getHeader("X-Ratelimit-Reset"); // NEW
+		}
+		return s;
 	}
 
-	public GitHubRateLimit(String limit, String remaining, String reset) {
+	/**
+	 * Constructor for tests only
+	 * @param limit
+	 * @param remaining
+	 * @param reset
+	 */
+	protected GitHubRateLimit(String limit, String remaining, String reset) {
 		super();
 		this.limit = limit;
 		this.remaining = remaining;
@@ -70,7 +104,12 @@ public class GitHubRateLimit {
 	 * @return
 	 */
 	public int getLimitAsInt() {
-		return Integer.parseInt(limit); // NumberFormatException acceptable here
+		try {
+			return Integer.parseInt(limit);
+		} catch (NumberFormatException e) {
+			// Can happen if GitHub API change 
+			return 0;
+		}
 	}
 
 	/**
@@ -85,7 +124,12 @@ public class GitHubRateLimit {
 	 * @return
 	 */
 	public int getRemainingAsInt() {
-		return Integer.parseInt(remaining); // NumberFormatException acceptable here
+		try {
+			return Integer.parseInt(remaining);
+		} catch (NumberFormatException e) {
+			// Can happen if GitHub API change 
+			return 0;
+		}
 	}
 
 	/**
@@ -102,7 +146,13 @@ public class GitHubRateLimit {
 	 */
 	public Date getResetAsDate() {
 		// RESET : The time at which the current rate limit window resets in UTC epoch seconds.
-		long seconds = Long.parseLong(this.reset); // NumberFormatException acceptable here
+		long seconds ;
+		try {
+			seconds = Long.parseLong(this.reset);
+		} catch (NumberFormatException e) {
+			// Can happen if GitHub API change 
+			seconds = 0L;
+		}
 		long milliseconds = seconds * 1000 ;
 		return new Date(milliseconds);
 	}
