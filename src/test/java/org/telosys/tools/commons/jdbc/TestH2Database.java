@@ -84,7 +84,7 @@ public class TestH2Database {
 		classLoader.loadClass("org.h2.Driver");
 		//Class.forName("org.h2.Driver");
 		System.out.println("Driver loaded.");
-		Connection conn = DriverManager.getConnection("jdbc:h2:~/test");
+		Connection conn = DriverManager.getConnection(ConnectionManagerTest.generateH2JDBCURL());
 		System.out.println("Connection OK.");
 		conn.close();
 		System.out.println("Connection closed.");
@@ -96,8 +96,8 @@ public class TestH2Database {
 		System.out.println("Driver loaded.");
 
 		System.out.println("Getting connection...");
-		//Connection conn = DriverManager.getConnection("jdbc:h2:~/test");
-		Connection conn = driver.connect("jdbc:h2:~/test", new Properties());
+		//Connection conn = DriverManager.getConnection(ConnectionManagerTest.generateH2JDBCURL());
+		Connection conn = driver.connect(ConnectionManagerTest.generateH2JDBCURL(), new Properties());
 		
 		System.out.println("Connection OK.");
 		conn.close();

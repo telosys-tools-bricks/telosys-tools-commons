@@ -20,7 +20,7 @@ public class SqlScriptRunnerTest extends TestCase {
 	private Connection getH2Connection() throws TelosysToolsException, SQLException {
 		ConnectionManager cm = new ConnectionManager();
 		System.out.println("Getting connection for 'H2 in memory' ...");
-		Connection conn = cm.getConnection("org.h2.Driver", "jdbc:h2:~/test", new Properties());
+		Connection conn = cm.getConnection("org.h2.Driver", ConnectionManagerTest.generateH2JDBCURL(), new Properties());
 		assertNotNull(conn);
 		System.out.println("Connection OK.");
 		return conn;

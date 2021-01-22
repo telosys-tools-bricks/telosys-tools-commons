@@ -13,9 +13,13 @@ import junit.framework.TestCase;
 
 public class ConnectionManagerTest extends TestCase {
 
+	public static String generateH2JDBCURL() {
+		return "jdbc:h2:~/test-" + System.getProperty("mavenSurefireForkNumber");
+	}
+
 	public void getH2Connection(ConnectionManager cm) throws TelosysToolsException, SQLException {
 		System.out.println("Getting connection for 'H2 in memory' ...");
-		Connection conn = cm.getConnection("org.h2.Driver", "jdbc:h2:~/test", new Properties());
+		Connection conn = cm.getConnection("org.h2.Driver", ConnectionManagerTest.generateH2JDBCURL(), new Properties());
 		assertNotNull(conn);
 		System.out.println("Connection OK.");
 		conn.close();
