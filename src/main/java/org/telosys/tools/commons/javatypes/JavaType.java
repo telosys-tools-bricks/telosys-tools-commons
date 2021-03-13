@@ -15,7 +15,7 @@
  */
 package org.telosys.tools.commons.javatypes;
 
-import org.telosys.tools.commons.JavaClassUtil;
+import org.telosys.tools.commons.JavaTypeUtil;
 
 public class JavaType {
 	private String _sText = null ; // the text to print ( anything : "Boolean", "Date (sql)", .. )
@@ -31,7 +31,8 @@ public class JavaType {
 		super();
 		_sText = text;
 		_sType = type;
-		_sShortType = JavaClassUtil.shortName(type);
+		//_sShortType = JavaClassUtil.shortName(type);
+		_sShortType = JavaTypeUtil.shortType(type);
 		_sDefaultValue = defaultValue ;
 	}
 	
