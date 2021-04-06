@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import org.telosys.tools.commons.TelosysToolsException;
 
@@ -17,18 +16,18 @@ import junit.framework.TestCase;
 
 public class SqlScriptRunnerTest extends TestCase {
 
-	private Connection getH2Connection() throws TelosysToolsException, SQLException {
-		ConnectionManager cm = new ConnectionManager();
-		System.out.println("Getting connection for 'H2 in memory' ...");
-		Connection conn = cm.getConnection("org.h2.Driver", "jdbc:h2:~/test", new Properties());
-		assertNotNull(conn);
-		System.out.println("Connection OK.");
-		return conn;
-	}
+//	private Connection getH2Connection() throws TelosysToolsException, SQLException {
+//		ConnectionManager cm = new ConnectionManager();
+//		System.out.println("Getting connection for 'H2 in memory' ...");
+//		Connection conn = cm.getConnection("org.h2.Driver", "jdbc:h2:~/test", new Properties());
+//		assertNotNull(conn);
+//		System.out.println("Connection OK.");
+//		return conn;
+//	}
 
 	public void testNoFileWithPath() throws TelosysToolsException, IOException, SQLException {
 		
-		Connection conn = getH2Connection() ;
+		Connection conn = H2Util.getH2Connection() ;
 		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
 		String scriptFileFullPath = TestsEnv.buildAbsolutePath("sql/script1-inex.sql");
 		System.out.println("Script file : " + scriptFileFullPath );
@@ -49,7 +48,7 @@ public class SqlScriptRunnerTest extends TestCase {
 
 	public void testNoFileWithReader() throws TelosysToolsException, IOException, SQLException {
 		
-		Connection con = getH2Connection() ;
+		Connection con = H2Util.getH2Connection() ;
 		SqlScriptRunner scriptRunner = new SqlScriptRunner(con);
 		
 		File scriptFile = new File( TestsEnv.buildAbsolutePath("sql/script1-inex.sql") ) ;
@@ -72,7 +71,7 @@ public class SqlScriptRunnerTest extends TestCase {
 
 	public void testNoFileWithFile() throws TelosysToolsException, IOException, SQLException {
 		
-		Connection con = getH2Connection() ;
+		Connection con = H2Util.getH2Connection() ;
 		SqlScriptRunner scriptRunner = new SqlScriptRunner(con);
 		
 		File scriptFile = new File( TestsEnv.buildAbsolutePath("sql/script1-inex.sql") ) ;
@@ -106,7 +105,7 @@ public class SqlScriptRunnerTest extends TestCase {
 	
 	public void testWithFileReader() throws TelosysToolsException, IOException, SQLException {
 		
-		Connection conn = getH2Connection() ;
+		Connection conn = H2Util.getH2Connection() ;
 		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
 		
 		File scriptFile = TestsEnv.getTestFile("sql/script1-H2.sql");
@@ -123,7 +122,7 @@ public class SqlScriptRunnerTest extends TestCase {
 
 	public void testWithFile() throws TelosysToolsException, IOException, SQLException {
 		
-		Connection conn = getH2Connection() ;
+		Connection conn = H2Util.getH2Connection() ;
 		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
 		
 		File scriptFile = TestsEnv.getTestFile("sql/script1-H2.sql");
@@ -139,7 +138,7 @@ public class SqlScriptRunnerTest extends TestCase {
 
 	public void testWithFileName() throws TelosysToolsException, IOException, SQLException {
 		
-		Connection conn = getH2Connection() ;
+		Connection conn = H2Util.getH2Connection() ;
 		SqlScriptRunner scriptRunner = new SqlScriptRunner(conn);
 		
 		String scriptFileFullPath = TestsEnv.getTestFileAbsolutePath("sql/script1-H2.sql"); 
