@@ -40,9 +40,9 @@ public class TestH2Database {
 		 */
 		//testH2EmbeddedConnection("my-h2-database-embedded", "sa", "");   // ERROR : not allowed, no "h2 directory"
 
-		testH2EmbeddedConnection("./my-h2-database-embedded",         null, null); // Creates  "(current-dir)/xxxx.h2.db
-		testH2EmbeddedConnection("~/my-h2-database-embedded",         null, null); // Creates  "D:/User/(user-name)/xxxx.h2.db
-		testH2EmbeddedConnection("D:/H2DATA/my-h2-database-embedded", "sa", "");   // User and Password required
+		testH2EmbeddedConnection("./my-h2-database-embedded",         null, null); // Creates  "(current-dir)/xxxx.mv.db
+		testH2EmbeddedConnection("~/my-h2-database-embedded",         null, null); // Creates  "D:/User/(user-name)/xxxx.mv.db
+		testH2EmbeddedConnection("C:/Z/TMP/my-h2-database-embedded", "sa", "");   // User and Password required
 		testH2EmbeddedConnection("mem:my-h2-database-embedded",        null, null); // No file, "in-memory"
 	}
 
