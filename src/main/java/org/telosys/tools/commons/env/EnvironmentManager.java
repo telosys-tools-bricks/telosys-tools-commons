@@ -80,7 +80,7 @@ public class EnvironmentManager {
 	 * Initializes the environment using the standard default folders and configuration files
 	 * @param sb
 	 */
-	public void initEnvironment(StringBuffer sb) {
+	public void initEnvironment(StringBuilder sb) {
 		initEnvironment(sb, null);
 	}
 	
@@ -90,7 +90,7 @@ public class EnvironmentManager {
 	 * @param sb
 	 * @param variables list of specific variables to set in the '.cfg' file (can be null if none)
 	 */
-	public void initEnvironment(StringBuffer sb, List<Variable> variables) {
+	public void initEnvironment(StringBuilder sb, List<Variable> variables) {
 		//--- Create folders
 		createFolder( telosysToolsEnv.getTelosysToolsFolder(), sb );
 		createFolder( telosysToolsEnv.getDownloadsFolder(), sb );
@@ -106,21 +106,6 @@ public class EnvironmentManager {
 		}
 	}
 	
-//	//-----------------------------------------------------------------------------------------------------	
-// Removed in v 3.0.0
-//	/**
-//	 * Initializes the environment using the folder names defined in the given configuration
-//	 * @param telosysToolsCfg
-//	 * @param sb
-//	 */
-//	public void initStandardEnvironment(TelosysToolsCfg telosysToolsCfg, StringBuffer sb) {
-//		createFolder( telosysToolsCfg.getRepositoriesFolder(), sb ); // e.g. 'TelosysTools' 
-//		createFolder( telosysToolsCfg.getDownloadsFolder(), sb );    // e.g. 'TelosysTools/downloads' 
-//		createFolder( telosysToolsCfg.getLibrariesFolder(), sb );    // e.g. 'TelosysTools/lib' 
-//		createFolder( telosysToolsCfg.getTemplatesFolder(), sb );    // e.g. 'TelosysTools/templates' 
-//		initDatabasesConfigFile(sb);
-//		initTelosysToolsConfigFile(sb);
-//	}
 	//-----------------------------------------------------------------------------------------------------	
 	/**
 	 * Returns the environment directory (OS full path)
@@ -137,8 +122,7 @@ public class EnvironmentManager {
 	 * @return
 	 */
 	protected String getTelosysToolsConfigFileFullPath() {
-//		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsConfigFileName()) ;
-		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsConfigFilePath()) ; // v 3.0.0
+		return FileUtil.buildFilePath(environmentDirectory, telosysToolsEnv.getTelosysToolsConfigFilePath()) ; 
 	}
 
 	//-----------------------------------------------------------------------------------------------------	
@@ -167,7 +151,7 @@ public class EnvironmentManager {
 	 * @param folderToBeCreated 
 	 * @param sb
 	 */
-	protected void createFolder(String folderToBeCreated, StringBuffer sb) {
+	protected void createFolder(String folderToBeCreated, StringBuilder sb) {
 
 		if ( ! StrUtil.nullOrVoid(folderToBeCreated) )  {
 			folderToBeCreated = folderToBeCreated.trim() ;
@@ -177,14 +161,7 @@ public class EnvironmentManager {
 				sb.append(". folder '" + folderToBeCreated + "' exists (not created)");
 			}
 			else {
-//				boolean created = newDir.mkdirs();
-//				if ( created ) {
-//					sb.append(". folder '" + folderToBeCreated + "' created");
-//				}
-//				else {
-//					sb.append(". folder '" + folderToBeCreated + "' not created (ERROR)");
-//				}
-				DirUtil.createDirectory( newDir ); // v 3.0.0
+				DirUtil.createDirectory( newDir ); 
 				sb.append(". folder '" + folderToBeCreated + "' created");
 			}
 		}
@@ -200,22 +177,20 @@ public class EnvironmentManager {
 	 * @param sb
 	 * @param variables list of specific variables to set in the '.cfg' file (can be null if none)
 	 */
-	protected void initTelosysToolsConfigFile( StringBuffer sb, List<Variable> variables ) throws TelosysToolsException {
+	protected void initTelosysToolsConfigFile( StringBuilder sb, List<Variable> variables ) throws TelosysToolsException {
 		//--- Initialize the file (from META-INF) in the project environment
 		initFileFromMetaInf(telosysToolsEnv.getTelosysToolsConfigFileName(), getTelosysToolsConfigFileFullPath(), sb );
 		//--- Set specific variables if any
-		if ( variables != null ) {
-			if ( variables.size() > 0 ) {
-				TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(environmentDirectory);
-				//--- Load the configuration
-				TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
-				//--- Set the given specific variables values
-				for ( Variable var : variables ) {
-					telosysToolsCfg.setSpecificVariable(var);
-				}
-				//--- Save the configuration
-				telosysToolsCfgManager.saveTelosysToolsCfg(telosysToolsCfg);
+		if ( ( variables != null ) && ( ! variables.isEmpty() ) ) {
+			TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(environmentDirectory);
+			//--- Load the configuration
+			TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
+			//--- Set the given specific variables values
+			for ( Variable var : variables ) {
+				telosysToolsCfg.setSpecificVariable(var);
 			}
+			//--- Save the configuration
+			telosysToolsCfgManager.saveTelosysToolsCfg(telosysToolsCfg);
 		}
 	}
 	
@@ -226,7 +201,7 @@ public class EnvironmentManager {
 	 * If the destination file already exists it is not copied 
 	 * @param sb
 	 */
-	protected void initDatabasesConfigFile( StringBuffer sb ) {
+	protected void initDatabasesConfigFile( StringBuilder sb ) {
 		initFileFromMetaInf(telosysToolsEnv.getDatabasesDbCfgFileName(), getDatabasesDbCfgFullPath(), sb );
 	}
 	
@@ -237,7 +212,7 @@ public class EnvironmentManager {
 	 * @param destinationFullPath  the destination file full path 
 	 * @param sb
 	 */
-	private void initFileFromMetaInf(String shortFileName, String destinationFullPath, StringBuffer sb ) {
+	private void initFileFromMetaInf(String shortFileName, String destinationFullPath, StringBuilder sb ) {
 		//--- File path inside "META-INF" folder
 		String filePathInMetaInf = FileUtil.buildFilePath("/files/", shortFileName) ; 
 		try {

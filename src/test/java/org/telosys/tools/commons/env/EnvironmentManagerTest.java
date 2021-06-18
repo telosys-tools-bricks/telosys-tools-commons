@@ -29,7 +29,7 @@ public class EnvironmentManagerTest extends TestCase {
 		return new EnvironmentManager( TestsEnv.getTmpExistingFolderFullPath(subFolder) );
 	}
 	
-	public void testGetEnvironmentDirectory() throws TelosysToolsException {
+	public void testGetEnvironmentDirectory() {
 		printSeparator();
 		System.out.println("getEnvironmentDirectory()...");
 		EnvironmentManager em = getEnvironmentManager() ;
@@ -38,17 +38,16 @@ public class EnvironmentManagerTest extends TestCase {
 		assertEquals(TestsEnv.getTmpRootFolderFullPath() , dir);
 	}
 
-	public void testGetTelosysToolsConfigFile() throws TelosysToolsException {
+	public void testGetTelosysToolsConfigFile() {
 		printSeparator();
 		System.out.println("getTelosysToolsConfigFile()...");
 		EnvironmentManager em = getEnvironmentManager() ;
 		String fullPath = em.getTelosysToolsConfigFileFullPath();
 		System.out.println(fullPath);
-//		assertEquals(TestsEnv.getTmpRootFolderFullPath()+"/telosys-tools.cfg" , cfgFile);
 		assertEquals(TestsEnv.getTmpRootFolderFullPath()+"/TelosysTools/telosys-tools.cfg" , fullPath);
 	}
 	
-	public void testGetTelosysToolsFolderFullPath() throws TelosysToolsException {
+	public void testGetTelosysToolsFolderFullPath() {
 		printSeparator();
 		System.out.println("getTelosysToolsConfigFile()...");
 		EnvironmentManager em = getEnvironmentManager() ;
@@ -57,7 +56,7 @@ public class EnvironmentManagerTest extends TestCase {
 		assertEquals(TestsEnv.getTmpRootFolderFullPath()+"/TelosysTools" , folder);
 	}
 	
-	public void testGetDatabasesDbCfgFullPath() throws TelosysToolsException {
+	public void testGetDatabasesDbCfgFullPath() {
 		printSeparator();
 		System.out.println("getDatabasesDbCfgFullPath()...");
 		EnvironmentManager em = getEnvironmentManager() ;
@@ -66,11 +65,11 @@ public class EnvironmentManagerTest extends TestCase {
 		assertEquals(TestsEnv.getTmpRootFolderFullPath()+"/TelosysTools/databases.dbcfg" , fullPath);
 	}
 	
-	public void testCreateFolder() throws TelosysToolsException {
+	public void testCreateFolder() {
 		printSeparator();
 		System.out.println("createFolder('foo1')...");
 		EnvironmentManager em = getEnvironmentManager() ;
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		em.createFolder("foo1", sb);
 		System.out.println(sb.toString());
 	}
@@ -89,7 +88,7 @@ public class EnvironmentManagerTest extends TestCase {
 			file.delete();
 		}
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		em.initTelosysToolsConfigFile(sb, null); // no variables to initialize
 		String result = sb.toString();
 		System.out.println(result);
@@ -97,12 +96,11 @@ public class EnvironmentManagerTest extends TestCase {
 		assertTrue( file.exists() );
 	}
 
-	public void testInitDatabasesConfigFile() throws TelosysToolsException {
+	public void testInitDatabasesConfigFile() {
 		printSeparator();
 		System.out.println("testInitDatabasesConfigFile()...");
 
 		EnvironmentManager em = getEnvironmentManager();
-		
 		
 		String filePath = em.getDatabasesDbCfgFullPath() ;
 		System.out.println("File : " + filePath);
@@ -112,24 +110,12 @@ public class EnvironmentManagerTest extends TestCase {
 			file.delete();
 		}
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		em.initDatabasesConfigFile(sb);
 		System.out.println(sb.toString());
 		
 		assertTrue( file.exists() );
-		
-//		StringBuffer sb = new StringBuffer();
-//		em.initDatabasesConfigFile("aaaa", sb);
-//		String result = sb.toString();
-//		System.out.println(result);
-//		assertTrue( result.contains("cannot create"));
 
-//		TestsEnv.getTmpExistingFolder("tmp-folder");
-//		sb = new StringBuffer();
-//		em.initDatabasesConfigFile("tmp-folder", sb);
-//		result = sb.toString();
-//		System.out.println(result);
-//		assertTrue( result.contains("created"));
 	}
 
 	public void testInitEnvironment() throws TelosysToolsException {
@@ -139,7 +125,7 @@ public class EnvironmentManagerTest extends TestCase {
 		EnvironmentManager em = new EnvironmentManager( TestsEnv.getTmpExistingFolderFullPath("myproject1") );
 		cleanTelosysToolsEnvironment(em);
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		em.initEnvironment(sb);
 		System.out.println(sb.toString());
 		
@@ -148,7 +134,6 @@ public class EnvironmentManagerTest extends TestCase {
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/downloads").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/templates").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/databases.dbcfg").exists() );
-//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/telosys-tools.cfg").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/telosys-tools.cfg").exists() );
 	}
 	
@@ -160,11 +145,11 @@ public class EnvironmentManagerTest extends TestCase {
 		EnvironmentManager em = new EnvironmentManager( projectFullPath);
 		cleanTelosysToolsEnvironment(em);
 		
-		List<Variable> variables = new LinkedList<Variable>();
+		List<Variable> variables = new LinkedList<>();
 		variables.add(new Variable("PROJECT_NAME","myproject2") );
 		variables.add(new Variable("MY_VAR1","value1") );
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		em.initEnvironment(sb, variables);
 		System.out.println(sb.toString());
 		
@@ -173,7 +158,6 @@ public class EnvironmentManagerTest extends TestCase {
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/downloads").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/templates").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/databases.dbcfg").exists() );
-//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/telosys-tools.cfg").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/telosys-tools.cfg").exists() );
 		
 		TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(projectFullPath) ;
@@ -189,7 +173,7 @@ public class EnvironmentManagerTest extends TestCase {
 		assertEquals("myproject2", var.getValue());
 	}
 	
-	public void testIsInitialized() throws TelosysToolsException {
+	public void testIsInitialized() {
 		printSeparator();
 		System.out.println("testIsInitialized()...");
 		EnvironmentManager em = getEnvironmentManager("/myproject");
@@ -198,11 +182,10 @@ public class EnvironmentManagerTest extends TestCase {
 		cleanTelosysToolsEnvironment(em);
 		
 		//--- Is initialized : NO
-		//boolean envInitialized = em.isEnvironmentInitialized();
 		assertFalse(em.isEnvironmentInitialized());
 
 		//--- Initialize...
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		em.initEnvironment(sb);
 		System.out.println(sb.toString());
 
@@ -214,7 +197,7 @@ public class EnvironmentManagerTest extends TestCase {
 		assertFalse(em.isEnvironmentInitialized());
 
 		//--- Initialize...
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		em.initEnvironment(sb);
 		System.out.println(sb.toString());
 
@@ -226,19 +209,19 @@ public class EnvironmentManagerTest extends TestCase {
 		assertFalse(em.isEnvironmentInitialized());
 	}
 	
-	public void cleanTelosysToolsEnvironment(EnvironmentManager em) throws TelosysToolsException {
+	public void cleanTelosysToolsEnvironment(EnvironmentManager em) {
 		System.out.println("cleaning TelosysTools environment ..." );
 		cleanTelosysToolsDirectory(em);
 		cleanTelosysToolsCfg(em);
 	}
-	public void cleanTelosysToolsDirectory(EnvironmentManager em) throws TelosysToolsException {
+	public void cleanTelosysToolsDirectory(EnvironmentManager em) {
 		File telosysToolsDirectory = new File(em.getTelosysToolsFolderFullPath() );
 		if ( telosysToolsDirectory.exists() ) {
 			DirUtil.deleteDirectory( telosysToolsDirectory ) ;
 			System.out.println("'TelosysTools' directory deleted." );
 		}
 	}
-	public void cleanTelosysToolsCfg(EnvironmentManager em) throws TelosysToolsException {
+	public void cleanTelosysToolsCfg(EnvironmentManager em) {
 		File telosysToolsCfg = new File(em.getTelosysToolsConfigFileFullPath() );
 		if ( telosysToolsCfg.exists() ) {
 			telosysToolsCfg.delete() ;

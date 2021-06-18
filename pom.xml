@@ -12,7 +12,7 @@
 
 	<name>telosys-tools-commons</name>
 	<artifactId>telosys-tools-commons</artifactId>
-    <version>3.2.2</version>
+    <version>3.3.0</version>
 	<packaging>jar</packaging>
 	
 	
