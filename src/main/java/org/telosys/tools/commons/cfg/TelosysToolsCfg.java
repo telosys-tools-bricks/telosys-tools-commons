@@ -47,7 +47,6 @@ public class TelosysToolsCfg
 	private final String     _projectAbsolutePath ; 
 	private final String     _cfgFileAbsolutePath ; 
 	private final boolean    _initializedFromFile ; 
-	//private final Properties _cfgFileProperties ; // removed in v 3.0.0
 
 	//----------------------------------------------------------------------------------------
 	//--- Project folders default values
@@ -76,7 +75,7 @@ public class TelosysToolsCfg
 	
 	//----------------------------------------------------------------------------------------
 	//--- Specific variables defined by the user for the current project
-	private LinkedList<Variable> _specificVariables = new LinkedList<Variable>() ; // v 3.0.0
+	private LinkedList<Variable> _specificVariables = new LinkedList<>() ; // v 3.0.0
 
 	//----------------------------------------------------------------------------------------
     /**
@@ -661,13 +660,13 @@ public class TelosysToolsCfg
 	public void setSpecificVariables(List<Variable> variables ) {
 		// v 3.0.0 : from Array to LinkedList
 		if ( variables != null ) {
-			_specificVariables = new LinkedList<Variable>() ;
+			_specificVariables = new LinkedList<>() ;
 			for ( Variable var : variables ) {
 				_specificVariables.add(var);
 			}
 		}
 		else {
-			_specificVariables = new LinkedList<Variable>() ;
+			_specificVariables = new LinkedList<>() ;
 		}
 	}	
 	//------------------------------------------------------------------------------------------------------
@@ -697,7 +696,7 @@ public class TelosysToolsCfg
 	//------------------------------------------------------------------------------------------------------
 	private Variable[] buildAllVariablesArray() {
     	//--- All variables : specific project variables + predefined variables 
-    	Hashtable<String, String> allVariables = new Hashtable<String, String>();
+    	Hashtable<String, String> allVariables = new Hashtable<>();
     	
     	//--- 1) Project specific variables (defined by user)
     	for ( Variable v : _specificVariables ) {
