@@ -21,38 +21,50 @@ public class ShellCommandExecutorIT extends TestCase {
 	}
 
 	@Test
-	public void testWindows1() {		
+	public void testWindowsCmd1() {		
 		ShellCommandResult r = exec("cmd /c dir C:\\Temp");
 		assertTrue( r.getExitValue() == 0 ); 
 	}
 
 	@Test
-	public void testWindows2() {		
+	public void testWindowsCmd2() {		
 		ShellCommandResult r = exec("cmd /c dir", "C:\\Temp");
 		assertTrue( r.getExitValue() == 0 ); 
 	}
 
+	@Test
+	public void testWindowsPowerShell1() {		
+		ShellCommandResult r = exec("powershell.exe  $PSVersionTable.PSVersion");
+		assertTrue( r.getExitValue() == 0 ); 
+	}
+
+	@Test
+	public void testWindowsPowerShell2() {		
+		ShellCommandResult r = exec("powershell.exe ls");
+		assertTrue( r.getExitValue() == 0 ); 
+	}
+
 //	@Test
-//	public void testWindows3() {
+//	public void testWindows99() {
 //		// NB : do not launch interactive shell
 //		ShellCommandResult r = exec("cmd", "C:\\Temp");
 //		assertTrue( r.getExitValue() == 0 ); 
 //	}
 
 	@Test
-	public void test2() {		
+	public void testGit() {		
 		ShellCommandResult r = exec("git --version");
 		assertTrue( r.getExitValue() == 0 ); 
 	}
 
 	@Test
-	public void test3() {		
+	public void testGo() {		
 		ShellCommandResult r = exec("go help mod");
 		assertTrue( r.getExitValue() == 0 ); 
 	}
 
 	@Test
-	public void test4() {		
+	public void testInvalidCommand() {		
 		ShellCommandResult r;
 		try {
 			r = exec("badcmd x y");
