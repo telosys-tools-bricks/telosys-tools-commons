@@ -41,17 +41,23 @@ public class NamingStyleConverter {
 			// contains UNDERSCORE => snake_case or ANACONDA_CASE or Cobra_Case
 			return s.toLowerCase();
 		}
+		if ( StrUtil.isUpperCase(s) ) {
+			// contains only uppercase letters or digits
+			return s.toLowerCase();
+		}
 		StringBuilder sb = new StringBuilder();
 		boolean started = false ;
 		char lastCharAdded = 0;
 		for (char c : s.toCharArray()) {
 		    if (Character.isUpperCase(c) && started ) {
 		    	if ( lastCharAdded != UNDERSCORE ) { // avoid double '_'
-			        sb.append(lastCharAdded = UNDERSCORE);
+		    		lastCharAdded = UNDERSCORE ;
+			        sb.append(lastCharAdded);
 		    	}
 		    }
 		    if ( c != ' ' ) {
-		        sb.append(lastCharAdded = Character.toLowerCase(c));
+		    	lastCharAdded = Character.toLowerCase(c);
+		        sb.append(lastCharAdded);
 		        started = true ;
 		    }
 		}
@@ -140,7 +146,7 @@ public class NamingStyleConverter {
 		    }
 		    else {
 			    if ( c != ' ' ) {
-			    	char newChar = '?';
+			    	char newChar ;
 				    if ( previousIsSeparator ) {
 				    	newChar = Character.toUpperCase(c);		    		
 			    	}

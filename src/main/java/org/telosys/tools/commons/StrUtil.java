@@ -362,6 +362,40 @@ public final class StrUtil
         }
         return false ;
     }
+    
+    /**
+     * Returns true if the given string contains only uppercase letters or digits <br>
+     * (return false if the string null or void)
+     * @param s
+     * @return
+     */
+    public static final boolean isUpperCase(String s) {
+    	if ( s == null ) return false ;
+    	if ( s.isEmpty() ) return false ;
+    	for (char c : s.toCharArray()) {
+    		if ( ! ( Character.isUpperCase(c) || Character.isDigit(c) ) ) {
+    			return false ;
+    		}
+    	}
+		return true ;
+    }    
+
+    /**
+     * Returns true if the given string contains only lowercase letters or digits <br>
+     * (return false if the string null or void)
+     * @param s
+     * @return
+     */
+    public static final boolean isLowerCase(String s) {
+    	if ( s == null ) return false ;
+    	if ( s.isEmpty() ) return false ;
+    	for (char c : s.toCharArray()) {
+    		if ( ! ( Character.isLowerCase(c) || Character.isDigit(c) ) ) {
+    			return false ;
+    		}
+    	}
+		return true ;
+    }    
 
     /**
      * Returns a void string if the given string is null, else returs the given string

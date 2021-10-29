@@ -25,6 +25,7 @@ public class NamingStyleConverterTest {
 		
 		// Expected use cases : from camelCase 
 		assertEquals("my_var_name", c.toSnakeCase("myVarName"));
+		assertEquals("my_var1_name2", c.toSnakeCase("myVar1Name2"));
 		assertEquals("my_x_y_position", c.toSnakeCase("myXYPosition"));
 		assertEquals("my_x1_y2_position", c.toSnakeCase("myX1Y2Position"));
 
@@ -33,12 +34,14 @@ public class NamingStyleConverterTest {
 		
 		assertEquals("abc", c.toSnakeCase("abc"));
 		assertEquals("abc", c.toSnakeCase(" abc  "));
+		assertEquals("abc12", c.toSnakeCase("abc 12"));
 		assertEquals("abc", c.toSnakeCase("Abc"));
-		assertEquals("a_b_c", c.toSnakeCase("ABC"));
+		assertEquals("abc", c.toSnakeCase("ABC"));
+		assertEquals("abc12", c.toSnakeCase("ABC12"));
 
 		// Unexpected use cases 
 		assertEquals("my_var_name", c.toSnakeCase("my Var Name"));
-		assertEquals("my_var_name", c.toSnakeCase("My Var Name"));
+		assertEquals("my_var_name", c.toSnakeCase("My Var  Name"));
 		assertEquals("my_var_name", c.toSnakeCase(" My Var   Name  "));
 		assertEquals("my_varname", c.toSnakeCase(" My Var   name  "));
 		
@@ -76,7 +79,7 @@ public class NamingStyleConverterTest {
 		assertEquals("ABC", c.toAnacondaCase("abc"));
 		assertEquals("ABC", c.toAnacondaCase(" abc  "));
 		assertEquals("ABC", c.toAnacondaCase("Abc"));
-		assertEquals("A_B_C", c.toAnacondaCase("ABC"));
+		assertEquals("ABC", c.toAnacondaCase("ABC"));
 
 		// Unexpected use cases 
 		assertEquals("MY_VAR_NAME", c.toAnacondaCase("my Var Name"));

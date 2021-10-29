@@ -218,5 +218,38 @@ public class StrUtilTest {
 		assertEquals( "a", StrUtil.repeat('a', 1)) ;
 		assertEquals( "aa", StrUtil.repeat('a', 2)) ;
 		assertEquals( "aaaa", StrUtil.repeat('a', 4)) ;
-	}		
+	}
+	
+	@Test
+	public void testIsUpperCase() {
+		assertTrue(StrUtil.isUpperCase("ABC")) ;
+		assertTrue(StrUtil.isUpperCase("ABC12")) ;
+		
+		assertFalse(StrUtil.isUpperCase(null)) ;
+		assertFalse(StrUtil.isUpperCase("")) ;
+		assertFalse(StrUtil.isUpperCase("abcde")) ;
+		assertFalse(StrUtil.isUpperCase("ABC-DE")) ;
+		assertFalse(StrUtil.isUpperCase("AB_CDE")) ;
+		assertFalse(StrUtil.isUpperCase("AB CDE")) ;
+		assertFalse(StrUtil.isUpperCase(" AB")) ;
+		assertFalse(StrUtil.isUpperCase("AB ")) ;
+	}
+	
+	@Test
+	public void testIsLowerCase() {
+		assertTrue(StrUtil.isLowerCase("a")) ;
+		assertTrue(StrUtil.isLowerCase("abcd")) ;
+		assertTrue(StrUtil.isLowerCase("abcdef12")) ;
+		
+		assertFalse(StrUtil.isLowerCase(null)) ;
+		assertFalse(StrUtil.isLowerCase("")) ;
+		assertFalse(StrUtil.isLowerCase("ABCD")) ;
+		assertFalse(StrUtil.isLowerCase("aBcdE")) ;
+		assertFalse(StrUtil.isLowerCase("abc-def")) ;
+		assertFalse(StrUtil.isLowerCase("ab_cde")) ;
+		assertFalse(StrUtil.isLowerCase("ab cde")) ;
+		assertFalse(StrUtil.isLowerCase(" abc")) ;
+		assertFalse(StrUtil.isLowerCase("abc ")) ;
+	}
+	
 }
