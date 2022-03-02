@@ -40,8 +40,9 @@ import org.telosys.tools.commons.variables.VariablesUtil;
  */
 public class TelosysToolsCfg 
 {
-	private final static String SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
-	private final static String SPECIFIC_TEMPLATES_FOLDER    = "SpecificTemplatesFolder";
+	private static final String SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
+	private static final String SPECIFIC_TEMPLATES_FOLDER    = "SpecificTemplatesFolder";
+	private static final String SPECIFIC_MODELS_FOLDER       = "SpecificModelsFolder"; // V 3.4.0
     
 	//----------------------------------------------------------------------------------------
 	private final String     _projectAbsolutePath ; 
@@ -72,6 +73,7 @@ public class TelosysToolsCfg
 	
 	private String _specificDestinationFolder = "" ;  // v 3.0.0
 	private String _specificTemplatesFolder   = "" ;  // v 3.0.0
+	private String specificModelsFolder = "" ;  // v 3.4.0
 	
 	//----------------------------------------------------------------------------------------
 	//--- Specific variables defined by the user for the current project
@@ -88,7 +90,7 @@ public class TelosysToolsCfg
     	// v 3.0.0
     	TelosysToolsEnv env = TelosysToolsEnv.getInstance();
     	_sTelosysToolsFolder = env.getTelosysToolsFolder();
-    	_sModelsFolder       = env.getModelsFolder() ; 
+    	_sModelsFolder       = env.getModelsFolder() ; // "TelosysTools/models" since v 3.4.0
     	_sTemplatesFolder    = env.getTemplatesFolder() ; 
     	_sDownloadsFolder    = env.getDownloadsFolder() ; 
     	_sLibrariesFolder    = env.getLibrariesFolder() ;
@@ -111,6 +113,7 @@ public class TelosysToolsCfg
     		// v 3.0.0
 	    	_specificDestinationFolder = prop.getProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder);
 	    	_specificTemplatesFolder   = prop.getProperty(SPECIFIC_TEMPLATES_FOLDER, _specificTemplatesFolder);
+	    	specificModelsFolder       = prop.getProperty(SPECIFIC_MODELS_FOLDER, specificModelsFolder); // v 3.4.0
 	    	
 	    	//--- Packages 
 	    	_ROOT_PKG   = prop.getProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
@@ -167,6 +170,7 @@ public class TelosysToolsCfg
     	
     	properties.setProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder );
     	properties.setProperty(SPECIFIC_TEMPLATES_FOLDER,   _specificTemplatesFolder );
+    	properties.setProperty(SPECIFIC_MODELS_FOLDER,      specificModelsFolder ); // v 3.4.0
     	
     	//--- Packages 
     	properties.setProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
@@ -241,8 +245,10 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDatabasesDbCfgFile() {
-    	// v 3.0.0
-    	return FileUtil.buildFilePath(getModelsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+//    	// v 3.0.0
+//    	return FileUtil.buildFilePath(getModelsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+    	// v 3.4.0 
+    	return FileUtil.buildFilePath(getTelosysToolsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}
     /**
      * Returns the absolute file name of the "databases.dbcfg" file 
@@ -250,8 +256,10 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDatabasesDbCfgFileAbsolutePath() {
-    	// v 3.0.0
-    	return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+//    	// v 3.0.0
+//    	return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+    	// v 3.4.0 
+    	return FileUtil.buildFilePath(getTelosysToolsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}
 
     //==============================================================================
@@ -425,18 +433,19 @@ public class TelosysToolsCfg
     	
 	}
 
-    /**
-     * Returns the absolute file name for the given model file name<br>
-     * e.g. : 'X:/dir/myproject/TelosysTools/aaa.model' for 'aaa.model'
-     * @param modelFileName the model file name ( e.g. 'foo.model' )
-     * @return
-     */
-    public String getDslModelFileAbsolutePath(String modelFileName) {
-    	if ( modelFileName == null ) {
-    		throw new IllegalArgumentException("model file name is null");
-    	}
-		return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), modelFileName.trim() );
-	}
+// removed in v 3.4.0
+//    /**
+//     * Returns the absolute file name for the given model file name<br>
+//     * e.g. : 'X:/dir/myproject/TelosysTools/aaa.model' for 'aaa.model'
+//     * @param modelFileName the model file name ( e.g. 'foo.model' )
+//     * @return
+//     */
+//    public String getDslModelFileAbsolutePath(String modelFileName) {
+//    	if ( modelFileName == null ) {
+//    		throw new IllegalArgumentException("model file name is null");
+//    	}
+//		return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), modelFileName.trim() );
+//	}
 
 
 	//------------------------------------------------------------------------------------------------------
@@ -487,14 +496,49 @@ public class TelosysToolsCfg
     	return _sModelsFolder ;
 	}
 
+//    /**
+//     * Returns the models folder absolute path <br>
+//     * ( e.g. 'X:/dir/myproject/TelosysTools' )
+//     * @return
+//     */
+//    public String getModelsFolderAbsolutePath() {
+//    	return FileUtil.buildFilePath(_projectAbsolutePath, _sModelsFolder ) ;
+//	}
     /**
      * Returns the models folder absolute path <br>
-     * ( e.g. 'X:/dir/myproject/TelosysTools' )
+     * ( e.g. 'X:/dir/myproject/TelosysTools/models' )
      * @return
      */
-    public String getModelsFolderAbsolutePath() {
-    	return FileUtil.buildFilePath(_projectAbsolutePath, _sModelsFolder ) ;
+    public String getModelsFolderAbsolutePath() { 
+    	if ( this.hasSpecificModelsFolders() ) {
+    		//--- Specific templates folder => use it as is (v 3.4.0 )
+    		return specificModelsFolder ; 
+    	}
+    	else {
+    		//--- Default templates location (in the current project)
+    		return FileUtil.buildFilePath(_projectAbsolutePath, _sModelsFolder ) ;
+    	}    	
 	}
+
+    /**
+     * Returns the model folder absolute path for the given model name <br>
+     * e.g. : <br>
+     * 'X:/dir/myproject/TelosysTools/models/mymodel' for 'mymodel' <br>
+     * 'X:/dir/myproject/TelosysTools/models' if model name is null or empty <br>
+     * @param modelName
+     * @return
+     */
+    public String getModelFolderAbsolutePath(String modelName) {
+    	String modelsFolderAbsolutePath = getModelsFolderAbsolutePath();
+		if ( StrUtil.nullOrVoid(modelName) ) {
+			// No current model => use the standard templates folder as is
+			return modelsFolderAbsolutePath ;
+		}
+		else {
+			// There's a bundle defined => use it
+			return FileUtil.buildFilePath(modelsFolderAbsolutePath, modelName.trim());
+		}
+    }
     
     //=======================================================================================================
     // Packages 
@@ -575,6 +619,15 @@ public class TelosysToolsCfg
     	return _specificTemplatesFolder ;
     }
     
+    /**
+     * Returns the specific models folder (absolute path) <br>
+     * @return
+     * @since v 3.4.0
+     */
+    public String getSpecificModelsFolderAbsolutePath() {
+    	return specificModelsFolder;
+    }
+    
 	/**
 	 * Set the specific templates folder (absolute path) <br>
 	 * ( e.g. "X:/foo/bar/myfolder" or "" for not defined )
@@ -602,6 +655,15 @@ public class TelosysToolsCfg
 		else {
 			return true ;
 		}
+	}
+	
+	/**
+	 * Returns true if a specific models folder has been defined (false if none)
+	 * @return
+     * @since v 3.4.0
+	 */
+	public boolean hasSpecificModelsFolders() {
+		return ! StrUtil.nullOrVoid( specificModelsFolder ) ;
 	}
 	
 	/**

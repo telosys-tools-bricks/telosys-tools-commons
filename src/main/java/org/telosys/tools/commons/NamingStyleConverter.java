@@ -77,9 +77,9 @@ public class NamingStyleConverter {
 	}
 
 	/**
-	 * Converts the given string to "camelCase" <br>
-	 * The input string can be in any known style (snake_case, ANACONDA_CASE, camelCase, PascalCase) <br>
-	 * Examples : 'my_var_name', 'MY_VAR_NAME' and 'MyVarName' are converted to "myVarName" <br>
+	 * Converts the given string to "camelCase" using "_" as word separator<br>
+	 * Examples : 'my_var_name', 'MY_VAR_NAME' are converted to "myVarName" <br>
+	 * 'AbcDef' is converted to 'abcdef'
 	 * @param s
 	 * @return
 	 */
@@ -88,7 +88,7 @@ public class NamingStyleConverter {
 	}
 
 	/**
-	 * Converts a string to "camelCase" using the given separator character<br>
+	 * Converts the given string to "camelCase" using the given word separator<br>
 	 * Example : "my.var.name" with separator "." is converted to "myVarName" <br>
 	 * @param s
 	 * @param separator 
@@ -99,9 +99,9 @@ public class NamingStyleConverter {
 	}
 	
 	/**
-	 * Converts a string to "PascalCase" <br>
-	 * The input string can be in any known style (snake_case, ANACONDA_CASE, camelCase, PascalCase) <br>
-	 * Examples : 'my_var_name', 'MY_VAR_NAME' and 'myVarName' are converted to "MyVarName" <br>
+	 * Converts a string to "PascalCase" using "_" as word separator<br>
+	 * Examples : 'my_var_name' and 'MY_VAR_NAME' are converted to "MyVarName" <br>
+	 * 'ABC' is converted to 'Abc' and 'abCdEf' to 'Abcdef' <br>
 	 * @param s 
 	 * @return
 	 */
@@ -132,10 +132,17 @@ public class NamingStyleConverter {
 		if ( s == null) {
 			return "";
 		}
-		if ( s.indexOf(separator) < 0 ) {
-			// No separator in string => just capitalize
-			return capitalize(s.trim());
-		}
+//		String s = "";
+//		if ( stringToConvert.indexOf(separator) < 0 ) {
+//			// No separator in string => just capitalize
+//			return capitalize(stringToConvert.trim());
+//		}
+//		else {
+//			// Separator in string will be used to capitalize => convert all chars to lower case
+//			s = stringToConvert.toLowerCase();
+//		}
+//		String s =stringToConvert ;
+
 		StringBuilder sb = new StringBuilder();
 		boolean started = false ;
 		boolean previousIsSeparator = false;

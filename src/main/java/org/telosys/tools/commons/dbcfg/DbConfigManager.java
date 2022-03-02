@@ -67,7 +67,12 @@ public class DbConfigManager {
 	public DatabasesConfigurations load() throws TelosysToolsException {
 		
 		DatabasesConfigurations databasesConfigurations = new DatabasesConfigurations();
-		
+		if ( ! file.exists() ) {
+			throw new TelosysToolsException("database config file '" + file.getAbsolutePath() + "' not found");
+		}
+		if ( ! file.isFile() ) {
+			throw new TelosysToolsException("database config file '" + file.getAbsolutePath() + "' not a file");
+		}
 		Document document = XmlFileUtil.load( file );
 		
         //--- Root element "<databases>"

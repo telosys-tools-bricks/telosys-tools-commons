@@ -1,0 +1,4 @@
+model:
+  name : MyModelName
+  version: 1.0
+  description  : My test model

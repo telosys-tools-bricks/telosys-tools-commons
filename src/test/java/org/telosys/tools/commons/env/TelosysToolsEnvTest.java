@@ -18,7 +18,8 @@ public class TelosysToolsEnvTest extends TestCase {
 		assertEquals("TelosysTools", telosysToolsEnv.getTelosysToolsFolder() );
 		assertEquals("TelosysTools/downloads", telosysToolsEnv.getDownloadsFolder() );
 		assertEquals("TelosysTools/lib", telosysToolsEnv.getLibrariesFolder() );
-		assertEquals("TelosysTools", telosysToolsEnv.getModelsFolder() );
+//		assertEquals("TelosysTools", telosysToolsEnv.getModelsFolder() );
+		assertEquals("TelosysTools/models", telosysToolsEnv.getModelsFolder() ); // v 3.4.0
 		assertEquals("TelosysTools/templates", telosysToolsEnv.getTemplatesFolder() );
 		
 		assertEquals("telosys-tools.cfg",              telosysToolsEnv.getTelosysToolsConfigFileName() );

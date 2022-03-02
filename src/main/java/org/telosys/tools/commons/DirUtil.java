@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
+
 /**
  * Utility class for DIRECTORY operations ( set of static methods )
  * 
@@ -45,16 +47,16 @@ public class DirUtil {
 	    }
 		if ( ! directory.exists() ) {
 			// Creates the directory, including any necessary but nonexistent parent directories.
-			boolean result = directory.mkdirs() ; 
-			if ( result != true ) {
-				throw new RuntimeException("cannot create directory '" + directory.getPath() + "'");
+			boolean created = directory.mkdirs() ; 
+			if ( ! created ) {
+				throw new TelosysRuntimeException("cannot create directory '" + directory.getPath() + "'");
 			}
 		}
 		else {
 			// already exists 
 			if ( ! directory.isDirectory() ) {
 				// not a directory :-(
-				throw new RuntimeException("cannot create directory '" + directory.getPath() + "' (already exists and not a directory) ");
+				throw new TelosysRuntimeException("cannot create directory '" + directory.getPath() + "' (already exists and not a directory) ");
 			}
 		}
 	}
@@ -84,8 +86,6 @@ public class DirUtil {
 	            if ( entry.isDirectory() ) {
 	            	//--- Delete the directory content
 	            	deleteDirectoryRecursively(entry);
-//	            	//--- Delete the directory itself
-//	                f.delete();
 	            }
 	            else {
 	            	//--- Delete the file

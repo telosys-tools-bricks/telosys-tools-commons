@@ -81,9 +81,9 @@ public class TelosysToolsCfgTest {
 		
 		assertEquals("TelosysTools",            telosysToolsCfg.getTelosysToolsFolder() );
 		assertEquals("TelosysTools/downloads",  telosysToolsCfg.getDownloadsFolder() );
-//		assertEquals("TelosysTools/templates",  telosysToolsCfg.getTemplatesFolder() );
+//		assertEquals("TelosysTools/templates",  telosysToolsCfg.getTemplatesFolder() ); // only absolute path
 		assertEquals("TelosysTools/lib",        telosysToolsCfg.getLibrariesFolder() );
-		assertEquals("TelosysTools",            telosysToolsCfg.getModelsFolder() );
+		assertEquals("TelosysTools/models",     telosysToolsCfg.getModelsFolder() );
 
 		assertEquals("TelosysTools/databases.dbcfg", telosysToolsCfg.getDatabasesDbCfgFile() );
 
@@ -94,10 +94,14 @@ public class TelosysToolsCfgTest {
 		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools/downloads",  telosysToolsCfg.getDownloadsFolderAbsolutePath() );
 		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools/templates",  telosysToolsCfg.getTemplatesFolderAbsolutePath() );
 		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools/lib",        telosysToolsCfg.getLibrariesFolderAbsolutePath() );
-		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools",            telosysToolsCfg.getModelsFolderAbsolutePath() );
+//		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools",            telosysToolsCfg.getModelsFolderAbsolutePath() );
+		assertEquals(PROJECT_ABSOLUTE_PATH+"/TelosysTools/models",     telosysToolsCfg.getModelsFolderAbsolutePath() ); // v 3.4.0
 
 		assertEquals(PROJECT_ABSOLUTE_PATH + "/TelosysTools/templates/mybundle", telosysToolsCfg.getTemplatesFolderAbsolutePath("mybundle") );
-		assertEquals(PROJECT_ABSOLUTE_PATH + "/TelosysTools/foo.model", telosysToolsCfg.getDslModelFileAbsolutePath("foo.model") );
+//		assertEquals(PROJECT_ABSOLUTE_PATH + "/TelosysTools/foo.model", telosysToolsCfg.getDslModelFileAbsolutePath("foo.model") );
+		// v 3.4.0
+//		assertEquals(PROJECT_ABSOLUTE_PATH + "/TelosysTools/models/foo.model", telosysToolsCfg.getDslModelFileAbsolutePath("foo.model") );
+		assertEquals(PROJECT_ABSOLUTE_PATH + "/TelosysTools/models/foo", telosysToolsCfg.getModelFolderAbsolutePath("foo") );
 	}
 
 	@Test

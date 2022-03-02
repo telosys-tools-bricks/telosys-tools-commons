@@ -101,7 +101,8 @@ public class NamingStyleConverterTest {
 		
 		assertEquals("Abc", c.toPascalCase("abc"));
 		assertEquals("Abc", c.toPascalCase("Abc"));
-		assertEquals("AbcDefGhi", c.toPascalCase(" abcDefGhi  "));
+//		assertEquals("AbcDefGhi", c.toPascalCase(" abcDefGhi  "));
+		assertEquals("Abcdefghi", c.toPascalCase(" abcDefGhi  "));
 
 		// Expected use cases : from snake_case 
 		assertEquals("ABC", c.toPascalCase("a_b_c"));
@@ -115,12 +116,16 @@ public class NamingStyleConverterTest {
 		assertEquals("MyVarName", c.toPascalCase("MY_VAR_NAME"));
 		
 		// Expected use cases : from camelCase 
-		assertEquals("ABC", c.toPascalCase("aBC"));
-		assertEquals("MyVarName", c.toPascalCase("myVarName"));
+//		assertEquals("ABC", c.toPascalCase("aBC"));
+		assertEquals("Abc", c.toPascalCase("aBC"));
+//		assertEquals("MyVarName", c.toPascalCase("myVarName"));
+		assertEquals("Myvarname", c.toPascalCase("myVarName"));
 
 		// Expected use cases : from PascalCase 
-		assertEquals("ABC", c.toPascalCase("ABC"));
-		assertEquals("MyVarName", c.toPascalCase("MyVarName"));
+//		assertEquals("ABC", c.toPascalCase("ABC"));
+		assertEquals("Abcde", c.toPascalCase("ABCDE"));
+//		assertEquals("MyVarName", c.toPascalCase("MyVarName"));
+		assertEquals("Abcdef", c.toPascalCase("abCdEf"));
 
 		
 		// Multiple separators
@@ -144,7 +149,7 @@ public class NamingStyleConverterTest {
 		
 		assertEquals("Abc", c.toPascalCase("abc", "/"));
 		assertEquals("Abc", c.toPascalCase("Abc", "/"));
-		assertEquals("AbcDefGhi", c.toPascalCase(" abcDefGhi  ", "/"));
+		assertEquals("Abcdefghi", c.toPascalCase(" abcDefGhi  ", "/"));
 
 		// Expected use cases 
 		assertEquals("ABC", c.toPascalCase("a/b/c", "/") );
@@ -152,7 +157,7 @@ public class NamingStyleConverterTest {
 		assertEquals("MyVarName", c.toPascalCase("my.var.name", "."));
 
 		// already in expected case
-		assertEquals("MyVarName", c.toPascalCase("MyVarName", "."));
+		assertEquals("Myvarname", c.toPascalCase("MyVarName", "."));
 
 		// Unexpected use cases 
 		assertEquals("A_b_c", c.toPascalCase("a_b_c", "/") );
@@ -169,7 +174,8 @@ public class NamingStyleConverterTest {
 		
 		assertEquals("abc", c.toCamelCase("abc"));
 		assertEquals("abc", c.toCamelCase("Abc"));
-		assertEquals("abcDefGhi", c.toCamelCase(" abcDefGhi  "));
+//		assertEquals("abcDefGhi", c.toCamelCase(" abcDefGhi  "));
+		assertEquals("abcdefghi", c.toCamelCase(" abcDefGhi  "));
 
 		// Expected use cases : from snake_case 
 		assertEquals("aBC", c.toCamelCase("a_b_c"));
@@ -183,12 +189,15 @@ public class NamingStyleConverterTest {
 		assertEquals("myVarName", c.toCamelCase("MY_VAR_NAME"));
 		
 		// Expected use cases : from camelCase 
-		assertEquals("aBC", c.toCamelCase("aBC"));
-		assertEquals("myVarName", c.toCamelCase("myVarName"));
+//		assertEquals("aBC", c.toCamelCase("aBC"));
+		assertEquals("abc", c.toCamelCase("aBC"));
+//		assertEquals("myVarName", c.toCamelCase("myVarName"));
 
 		// Expected use cases : from PascalCase 
-		assertEquals("aBC", c.toCamelCase("ABC"));
-		assertEquals("myVarName", c.toCamelCase("MyVarName"));
+//		assertEquals("aBC", c.toCamelCase("ABC"));
+		assertEquals("abc", c.toCamelCase("ABC"));
+		assertEquals("abcdef", c.toCamelCase("AbcDef"));
+		assertEquals("myvarname", c.toCamelCase("MyVarName"));
 
 		// Multiple separators
 		assertEquals("myVarName", c.toCamelCase("my__var___name"));
@@ -210,7 +219,8 @@ public class NamingStyleConverterTest {
 		
 		assertEquals("abc", c.toCamelCase("abc", "/"));
 		assertEquals("abc", c.toCamelCase("Abc", "/"));
-		assertEquals("abcDefGhi", c.toCamelCase(" abcDefGhi  ", "/"));
+//		assertEquals("abcDefGhi", c.toCamelCase(" abcDefGhi  ", "/"));
+		assertEquals("abcdefghi", c.toCamelCase(" abcDefGhi  ", "/"));
 
 		// Expected use cases 
 		assertEquals("aBC", c.toCamelCase("a/b/c", "/") );

@@ -27,4 +27,8 @@ public class TelosysRuntimeException extends RuntimeException {
 		super(msg);
 	}
 
+	public TelosysRuntimeException(String msg, Exception exception) {
+		super(msg, exception);
+	}
+
 }

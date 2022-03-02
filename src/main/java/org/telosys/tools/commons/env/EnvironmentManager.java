@@ -96,6 +96,7 @@ public class EnvironmentManager {
 		createFolder( telosysToolsEnv.getDownloadsFolder(), sb );
 		createFolder( telosysToolsEnv.getLibrariesFolder(), sb );
 		createFolder( telosysToolsEnv.getTemplatesFolder(), sb );
+		createFolder( telosysToolsEnv.getModelsFolder(), sb ); // v 3.4.0
 		//--- Init 'databases.dbcfg' file
 		initDatabasesConfigFile(sb);
 		//--- Init 'telosys-tools.cfg' file

@@ -27,17 +27,26 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
 /**
- * Utility class for FILE operations ( set of static methods )
+ * Utility class for FILE operations (static methods)
  * 
  * @author Laurent GUERIN 
  * 
  */
 public class FileUtil {
 	
-    private static final int     BUFFER_SIZE = 4*1024 ; // 4 kb   
-    private static final String  UTF_8 = "UTF-8" ;
+    private static final int     BUFFER_SIZE = 4*1024 ; // 4 kb  
+    
+    /**
+     * Private constructor
+     */
+    private FileUtil() {
+    }
+    
     /**
      * Close the given stream without throwing exception
      * @param stream
@@ -52,6 +61,24 @@ public class FileUtil {
     	}
     }
     
+    private static FileInputStream createInputStream(File inputFile) {
+    	try {
+			return new FileInputStream(inputFile);
+		} catch (FileNotFoundException e) {
+			throw new TelosysRuntimeException("Cannot open input file " + inputFile.getName() 
+				+ "(file not found)", e);
+		}
+    }
+
+    private static FileOutputStream createOutputStream(File outputFile) {
+	    try {
+	    	return new FileOutputStream(outputFile);
+	    } 
+	    catch (FileNotFoundException e) {
+			throw new TelosysRuntimeException("Cannot open output file " + outputFile.getName() 
+				+ "(file not found)", e);
+	    }
+    }
     //----------------------------------------------------------------------------------------------------
     /**
      * Build a file path with the given directory path and the given file name.<br>
@@ -63,14 +90,12 @@ public class FileUtil {
      */
     public static String buildFilePath(String dir, String file) {
     	String s1 = dir ;
-    	if ( dir.endsWith("/") || dir.endsWith("\\") )
-    	{
+    	if ( dir.endsWith("/") || dir.endsWith("\\") ) {
     		s1 = dir.substring(0, dir.length() - 1 );
     	}
     	
     	String s2 = file ;
-    	if ( file.startsWith("/") || file.startsWith("\\") )
-    	{
+    	if ( file.startsWith("/") || file.startsWith("\\") ) {
     		s2 = file.substring(1);
     	}
     	
@@ -85,35 +110,39 @@ public class FileUtil {
      * @param createFolder if true creates the destination folder if necessary
      * @throws Exception
      */
-    public static void copy(String inputFileName, String outputFileName, boolean createFolder) throws Exception
+    public static void copy(String inputFileName, String outputFileName, boolean createFolder) //throws Exception
     {
         //--- Open input file
-		FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(inputFileName);
-        } 
-        catch (FileNotFoundException ex) {
-            throw new Exception("copy : cannot open input file.", ex);
-        }
+//		FileInputStream fis = null;
+//        try {
+//            fis = new FileInputStream(inputFileName);
+//        } 
+//        catch (FileNotFoundException ex) {
+//            throw new TelosysRuntimeException("copy : cannot open input file", ex);
+//        }
+    	File inputFile = new File(inputFileName);
+    	File outputFile = new File(outputFileName);
+    	
+        FileInputStream fis = createInputStream(inputFile);
         
         //--- Create output file folder is non existent 
         if ( createFolder ) {
-        	//createFolderIfNecessary(outputFileName);
-        	createParentFolderIfNecessary(new File(outputFileName));        	
+        	createParentFolderIfNecessary(outputFile);        	
         }
     	
         //--- Open output file
-		FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(outputFileName);
-        } 
-        catch (FileNotFoundException ex) {
-        	close(fis);
-            throw new Exception("copy : cannot open output file.", ex);
-        }
+//		FileOutputStream fos = null;
+//        try {
+//            fos = new FileOutputStream(outputFileName);
+//        } 
+//        catch (FileNotFoundException ex) {
+//        	close(fis);
+//            throw new TelosysRuntimeException("copy : cannot open output file.", ex);
+//        }
+        FileOutputStream fos = createOutputStream(outputFile);
         
         //--- Copy and close
-        copyAndClose( fis, fos);
+        copyAndClose(fis, fos);
     }
 
     //----------------------------------------------------------------------------------------------------
@@ -124,33 +153,31 @@ public class FileUtil {
      * @param createFolder if true creates the destination folder if necessary
      * @throws Exception
      */
-    public static void copy(File inputFile, File outputFile, boolean createFolder) throws Exception
+    public static void copy(File inputFile, File outputFile, boolean createFolder) //throws Exception
     {
         //--- Open input file
-		FileInputStream fileInputStream = new FileInputStream(inputFile);
+//		FileInputStream fileInputStream = new FileInputStream(inputFile);
+		FileInputStream fileInputStream = createInputStream(inputFile);
         
-//        //--- Create output file folder is non existent 
-//        if ( createFolder ) {
-//        	createParentFolderIfNecessary(outputFile);
-//        }
-//    	
-//        //--- Open output file
-//		FileOutputStream fos = new FileOutputStream(outputFile);
-//        
-//        //--- Copy and close
-//        copyAndClose( fis, fos);
     	copyInputStreamToFile(fileInputStream, outputFile, createFolder) ;
     }
 
-    public static void copy(String inputContent, File outputFile, boolean createFolder) throws Exception
+    public static void copy(String inputContent, File outputFile, boolean createFolder) //throws Exception
     {
     	//--- The input content is the string
-    	InputStream inputStream = new ByteArrayInputStream(inputContent.getBytes(UTF_8));
+//    	byte[] bytes;
+//		try {
+//			bytes = inputContent.getBytes(UTF_8);
+//		} catch (UnsupportedEncodingException e) {
+//			throw new TelosysRuntimeException("Cannot get bytes (UnsupportedEncodingException)", e);
+//		}
+		byte[] bytes = inputContent.getBytes(StandardCharsets.UTF_8);
+    	InputStream inputStream = new ByteArrayInputStream(bytes);
     	
     	copyInputStreamToFile(inputStream, outputFile, createFolder) ;
     }
     
-    private static void copyInputStreamToFile(InputStream is, File outputFile, boolean createFolder) throws Exception
+    private static void copyInputStreamToFile(InputStream is, File outputFile, boolean createFolder) //throws Exception
     {
         //--- Create output file folder is non existent 
         if ( createFolder ) {
@@ -158,7 +185,8 @@ public class FileUtil {
         }
     	
         //--- Open output file
-		FileOutputStream fos = new FileOutputStream(outputFile);
+//		FileOutputStream fos = new FileOutputStream(outputFile);
+		FileOutputStream fos = createOutputStream(outputFile);
         
         //--- Copy and close
         copyAndClose( is, fos);
@@ -172,29 +200,31 @@ public class FileUtil {
      * @param createFolder if true creates the destination folder if necessary
      * @throws Exception
      */
-    public static void copyToDirectory(File inputFile, File directory, boolean createFolder) throws Exception
+    public static void copyToDirectory(File inputFile, File directory, boolean createFolder) //throws Exception
     {
-    	if ( directory.exists() ) {
-    		if ( ! directory.isDirectory() ) {
-    			throw new Exception(directory + " is not a directory");
-    		}
+    	if ( directory.exists() && ! directory.isDirectory() ) {
+//    		if ( ! directory.isDirectory() ) {
+   			throw new IllegalArgumentException(directory + " is not a directory");
+//    		}
     	}
     	String outputFileFullPath = FileUtil.buildFilePath(directory.getAbsolutePath(), inputFile.getName());
     	File outputFile = new File(outputFileFullPath);
     	
         //--- Open input file
-		FileInputStream fis = new FileInputStream(inputFile);
-        
+		//FileInputStream fis = new FileInputStream(inputFile);
+		InputStream  fis  = createInputStream(inputFile);
+		
         //--- Create output file folder is non existent 
         if ( createFolder ) {
         	createParentFolderIfNecessary(outputFile);
         }
     	
         //--- Open output file
-		FileOutputStream fos = new FileOutputStream(outputFile);
+		//FileOutputStream fos = new FileOutputStream(outputFile);
+		FileOutputStream fos = createOutputStream(outputFile);
         
         //--- Copy and close
-        copyAndClose( fis, fos);
+        copyAndClose(fis,fos);
     }
 
     //----------------------------------------------------------------------------------------------------
@@ -222,15 +252,15 @@ public class FileUtil {
         }		
 
     	//--- Open output stream
-		FileOutputStream fos = null;
-        try
-        {
-            fos = new FileOutputStream(outputFileName);
-        } catch (FileNotFoundException ex)
-        {
-            throw new Exception("copy : cannot open output file " + outputFileName, ex);
-        }
-        
+//		FileOutputStream fos = null;
+//        try
+//        {
+//            fos = new FileOutputStream(outputFileName);
+//        } catch (FileNotFoundException ex)
+//        {
+//            throw new Exception("copy : cannot open output file " + outputFileName, ex);
+//        }
+        FileOutputStream fos = createOutputStream(new File(outputFileName));
         //--- Copy and close
         copyAndClose( is, fos);
     }
@@ -285,20 +315,18 @@ public class FileUtil {
 		
         //--- Create output file folder is non existent 
         if ( createFolder ) {
-        	//createFolderIfNecessary(outputFileName);
         	createParentFolderIfNecessary(new File(destFullPath));        	
         }
     			
 		//--- Open output stream
-		FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(destFullPath);
-        } catch (FileNotFoundException ex)
-        {
-            //sb.append("ERROR : cannot create output file '" + destFullPath + "' ! \n");
-            throw new Exception("Cannot create output file '" + destFullPath + "' \n");
-        }
-
+//		FileOutputStream fos = null;
+//        try {
+//            fos = new FileOutputStream(destFullPath);
+//        } catch (FileNotFoundException ex)
+//        {
+//            throw new Exception("Cannot create output file '" + destFullPath + "' \n");
+//        }
+        FileOutputStream fos = createOutputStream(new File(destFullPath));
         //--- Copy 
 		copyAndClose(is, fos);
 	}
@@ -309,12 +337,10 @@ public class FileUtil {
      * @param file 
      */
     public static void createParentFolderIfNecessary( File file) {
-    	//File file = new File(fullFileName) ;
     	File parent = file.getParentFile() ;
     	if ( parent != null ) {
     		if ( parent.exists() == false ) {
     			// Creates the directory, including any necessary but nonexistent parent directories.
-    			// parent.mkdirs() ; 
     			DirUtil.createDirectory( parent ); // v 3.0.0
     		}
     	}
@@ -324,27 +350,23 @@ public class FileUtil {
      * Copy the content of the given InputStream to the given OutputStream, then close all streams.
      * @param is
      * @param os
-     * @throws Exception
      */
-    private static void copyAndClose(InputStream is, OutputStream os) throws Exception
+    private static void copyAndClose(InputStream is, OutputStream os)
     {
         //--- Copy and close
-        if ( is != null && os != null )
-        {
-			byte buffer[] = new byte[BUFFER_SIZE];
+        if ( is != null && os != null ) {
+			byte[] buffer = new byte[BUFFER_SIZE];
 			int len = 0;
-			
-			try
-            {
+			try {
                 while ((len = is.read(buffer)) > 0)
                 {
                     os.write(buffer, 0, len);
                 }
                 is.close();
                 os.close();
-            } catch (IOException ioex)
-            {
-                throw new Exception("copy : IO error.", ioex);
+            } 
+			catch (IOException e) {
+                throw new TelosysRuntimeException("Cannot copy : IO error", e);
             }
 		}
     }
@@ -362,12 +384,12 @@ public class FileUtil {
 			try {
 				uri = url.toURI();
 			} catch (URISyntaxException e) {
-				throw new RuntimeException("Cannot convert URL to URI (file '" + fileName + "')");
+				throw new TelosysRuntimeException("Cannot convert URL to URI (file '" + fileName + "')");
 			}
 			return new File(uri);
 		}
 		else {
-			throw new RuntimeException("File '" + fileName + "' not found");
+			throw new TelosysRuntimeException("File '" + fileName + "' not found");
 		}
 	}
     
@@ -382,12 +404,10 @@ public class FileUtil {
 	 */
 	public static void copyFolder( File source, File destination, boolean overwrite ) throws Exception {
 	 	if ( source.isDirectory() ) {
-	 		 
     		//--- If the destination directory doesn't exist create it
     		if ( ! destination.exists() ) {
     			destination.mkdir();
     		}
- 
     		//--- Get all the directory content
     		for (String file : source.list() ) {
     		   File srcFile = new File(source, file);
@@ -404,13 +424,16 @@ public class FileUtil {
     		}
     		else {
     			//--- Copy file to file
-        		try {
-    				InputStream  inputStream  = new FileInputStream(source);
-    				OutputStream outputStream = new FileOutputStream(destination);
-    				copyAndClose(inputStream, outputStream);
-    			} catch (FileNotFoundException e) {
-    				throw new Exception("File not found", e);
-    			}
+//        		try {
+//    				InputStream  inputStream  = new FileInputStream(source);
+//    				OutputStream outputStream = new FileOutputStream(destination);
+//    				copyAndClose(inputStream, outputStream);
+//    			} catch (FileNotFoundException e) {
+//    				throw new Exception("File not found", e);
+//    			}
+        		InputStream  inputStream  = createInputStream(source);
+				OutputStream outputStream = createOutputStream(destination);
+				copyAndClose(inputStream, outputStream);
     		}
     	}
 	}
@@ -421,26 +444,27 @@ public class FileUtil {
 	 * @return
 	 * @since 3.0.0
 	 */
-	public static byte[] read( File file ) throws Exception {
+	public static byte[] read(File file) { // throws Exception {
 		
 		if ( file == null ) {
-			throw new Exception ("File argument is null");
+			throw new IllegalArgumentException("File argument is null");
 		}
 		
-		FileInputStream fileInputStream ;
-		try {
-			fileInputStream = new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			throw new Exception("File '" + file.getName() + "' not found", e);
-		}
-		
+//		FileInputStream fileInputStream ;
+//		try {
+//			fileInputStream = new FileInputStream(file);
+//		} catch (FileNotFoundException e) {
+//			throw new Exception("File '" + file.getName() + "' not found", e);
+//		}
+		FileInputStream fileInputStream = createInputStream(file);
 		
 		byte[] fileContent = new byte[(int) file.length()];
 		try {
 			fileInputStream.read(fileContent);
 			fileInputStream.close();
 		} catch (IOException e) {
-			throw new Exception("IOException : cannot read or close file  '" + file.getName() + "' ", e);
+//			throw new Exception("IOException : cannot read or close file  '" + file.getName() + "' ", e);
+			throw new TelosysRuntimeException("Cannot read or close file '" + file.getName() + "'", e);
 		}
 		return fileContent;
 	}

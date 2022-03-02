@@ -41,7 +41,8 @@ public class TelosysToolsEnv
 	
 	private final static String TELOSYS_TOOLS_FOLDER = "TelosysTools" ;
 	
-	private final static String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER ; 
+//	private final static String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER ; 
+	private final static String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER + "/models" ;  // v 3.4.0
 	private final static String TEMPLATES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/templates" ; 
 	private final static String DOWNLOADS_FOLDER     = TELOSYS_TOOLS_FOLDER + "/downloads" ; 
 	private final static String LIBRARIES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/lib" ; 
@@ -141,7 +142,7 @@ public class TelosysToolsEnv
     //------------------------------------------------------------------------------------------------------
     /**
      * Returns the models folder in the current project (relative path in the project) <br>
-     * ( e.g. 'TelosysTools' )
+     * ( e.g. 'TelosysTool' until v 3.3.0, 'TelosysTools/models' since 3.4.0 )
      * @return
      */
     public String getModelsFolder()

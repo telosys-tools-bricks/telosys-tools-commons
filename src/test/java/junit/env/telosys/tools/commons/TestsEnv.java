@@ -3,41 +3,33 @@ package junit.env.telosys.tools.commons;
 import java.io.File;
 import java.util.Properties;
 
+import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.PropertiesManager;
-import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
 
 public class TestsEnv {
 
-//	public final static String getTestsProxyPropertiesFile() {
-//		//return TESTS_ROOT_FOLDER + "/proxy.properties";
-//		return getExistingFileFullPath( "/proxy.properties" ) ;
-//	}
-	
-//	public final static String getFullFileName(String fileName) {
-//		return TESTS_ROOT_FOLDER + "/" + fileName ;
-//	}
-	
-	private final static String SRC_TEST_RESOURCES = "src/test/resources/" ;
+	private static final String SRC_TEST_RESOURCES = "src/test/resources/" ;
 
 	/**
 	 * Returns the absolute path for the given test file name without checking existence
 	 * @param fileName
 	 * @return
 	 */
-	public final static String buildAbsolutePath(String fileName) {
+	public static final String buildAbsolutePath(String fileName) {
 		File file = new File(SRC_TEST_RESOURCES + fileName);
 		return file.getAbsolutePath();
 	}
 	
-	public final static String getTestFileAbsolutePath(String fileName) {
+	public static final String getTestFileAbsolutePath(String fileName) {
 		File file = getTestFile( fileName ); 
 		return file.getAbsolutePath();
 	}
 	
-	public final static File getTestFile(String fileName) {
-		File file = new File(SRC_TEST_RESOURCES + fileName);
+	public static final File getTestFile(String fileName) {
+//		File file = new File(SRC_TEST_RESOURCES + fileName);
+		File file = new File(FileUtil.buildFilePath(SRC_TEST_RESOURCES, fileName));
 		if ( file.exists() ) {
 			if ( file.isFile() ) {
 				return file ;
@@ -51,30 +43,19 @@ public class TestsEnv {
 		}
 	}
 
-	public final static File getTestRootFolder() {
+	public static final File getTestRootFolder() {
 		File folder = new File(SRC_TEST_RESOURCES);
 		checkFolder(folder);
 		return folder ;
 	}
 
-	public final static File getTestFolder(String folderName) {
+	public static final File getTestFolder(String folderName) {
 		File folder = new File(SRC_TEST_RESOURCES + folderName);
 		checkFolder(folder);
 		return folder ;
-//		if ( folder.exists() ) {
-//			if ( folder.isDirectory() ) {
-//				return folder ;
-//			}
-//			else {
-//				throw new RuntimeException("Test resource '"+ folder.getName() + "' is not a folder");
-//			}
-//		}
-//		else {
-//			throw new RuntimeException("Test resource '"+ folder.getName() + "' not found");
-//		}
 	}
 
-	private final static void checkFolder(File folder) {
+	private static final void checkFolder(File folder) {
 		if ( folder.exists() ) {
 			if ( folder.isDirectory() ) {
 				return ;
@@ -90,17 +71,17 @@ public class TestsEnv {
 	//-----------------------------------------------------------------------------------------
 	// TEMPORARY FILES AND FOLDERS
 	//-----------------------------------------------------------------------------------------
-	private final static String TARGET_TESTS_TMP_DIR = "target/tests-tmp/" ;
+	private static final String TARGET_TESTS_TMP_DIR = "target/tests-tmp/" ;
 	
-	public final static String getTmpRootFolderFullPath() {
+	public static final String getTmpRootFolderFullPath() {
 		return getTmpExistingFolderFullPath( "" ) ;
 	}
 	
-	public final static String getTmpBundlesFolderFullPath() {
+	public static final String getTmpBundlesFolderFullPath() {
 		return getTmpExistingFolderFullPath( "/TelosysTools/templates" ) ;
 	}
 	
-	public final static String getTmpDownloadFolderFullPath() {
+	public static final String getTmpDownloadFolderFullPath() {
 		return getTmpExistingFolderFullPath( "/TelosysTools/downloads" ) ;
 	}
 	
@@ -165,7 +146,9 @@ public class TestsEnv {
 	}
 	
 	public static File getTmpFile(String fileName ) {
-		File file = new File(TARGET_TESTS_TMP_DIR + fileName);
+//		File file = new File(TARGET_TESTS_TMP_DIR + fileName);
+		String filePath = FileUtil.buildFilePath(TARGET_TESTS_TMP_DIR, fileName);
+		File file = new File(filePath);
 		if ( file.exists() && ! file.isFile()) {
 				throw new RuntimeException("'"+ file.getName() + "' exists and is not a file");
 		}
@@ -191,12 +174,9 @@ public class TestsEnv {
 	 * 
 	 * @return
 	 */
-	public final static Properties loadSpecificProxyProperties()  {
-		
-		//File file = new File("src/test/resources/proxy.properties");
+	public static final Properties loadSpecificProxyProperties()  {
 		File file = getTestFile("proxy.properties");
 		System.out.println("Loading http properties from " + file.getAbsolutePath() +" ...");
-		//PropertiesManager pm = new PropertiesManager(TestsFolders.getTestsProxyPropertiesFile());
 		PropertiesManager pm = new PropertiesManager(file.getAbsolutePath());
 		Properties proxyProperties;
 		try {
@@ -210,22 +190,11 @@ public class TestsEnv {
 		return proxyProperties ;
 	}
 	
-//	/**
-//	 * Returns the 'telosys-tools.cfg' full file name 
-//	 * @return
-//	 */
-//	public final static String getTelosysToolsCfgFileName()  {
-//		return getTmpRootFolder() + "/telosys-tools.cfg" ;
-//	}
-	
 	/**
 	 * Returns the 'telosys-tools.cfg' file 
 	 * @return
 	 */
-	public final static File getTelosysToolsCfgFile()  {
-//		String fileName = getTelosysToolsCfgFileName();
-//		System.out.println("telosys-tool.cfg file : '" + fileName  + "'");
-//		File file = new File( fileName ) ;
+	public static final File getTelosysToolsCfgFile()  {
 		File file = getTestFile("/telosys-tools.cfg");
 		System.out.println("TelosysToolsCfgFile = '" + file.getAbsolutePath() + "' ");
 		if ( file.exists() != true ) {
@@ -238,7 +207,7 @@ public class TestsEnv {
 	 * Returns the properties loaded from the 'telosys-tools.cfg' file 
 	 * @return
 	 */
-	public final static Properties loadTelosysToolsCfgProperties()  {
+	public static final Properties loadTelosysToolsCfgProperties()  {
 		
 		PropertiesManager pm = new PropertiesManager( getTelosysToolsCfgFile() );
 		Properties properties;
