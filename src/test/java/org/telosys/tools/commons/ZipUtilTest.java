@@ -12,7 +12,7 @@ import junit.env.telosys.tools.commons.TestsEnv;
 
 import org.junit.Test;
 
-public class ZipUtilTest { // extends TestCase {
+public class ZipUtilTest {
 
 	@Test
 	public void testCutEntryName() {

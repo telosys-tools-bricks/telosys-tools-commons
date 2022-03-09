@@ -40,7 +40,6 @@ public class SqlScriptRunner {
     private final Connection connection;
 
     private String      delimiter   = ";";
-    //private final boolean fullLineDelimiter = false;
     private boolean     stopOnError = true ;
     private boolean     autoCommit  = true ;
     private PrintWriter logWriter      = new PrintWriter(System.out);
@@ -116,8 +115,7 @@ public class SqlScriptRunner {
      * @throws IOException
      * @throws SQLException
      */
-    public void runScript(File file) throws IOException, SQLException 
-    {
+    public void runScript(File file) throws IOException, SQLException {
 //    	if ( ! file.exists()  ) {
 //    		throw new IllegalArgumentException("File " + file.getAbsolutePath() + " doesn't exist");
 //    	}
@@ -146,9 +144,7 @@ public class SqlScriptRunner {
             } finally {
                 connection.setAutoCommit(originalAutoCommit);
             }
-        } catch (IOException e) {
-            throw e;
-        } catch (SQLException e) {
+        } catch (IOException|SQLException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error running script.  Cause: " + e, e);
@@ -163,13 +159,13 @@ public class SqlScriptRunner {
      * @throws SQLException if any SQL errors occur 
      */
     private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
-        StringBuffer command = null;
+        StringBuilder command = null;
         try {
             LineNumberReader lineReader = new LineNumberReader(reader);
             String line = null;
             while ((line = lineReader.readLine()) != null) {
                 if (command == null) {
-                    command = new StringBuffer();
+                    command = new StringBuilder();
                 }
                 String trimmedLine = line.trim();
                 if (trimmedLine.startsWith("--")) 
@@ -196,57 +192,6 @@ public class SqlScriptRunner {
                     command.append(" ");
                     
                     executeSqlCommand(conn, command.toString());
-//                    Statement statement = conn.createStatement();
-//
-//                    println(command);
-//
-//                    boolean hasResults = false;
-//                    if (stopOnError) 
-//                    {
-//                        hasResults = statement.execute(command.toString());
-//                    } 
-//                    else 
-//                    {
-//                        try {
-//                            statement.execute(command.toString());
-//                        } catch (SQLException e) {
-//                            e.fillInStackTrace();
-//                            printlnError("Error executing: " + command);
-//                            printlnError(e);
-//                        }
-//                    }
-//
-//                    if (autoCommit && !conn.getAutoCommit()) {
-//                        conn.commit();
-//                    }
-//
-//                    ResultSet rs = statement.getResultSet();
-//                    if (hasResults && rs != null) 
-//                    {
-//                        ResultSetMetaData md = rs.getMetaData();
-//                        int cols = md.getColumnCount();
-//                        for (int i = 0; i < cols; i++) {
-//                            String name = md.getColumnLabel(i);
-//                            print(name + "\t");
-//                        }
-//                        println("");
-//                        while (rs.next()) {
-//                            for (int i = 0; i < cols; i++) {
-//                                String value = rs.getString(i);
-//                                print(value + "\t");
-//                            }
-//                            println("");
-//                        }
-//                    }
-//
-//                    command = null;
-//                    try {
-//                        statement.close();
-//                    } catch (Exception e) {
-//                        // Ignore to workaround a bug in Jakarta DBCP
-//                    }
-//                    Thread.yield();
-                    
                     command = null ;
                     Thread.yield();
                 } else {
@@ -257,12 +202,7 @@ public class SqlScriptRunner {
             if (!autoCommit) {
                 conn.commit();
             }
-        } catch (SQLException e) {
-            e.fillInStackTrace();
-            printlnError("Error executing: " + command);
-            printlnError(e);
-            throw e;
-        } catch (IOException e) {
+        } catch (SQLException|IOException e) {
             e.fillInStackTrace();
             printlnError("Error executing: " + command);
             printlnError(e);
@@ -276,54 +216,63 @@ public class SqlScriptRunner {
     private void executeSqlCommand(Connection conn, String command) throws SQLException {
     	
         println(command);
-
-        Statement statement = conn.createStatement();
-
-        boolean resultIsResultSet  = false;
-        if (stopOnError) 
-        {
-        	resultIsResultSet = statement.execute(command);
-        } 
-        else 
-        {
-            try {
-            	resultIsResultSet = statement.execute(command);
-            } catch (SQLException e) {
-                e.fillInStackTrace();
-                printlnError("Error executing: " + command);
-                printlnError(e);
+        Statement statement = null;
+        try {
+        	statement = conn.createStatement();
+	        boolean resultIsResultSet = executeSqlCommand(statement, command);
+	        
+	        if (autoCommit && !conn.getAutoCommit()) {
+	            conn.commit();
+	        }
+	        // If there's a ResultSet print it
+	        ResultSet rs = statement.getResultSet();
+	        if (resultIsResultSet && rs != null) {
+	        	printResultset(rs);
+	            rs.close();
+	        }
+        }
+        finally {
+        	if ( statement != null ) {
+        		// try to close statement
+    	        try {
+    	            statement.close();
+    	        } catch (Exception e) {
+    	            // Ignore to workaround a bug in Jakarta DBCP
+    	        }
+        	}
+        }
+    }
+    
+    private boolean executeSqlCommand(Statement statement, String command) throws SQLException {
+        try {
+        	return statement.execute(command);
+        } catch (SQLException e) {
+            e.fillInStackTrace();
+            printlnError("Error executing: " + command);
+            printlnError(e);
+            if (stopOnError) {
+            	throw e;
+            }
+            else {
+            	return false; // Error => no result set
             }
         }
-
-        if (autoCommit && !conn.getAutoCommit()) {
-            conn.commit();
+    }
+    
+    private void printResultset(ResultSet rs) throws SQLException {
+        ResultSetMetaData md = rs.getMetaData();
+        int cols = md.getColumnCount();
+        for (int i = 1; i <= cols; i++) {
+            String name = md.getColumnLabel(i);
+            print(name + "\t");
         }
-
-        // If there's a ResultSet print it
-        ResultSet rs = statement.getResultSet();
-        if (resultIsResultSet && rs != null) 
-        {
-            ResultSetMetaData md = rs.getMetaData();
-            int cols = md.getColumnCount();
+        println("");
+        while (rs.next()) {
             for (int i = 1; i <= cols; i++) {
-                String name = md.getColumnLabel(i);
-                print(name + "\t");
+                String value = rs.getString(i);
+                print(value + "\t");
             }
             println("");
-            while (rs.next()) {
-                for (int i = 1; i <= cols; i++) {
-                    String value = rs.getString(i);
-                    print(value + "\t");
-                }
-                println("");
-            }
-            rs.close();
-        }
-
-        try {
-            statement.close();
-        } catch (Exception e) {
-            // Ignore to workaround a bug in Jakarta DBCP
         }
     }
 

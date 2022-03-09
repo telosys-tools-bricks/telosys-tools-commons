@@ -65,7 +65,7 @@ public class EnvironmentManagerTest extends TestCase {
 		EnvironmentManager em = getEnvironmentManager() ;
 		String fullPath = em.getDatabasesDbCfgFullPath() ;
 		println(fullPath);
-		assertEquals(TestsEnv.getTmpRootFolderFullPath()+"/TelosysTools/databases.dbcfg" , fullPath);
+		assertEquals(TestsEnv.getTmpRootFolderFullPath()+"/TelosysTools/databases.yaml" , fullPath);
 	}
 	
 	public void testCreateFolder() {
@@ -136,7 +136,7 @@ public class EnvironmentManagerTest extends TestCase {
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/downloads").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/templates").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/models").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/databases.dbcfg").exists() );
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/databases.yaml").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/telosys-tools.cfg").exists() );
 	}
 	
@@ -161,7 +161,7 @@ public class EnvironmentManagerTest extends TestCase {
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/downloads").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/templates").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/models").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/databases.dbcfg").exists() );
+		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/databases.yaml").exists() );
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/telosys-tools.cfg").exists() );
 		
 		TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(projectFullPath) ;

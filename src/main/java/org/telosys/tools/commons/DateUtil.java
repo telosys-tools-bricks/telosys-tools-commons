@@ -19,6 +19,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
+
 
 /**
  * Utility class for DATE operations ( set of static methods )
@@ -29,22 +31,14 @@ import java.util.Calendar;
 public final class DateUtil
 {
 
-    private final static String DATE_ISO_FORMAT      = "yyyy-MM-dd" ;
-    private final static String DATE_TIME_ISO_FORMAT = "yyyy-MM-dd HH:mm:ss" ;
-    private final static String TIME_ISO_FORMAT      = "HH:mm:ss" ;
+    private static final String DATE_ISO_FORMAT      = "yyyy-MM-dd" ;
+    private static final String DATE_TIME_ISO_FORMAT = "yyyy-MM-dd HH:mm:ss" ;
+    private static final String TIME_ISO_FORMAT      = "HH:mm:ss" ;
     
-//    private final static SimpleDateFormat DATE_ISO_FORMAT   = new SimpleDateFormat("yyyy-MM-dd");
-//
-//    private final static SimpleDateFormat DATE_TIME_ISO_FORMAT   = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//
-//    private final static SimpleDateFormat TIME_ISO_FORMAT   = new SimpleDateFormat("HH:mm:ss");
-        
-    //----------------------------------------------------------------------------------------------
     /**
      * Private constructor to avoid instance creation
      */
-    private DateUtil()
-    {
+    private DateUtil() {
     }
 
     //----------------------------------------------------------------------------------------------
@@ -109,7 +103,6 @@ public final class DateUtil
      */
     public static String format(final int iDay, final int iMonth, final int iYear)
     {
-        //return DATE_ISO_FORMAT.format( getUtilDate(iDay, iMonth, iYear) );
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_ISO_FORMAT);
         return dateFormat.format( getUtilDate(iDay, iMonth, iYear) );
     }
@@ -205,14 +198,11 @@ public final class DateUtil
      */
     public static String dateISO(final java.util.Date date)
     {
-        if (date != null)
-        {
-            //return DATE_ISO_FORMAT.format( date );
+        if (date != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_ISO_FORMAT);
             return dateFormat.format( date );    
         }
-        else
-        {
+        else {
             return "";
         }
     }
@@ -225,14 +215,11 @@ public final class DateUtil
      */
     public static String timeISO(final java.util.Date date)
     {
-        if (date != null)
-        {
-            // return TIME_ISO_FORMAT.format( date ); 
+        if (date != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(TIME_ISO_FORMAT);
             return dateFormat.format( date );    
         }
-        else
-        {
+        else {
             return "";
         }
     }
@@ -245,54 +232,30 @@ public final class DateUtil
      */
     public static String dateTimeISO(final java.util.Date date)
     {
-        if (date != null)
-        {
-            // return DATE_TIME_ISO_FORMAT.format( date );
+        if (date != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_ISO_FORMAT);
             return dateFormat.format( date );    
 
         }
-        else
-        {
+        else {
             return "";
         }
     }
 
     //-----------------------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------------------
-//// N.B. the setLenient cannot be set in static block
-//    private final static SimpleDateFormat DATE_FORMAT_ISO   = new SimpleDateFormat("yyyy-MM-dd");
-////    {
-////        dateFormatISO.setLenient(false); // Parsing non lenient ( exception if invalid date )
-////    }
-//
-//    private final static SimpleDateFormat DATETIME_FORMAT_ISO   = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-////    {
-////        datetimeFormatISO.setLenient(false); // Parsing non lenient ( exception if invalid datetime )
-////    }
-//
-//    private final static SimpleDateFormat TIME_FORMAT_ISO   = new SimpleDateFormat("HH:mm:ss");
-////    {
-////        timeFormatISO.setLenient(false); // Parsing non lenient ( exception if invalid datetime )
-////    }
-
-    //-----------------------------------------------------------------------------------------
-    private static void throwParseDateException(String sDate, String sMsg)
-    {
-        throw new RuntimeException("Cannot parse date '" + sDate + "' : " + sMsg );
+    private static void throwParseDateException(String sDate, String sMsg) {
+        throw new TelosysRuntimeException("Cannot parse date '" + sDate + "' : " + sMsg );
     }
-    private static void throwParseTimeException(String sTime, String sMsg)
-    {
-        throw new RuntimeException("Cannot parse time '" + sTime + "' : " + sMsg );
+    private static void throwParseTimeException(String sTime, String sMsg) {
+        throw new TelosysRuntimeException("Cannot parse time '" + sTime + "' : " + sMsg );
     }
-    private static void throwParseDateTimeException(String sDateTime, String sMsg)
-    {
-        throw new RuntimeException("Cannot parse date & time '" + sDateTime + "' : " + sMsg );
+    private static void throwParseDateTimeException(String sDateTime, String sMsg) {
+        throw new TelosysRuntimeException("Cannot parse date & time '" + sDateTime + "' : " + sMsg );
     }
     
-    private final static String INVALID_DATE_FORMAT     = "invalid format 'YYYY-MM-DD' expected" ;
-    private final static String INVALID_TIME_FORMAT     = "invalid format 'HH:MM:SS' expected" ;
-    private final static String INVALID_DATETIME_FORMAT = "invalid format 'YYYY-MM-DD HH:MM:SS' expected" ;
+    private static final String INVALID_DATE_FORMAT     = "invalid format 'YYYY-MM-DD' expected" ;
+    private static final String INVALID_TIME_FORMAT     = "invalid format 'HH:MM:SS' expected" ;
+    private static final String INVALID_DATETIME_FORMAT = "invalid format 'YYYY-MM-DD HH:MM:SS' expected" ;
     
     //-----------------------------------------------------------------------------------------
     /**
@@ -307,33 +270,28 @@ public final class DateUtil
         if ( sDate == null ) return null ;
         if ( sDate.length() == 0 ) return null ;
         
-        char c = 0 ;
-        for ( int i = 0 ; i < 10 ; i++ ) // the length is 10 "YYYY-MM-DD"
-        {
-            c = sDate.charAt(i);
-            if ( ( c < '0' || c > '9') && ( c != '-' ) )  
-            {
-                throwParseDateException(sDate, INVALID_DATE_FORMAT );
-            }
-            if ( c == '-' && ( i != 4 && i != 7 ) )
-            {
-                throwParseDateException(sDate, INVALID_DATE_FORMAT );
-            }
-        }
+//        char c = 0 ;
+//        for ( int i = 0 ; i < 10 ; i++ ) // the length is 10 "YYYY-MM-DD"
+//        {
+//            c = sDate.charAt(i);
+//            if ( ( c < '0' || c > '9') && ( c != '-' ) )  
+//            {
+//                throwParseDateException(sDate, INVALID_DATE_FORMAT );
+//            }
+//            if ( c == '-' && ( i != 4 && i != 7 ) )
+//            {
+//                throwParseDateException(sDate, INVALID_DATE_FORMAT );
+//            }
+//        }
         
         java.util.Date ret = null ;
-        try
-        {
+        try {
             //--- Try to parse the input date ( with non lenient parsing => check validity )
-//            DATE_FORMAT_ISO.setLenient(false); // non lenient parsing ( exception if invalid date )
-//            ret = DATE_FORMAT_ISO.parse(sDate);
-
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_ISO_FORMAT);
             dateFormat.setLenient(false); // non lenient parsing ( exception if invalid date )
             ret = dateFormat.parse(sDate);
-            
-        } catch (ParseException e)
-        {
+        } 
+        catch (ParseException e) {
             throwParseDateException(sDate, "invalid date");
         }
         return ret ;
@@ -367,18 +325,14 @@ public final class DateUtil
         }
 
         java.util.Date ret = null ;
-        try
-        {
+        try {
             //--- Try to parse the input date ( with non lenient parsing => check validity )
-//            TIME_FORMAT_ISO.setLenient(false); // non lenient parsing ( exception if invalid date )
-//            ret = TIME_FORMAT_ISO.parse(sTime);
-
             SimpleDateFormat dateFormat = new SimpleDateFormat(TIME_ISO_FORMAT);
             dateFormat.setLenient(false); // non lenient parsing ( exception if invalid date )
             ret = dateFormat.parse(sTime);
             
-        } catch (ParseException e)
-        {
+        } 
+        catch (ParseException e) {
             throwParseTimeException(sTime, "invalid time" );
         }
         return ret ;
@@ -394,50 +348,42 @@ public final class DateUtil
      */
     public static java.util.Date parseDateTime( String sDateTime )
     {
-        
         if ( sDateTime == null ) return null ;
         if ( sDateTime.length() == 0 ) return null ;
 
-        char c = 0 ;
-        for ( int i = 0 ; i < 19 ; i++ ) // the length is 19 "YYYY-MM-DD HH:MM:SS"
-        {
-            c = sDateTime.charAt(i);
-            if ( ( c < '0' || c > '9') && ( c != '-' && c != ':' && c != ' ' ) )  
-            {
-                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-            }
-            if ( c == '-' && ( i != 4 && i != 7 ) )
-            {
-                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-            }
-            if ( c == ' ' && ( i != 10 ) ) 
-            {
-                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-            }
-            if ( c == ':' && ( i != 13 && i != 16 ) )
-            {
-                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-            }
-        }
-
+//        char c = 0 ;
+//        for ( int i = 0 ; i < 19 ; i++ ) // the length is 19 "YYYY-MM-DD HH:MM:SS"
+//        {
+//            c = sDateTime.charAt(i);
+//            if ( ( c < '0' || c > '9') && ( c != '-' && c != ':' && c != ' ' ) )  
+//            {
+//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
+//            }
+//            if ( c == '-' && ( i != 4 && i != 7 ) )
+//            {
+//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
+//            }
+//            if ( c == ' ' && ( i != 10 ) ) 
+//            {
+//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
+//            }
+//            if ( c == ':' && ( i != 13 && i != 16 ) )
+//            {
+//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
+//            }
+//        }
+//
         java.util.Date ret = null ;
-        try
-        {
+        try {
             //--- Try to parse the input datetime ( with non lenient parsing => check validity )
-//            DATETIME_FORMAT_ISO.setLenient(false); // non lenient parsing ( exception if invalid date )
-//            ret = DATETIME_FORMAT_ISO.parse(sDateTime);
-
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_ISO_FORMAT);
             dateFormat.setLenient(false); // non lenient parsing ( exception if invalid date )
             ret = dateFormat.parse(sDateTime);
-            
-        } catch (ParseException e)
-        {
+        } 
+        catch (ParseException e) {
             throwParseDateTimeException(sDateTime, "invalid date or time" );
         }
         return ret ;
     }
-    
-    //-----------------------------------------------------------------------------------
     
 }

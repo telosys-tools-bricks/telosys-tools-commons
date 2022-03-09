@@ -1,0 +1,44 @@
+databases :
+
+  # First DB identified by "aaa"
+  - id: aaa
+    name: my database AAA
+    type: H2
+    # JDBC connection
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=0
+    driver: org.h2.Driver
+    user: sa
+    password: sa
+    # Metadata parameters
+    catalog: CUSTOMERS
+    schema:
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes:
+    # DB model creation
+    dbModelName:
+    # Telosys DSL model creation 
+    linksManyToOne: true
+    linksOneToMany: false
+    
+  # Second DB identified by "bbb"
+  - id: bbb
+    name: my database BBB
+    # JDBC connection
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=0
+    driver: org.h2.Driver
+    user: sa
+    password: sa
+    # Metadata parameters
+    catalog: STUDENTS
+    schema:
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes:
+    # DB model creation
+    dbModelName:
+    # Telosys DSL model creation 
+    linksManyToOne: true
+    linksOneToMany: false

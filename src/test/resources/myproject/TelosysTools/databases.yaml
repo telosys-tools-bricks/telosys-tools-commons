@@ -1,0 +1,41 @@
+databases :
+
+  - id: db1
+    name: my database AAA
+    # JDBC connection
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=0
+    driver: org.h2.Driver
+    user: sa
+    password: sa
+    # Metadata parameters
+    catalog: !
+    schema: CUSTOMERS
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes: TABLE
+    # DB model creation
+    dbModelName:
+    # Telosys DSL model creation 
+    linksManyToOne: true
+    linksOneToMany: false
+    
+  - id: myDatabase
+    name: my database BBB
+    # JDBC connection
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=0
+    driver: org.h2.Driver
+    user: sa
+    password: sa
+    # Metadata parameters
+    catalog: !
+    schema: STUDENTS
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes: TABLE
+    # DB model creation
+    dbModelName:
+    # Telosys DSL model creation 
+    linksManyToOne: true
+    linksOneToMany: false

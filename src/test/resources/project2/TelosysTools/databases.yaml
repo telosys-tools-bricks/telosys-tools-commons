@@ -1,0 +1,59 @@
+# Telosys databases configuration
+# 
+#    . id : must be unique (database identifier)
+#
+# "metadata" configuration  :
+#    . catalog          : the catalog where to search the metadata ( "!" means "null" ) 
+#    . schema           : the schema  where to search the metadata ( "!" means "null" )
+#    . tableNamePattern : the pattern used as table name filter ( ex : "%", "A%", ... ) 
+#    . tableTypes       : the types to retrieve, separated by blanks ( ex : "TABLE", "TABLE VIEW", ... ) 
+#    . tableNameExclude : the pattern used to exclude tables
+#    . tableNameInclude : the pattern used to include tables
+
+databases :
+
+  - id: database1
+    name: my Derby database
+    type: Derby 
+    # JDBC connection
+    driver: org.apache.derby.jdbc.ClientDriver 
+    url: jdbc:derby://localhost:1527/testdb;create=true
+    user: root
+    password: admin
+    schema: ROOT
+    # Metadata parameters
+    catalog:
+    schema:
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes:
+    # DB model creation
+    # dbModelName:
+    # Telosys DSL model creation 
+    # linksManyToOne: true
+    # linksOneToMany: false
+    
+  - id: database2
+    name: my SQL Server database
+    type: SQL-Server 
+    # JDBC connection
+    driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://10.226.xxx.xxx
+    user: aaa
+    password: bbb
+    schema: 
+    # Metadata parameters
+    catalog:
+    schema:
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes:
+    # DB model creation
+    # dbModelName:
+    # Telosys DSL model creation 
+    # linksManyToOne: true
+    # linksOneToMany: false
+    
+    

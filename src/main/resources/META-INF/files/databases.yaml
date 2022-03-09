@@ -1,0 +1,96 @@
+# Telosys databases configuration
+# 
+#    . id : must be unique (database identifier)
+#
+# "metadata" configuration  :
+#    . catalog          : the catalog where to search the metadata ( "!" means "null" ) 
+#    . schema           : the schema  where to search the metadata ( "!" means "null" )
+#    . tableNamePattern : the pattern used as table name filter ( ex : "%", "A%", ... ) 
+#    . tableTypes       : the types to retrieve, separated by blanks ( ex : "TABLE", "TABLE VIEW", ... ) 
+#    . tableNameExclude : the pattern used to exclude tables
+#    . tableNameInclude : the pattern used to include tables
+
+databases :
+
+  # First DB identified by "aaa"
+  - id: aaa
+    name: my H2 database
+    type: H2 
+    # JDBC connection
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=0
+    driver: org.h2.Driver
+    user: sa
+    password: sa
+    # Metadata parameters
+    catalog: !
+    schema: !
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes:
+    # DB model creation
+    dbModelName:
+    # Telosys DSL model creation 
+    linksManyToOne: true
+    linksOneToMany: false
+    
+# ============================================ 
+# DERBY (the JDBC Driver is in "derbyclient.jar" )
+#   driver: org.apache.derby.jdbc.ClientDriver 
+#   url: jdbc:derby://localhost:1527/bookstore 
+#   user: root
+#   password: admin
+#   schema: ROOT
+
+# ============================================
+# MYSQL (the JDBC Driver is in "mysql-connector-java-x.x.x-bin.jar")
+#   driver: com.mysql.jdbc.Driver 
+#   url: jdbc:mysql://localhost:3306/bookstore 
+#   user: root
+#   password:
+
+# ============================================ 
+# H2 embedded (the JDBC Driver is in "h2-x.x.xxx.jar")
+#   driver: org.h2.Driver 
+#   url: jdbc:h2:mem 
+#   user: sa
+#   password:
+
+# ============================================ 
+# H2 server  (the JDBC Driver is in "h2-x.x.xxx.jar")
+#   driver: org.h2.Driver 
+#   url: jdbc:h2:tcp://localhost/~/test
+#   user: sa
+#   password:
+
+# ============================================ 
+# POSTGRESQL 
+#   driver: org.postgresql.Driver 
+#   url: jdbc:postgresql://localhost:5432/bookstore
+
+# ============================================ 
+# HSQL-DB 
+#   driver: org.hsqldb.jdbcDriver 
+#   url: jdbc:hsqldb:hsql://localhost:9001/mydb
+#   schema: PUBLIC
+
+# ============================================ 
+# SQLSERVER  (the JDBC Driver is in "sqljdbc.jar" )
+#   driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver" 
+#   url    = "jdbc:sqlserver://10.226.xxx.xxx" 
+#   user: demo
+#   password: demo
+#   catalog: demo
+#   schema: dbo
+
+# ============================================ 
+# ORACLE 8i, 9i, 10g, 11g  
+# The JDBC Driver is in "ojdbc14.jar" or "ojdbc5.jar (JDK 1.5) or "ojdbc6.jar" (JDK 1.6)
+#     ( or "classes12.jar" or "classes12.zip" for 8i )
+#     schema: "HR" to use the demo database provided with Oracle XE
+#---------------- 
+#   driver: oracle.jdbc.driver.OracleDriver 
+#   url: jdbc:oracle:thin:@localhost:1521/XE
+#   catalog: ! 
+#   schema: HR
+

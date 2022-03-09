@@ -26,6 +26,12 @@ public class ExceptionUtil
 {
 	private static final int STACK_MAX_CALLERS = 100 ;
 	
+	/**
+	 * Priavte constructor
+	 */
+	private ExceptionUtil() {	
+	}
+	
 	//----------------------------------------------------------------------------------
 	/**
 	 * Returns a multi-line string containing the summary of the given exception (with causes if any)<br>
@@ -40,12 +46,11 @@ public class ExceptionUtil
 	 */
 	public static String getExceptionSummary( Throwable ex ) {
 		if ( ex != null ) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			addExceptionSummary("Exception", ex, sb);
 			Throwable cause = ex.getCause() ;
 			while ( cause != null ) {
 				addExceptionSummary("Cause", cause, sb);
-				//sb.append(  "\n  " + getExceptionSummary(cause) );
 				cause = cause.getCause();
 			}
 			return sb.toString();
@@ -55,14 +60,14 @@ public class ExceptionUtil
 		}
 	}
 	
-	private static void addExceptionSummary( String type, Throwable ex, StringBuffer sb ) {
+	private static void addExceptionSummary( String type, Throwable ex, StringBuilder sb ) {
 		sb.append(type );
 		sb.append(" " );
 		sb.append(ex.getClass().getName() );
 		sb.append(" : " );
 		sb.append(ex.getMessage() );
 		sb.append("\n" );
-		StackTraceElement stackTrace[] = ex.getStackTrace() ;
+		StackTraceElement[] stackTrace = ex.getStackTrace() ;
 		if ( stackTrace != null && stackTrace.length > 0 ) {
 			StackTraceElement ste = stackTrace[0] ;
 			sb.append(" at " ) ;
@@ -91,15 +96,15 @@ public class ExceptionUtil
 	}
 
 	//----------------------------------------------------------------------------------
-	public static String getStackTraceAsString(StackTraceElement stackTrace[] ) {
+	public static String getStackTraceAsString(StackTraceElement[] stackTrace ) {
 		return getStackTraceAsString(stackTrace, STACK_MAX_CALLERS); 
 	}
 	
 	//----------------------------------------------------------------------------------
-	public static String getStackTraceAsString(StackTraceElement stackTrace[], int maxCallers ) {
+	public static String getStackTraceAsString(StackTraceElement[] stackTrace, int maxCallers ) {
 		
 		if ( stackTrace.length > 0 ) {
-        	StringBuffer sb = new StringBuffer();
+        	StringBuilder sb = new StringBuilder();
             //--- Callers stack ( 1 to N )
     		for ( int i = 0 ; i < stackTrace.length && i < maxCallers ; i++ ) {
 	        	StackTraceElement stackTraceElement = stackTrace[i];

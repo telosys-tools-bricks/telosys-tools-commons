@@ -31,7 +31,7 @@ public class JavaLibraries {
 	 * @param telosysToolsCfg
 	 * @throws TelosysToolsException
 	 */
-	public JavaLibraries(TelosysToolsCfg telosysToolsCfg) throws TelosysToolsException {
+	public JavaLibraries(TelosysToolsCfg telosysToolsCfg) { // throws TelosysToolsException {
 		this.libraries = getLibrariesFromLibFolder(telosysToolsCfg) ;
 	}
 
@@ -70,20 +70,24 @@ public class JavaLibraries {
      * Returns the libraries located in the Telosys Tools "lib" folder
      * @return
      */
-    protected List<File> getLibrariesFromLibFolder(TelosysToolsCfg telosysToolsCfg) throws TelosysToolsException {
+    protected List<File> getLibrariesFromLibFolder(TelosysToolsCfg telosysToolsCfg) { // throws TelosysToolsException {
 
-		String libFolderPath  = telosysToolsCfg.getLibrariesFolderAbsolutePath(); // v 3.0.0
+    	List<File> list = new LinkedList<>();
+
+    	String libFolderPath  = telosysToolsCfg.getLibrariesFolderAbsolutePath(); 
         
     	File libFolder = new File(libFolderPath);
     	if ( ! libFolder.exists() ) {
-    		throw new TelosysToolsException("Libraries folder : '"+libFolderPath+"' not found") ;
+    		//throw new TelosysToolsException("Libraries folder : '"+libFolderPath+"' not found") ;
+    		return list; // void list - v 3.4.0
     	}
     	if ( ! libFolder.isDirectory() ) {
-    		throw new TelosysToolsException("Libraries folder : '"+libFolderPath+"' is not a folder") ;
+    		//throw new TelosysToolsException("Libraries folder : '"+libFolderPath+"' is not a folder") ;
+    		return list; // void list - v 3.4.0
     	}
         
     	// Select ".jar" and ".zip" files 
-    	List<File> list = new LinkedList<>();
+    	//List<File> list = new LinkedList<>();
         for ( File entry : libFolder.listFiles() ) {
             if ( entry.isFile() ) {
             	String fileName = entry.getName();            	

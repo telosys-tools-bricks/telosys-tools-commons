@@ -10,7 +10,7 @@ public class TelosysToolsEnvTest extends TestCase {
 		System.out.println("==============================================================" );
 	}
 	
-	public void test1() throws TelosysToolsException {
+	public void test1() {
 		printSeparator();
 		System.out.println("Test TelosysToolsEnv ...");
 		TelosysToolsEnv telosysToolsEnv = TelosysToolsEnv.getInstance();
@@ -25,8 +25,8 @@ public class TelosysToolsEnvTest extends TestCase {
 		assertEquals("telosys-tools.cfg",              telosysToolsEnv.getTelosysToolsConfigFileName() );
 		assertEquals("TelosysTools/telosys-tools.cfg", telosysToolsEnv.getTelosysToolsConfigFilePath() );
 
-		assertEquals("databases.dbcfg",                telosysToolsEnv.getDatabasesDbCfgFileName() );
-		assertEquals("TelosysTools/databases.dbcfg",   telosysToolsEnv.getDatabasesDbCfgFilePath() );
+		assertEquals("databases.yaml",                telosysToolsEnv.getDatabasesDbCfgFileName() );
+		assertEquals("TelosysTools/databases.yaml",   telosysToolsEnv.getDatabasesDbCfgFilePath() );
 		
 	}
 

@@ -23,7 +23,7 @@ public class ExternalConfiguration {
 	/**
 	 * Private constructor for static class
 	 */
-	public ExternalConfiguration() {	
+	private ExternalConfiguration() {	
 	}
 	
 	/**

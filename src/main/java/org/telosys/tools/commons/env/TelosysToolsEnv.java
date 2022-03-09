@@ -29,9 +29,9 @@ public class TelosysToolsEnv
 	//==============================================================================
     // SINGLETON MANAGEMENT 
     //==============================================================================
-	private final static TelosysToolsEnv instance = new TelosysToolsEnv();
+	private static final TelosysToolsEnv instance = new TelosysToolsEnv();
 	
-	public final static TelosysToolsEnv getInstance() {
+	public static final TelosysToolsEnv getInstance() {
 		return instance ;
 	}
 	
@@ -39,19 +39,21 @@ public class TelosysToolsEnv
     // INSTANCE 
     //==============================================================================
 	
-	private final static String TELOSYS_TOOLS_FOLDER = "TelosysTools" ;
+	private static final String TELOSYS_TOOLS_FOLDER = "TelosysTools" ;
 	
-//	private final static String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER ; 
-	private final static String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER + "/models" ;  // v 3.4.0
-	private final static String TEMPLATES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/templates" ; 
-	private final static String DOWNLOADS_FOLDER     = TELOSYS_TOOLS_FOLDER + "/downloads" ; 
-	private final static String LIBRARIES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/lib" ; 
+//	private static final String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER ; 
+	private static final String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER + "/models" ;  // v 3.4.0
+	private static final String TEMPLATES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/templates" ; 
+	private static final String DOWNLOADS_FOLDER     = TELOSYS_TOOLS_FOLDER + "/downloads" ; 
+	private static final String LIBRARIES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/lib" ; 
 	
-	private final static String TELOSYS_TOOLS_CFG_FILE_NAME = "telosys-tools.cfg" ;
-	private final static String TELOSYS_TOOLS_CFG_FILE_PATH = TELOSYS_TOOLS_FOLDER + "/telosys-tools.cfg" ;
+	private static final String TELOSYS_TOOLS_CFG_FILE_NAME = "telosys-tools.cfg" ;
+	private static final String TELOSYS_TOOLS_CFG_FILE_PATH = TELOSYS_TOOLS_FOLDER + "/telosys-tools.cfg" ;
 	
-	private final static String DATABASES_DBCFG_FILE_NAME   = "databases.dbcfg";
-	private final static String DATABASES_DBCFG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.dbcfg";
+//	private static final String DATABASES_DBCFG_FILE_NAME   = "databases.dbcfg";
+//	private static final String DATABASES_DBCFG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.dbcfg";
+	private static final String DATABASES_DBCFG_FILE_NAME   = "databases.yaml"; // v 3.4.0
+	private static final String DATABASES_DBCFG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.yaml"; // v 3.4.0
 	
 	//----------------------------------------------------------------------------------------
     /**

@@ -1,26 +1,21 @@
 package org.telosys.tools.commons.cfg;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Test;
-import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.variables.Variable;
+
+import static org.junit.Assert.assertEquals;
 
 public class TelosysToolsCfgTest {
 
 	private void printSeparator() {
 		System.out.println("==============================================================" );
 	}
-//	private void print(File file) {
-//		System.out.println("File   : " + file.toString());
-//		System.out.println("Parent : " + file.getParent());
-//	}
 	
-	private final static String PROJECT_ABSOLUTE_PATH     = "X:/foo/bar/myproject" ;
-	private final static String CONFIG_FILE_ABSOLUTE_PATH = "X:/foo/bar/myproject/telosys-tools.cfg" ;
+	private static final String PROJECT_ABSOLUTE_PATH     = "X:/foo/bar/myproject" ;
+	private static final String CONFIG_FILE_ABSOLUTE_PATH = "X:/foo/bar/myproject/telosys-tools.cfg" ;
 	
 	private TelosysToolsCfg getTelosysToolsCfg() {
 		TelosysToolsCfg telosysToolsCfg = new TelosysToolsCfg(PROJECT_ABSOLUTE_PATH, CONFIG_FILE_ABSOLUTE_PATH, null);
@@ -55,7 +50,7 @@ public class TelosysToolsCfgTest {
 	}
 	
 	@Test
-	public void testDefaultPackages() throws TelosysToolsException {
+	public void testDefaultPackages() {
 		printSeparator();
 		
 		TelosysToolsCfg telosysToolsCfg = getTelosysToolsCfg() ;
@@ -74,7 +69,7 @@ public class TelosysToolsCfgTest {
 	}
 
 	@Test
-	public void testTelosysToolsFolders() throws TelosysToolsException {
+	public void testTelosysToolsFolders() {
 		printSeparator();
 		
 		TelosysToolsCfg telosysToolsCfg = getTelosysToolsCfg() ;
@@ -85,7 +80,7 @@ public class TelosysToolsCfgTest {
 		assertEquals("TelosysTools/lib",        telosysToolsCfg.getLibrariesFolder() );
 		assertEquals("TelosysTools/models",     telosysToolsCfg.getModelsFolder() );
 
-		assertEquals("TelosysTools/databases.dbcfg", telosysToolsCfg.getDatabasesDbCfgFile() );
+		assertEquals("TelosysTools/databases.yaml", telosysToolsCfg.getDatabasesDbCfgFile() );
 
 		assertEquals(PROJECT_ABSOLUTE_PATH,  telosysToolsCfg.getProjectAbsolutePath() );
 		assertEquals(CONFIG_FILE_ABSOLUTE_PATH, telosysToolsCfg.getCfgFileAbsolutePath() );
@@ -105,7 +100,7 @@ public class TelosysToolsCfgTest {
 	}
 
 	@Test
-	public void testDestinationFolder() throws TelosysToolsException {
+	public void testDestinationFolder() {
 		printSeparator();
 		
 		TelosysToolsCfg telosysToolsCfg = getTelosysToolsCfg() ;

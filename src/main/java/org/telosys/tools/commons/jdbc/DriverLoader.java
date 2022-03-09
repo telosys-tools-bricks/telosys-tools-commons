@@ -21,12 +21,14 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Driver;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.telosys.tools.commons.TelosysToolsException;
 
 /**
- * Utility class used to load JDBC drivers
+ * JDBC driver loader <br>
+ * based on current class loader or specific class loader if specific libraries are defined
  * 
  * @author Laurent GUERIN *  */
 
@@ -41,9 +43,8 @@ public class DriverLoader {
          * @param urls
          * @param parentLoader
          */
-        public MySpecificClassLoader (URL[] urls, java.lang.ClassLoader parentLoader ) {
-            //--- Call the URLClassLoader constructor
-            super(urls, parentLoader);
+        public MySpecificClassLoader(URL[] urls, java.lang.ClassLoader parent) {
+            super(urls, parent);
         }
     }
 
@@ -54,39 +55,47 @@ public class DriverLoader {
 
     private final MySpecificClassLoader     specificClassLoader ; // Specific Class Loader instance
 
-    private final Hashtable<String,Driver>  drivers = new Hashtable<>(); // Loaded drivers
+//    private final Hashtable<String,Driver>  drivers = new Hashtable<>(); // Loaded drivers
+    private final Map<String,Driver>  drivers = new HashMap<>(); // Loaded drivers
     
     //-----------------------------------------------------------------------------
     /**
      * Constructor for a driver loader without list of libraries where to search the driver class<br>
      * The current class loader will be used.
      * @param logger
-     * @since 2.1.1
      */
     public DriverLoader() {
     	// No libraries => void array
     	this.specificLibraries = new String[0] ;
-    	this.specificClassLoader = null ;
+    	// no specific class loader (current class loader will be used)
+    	this.specificClassLoader = null ; 
     }
     
-    //-----------------------------------------------------------------------------
     /**
-     * Constructor for a driver loader with a list of libraries where to search the driver class
-     * 
+     * Constructor for a driver loader with a list of libraries where to search the driver class<br>
      * @param libraries
-     * @param logger
+     * @throws TelosysToolsException
      */
-    public DriverLoader( String[] libraries) throws TelosysToolsException {
-    	
+    public DriverLoader(String[] libraries) throws TelosysToolsException {
         if ( libraries == null ) {
         	throw new TelosysToolsException( "DriverLoader constructor : 'libraries' is null !" );
         }
-        else if ( libraries.length == 0 ) {
-        	throw new TelosysToolsException( "DriverLoader constructor : 'libraries' is void !" );
-        }
-        this.specificLibraries = libraries ;
         
-        //--- Convert String[] to URL[] (eliminate void and malformed urls )
+        if ( libraries.length == 0 ) {
+        	// No libraries => void array
+        	this.specificLibraries = new String[0] ;
+        	this.specificClassLoader = null ;
+        }
+        else {
+        	this.specificLibraries = libraries ;
+        	URL[] urls = buildLibrariesURL(libraries);
+            ClassLoader parentClassLoader = ClassLoader.getSystemClassLoader();
+            this.specificClassLoader = new MySpecificClassLoader(urls, parentClassLoader);
+        }
+    }
+    
+    private URL[] buildLibrariesURL(String[] libraries) throws TelosysToolsException {
+        //--- Convert String[] to URL[] (eliminate void urls and detect malformed urls )
         URL[] urls = new URL[libraries.length];
         int n = 0 ;
         for ( int i = 0 ; i < libraries.length ; i++ ) {
@@ -113,12 +122,8 @@ public class DriverLoader {
         if ( validURLs.length == 0 ) {
         	throw new TelosysToolsException( "No valid library URL (URL list is void)" );
         }
-        
-        //--- Create the specific class loader
-        ClassLoader parentLoader = ClassLoader.getSystemClassLoader();
-        specificClassLoader = new MySpecificClassLoader ( validURLs, parentLoader );
+        return validURLs;
     }
-    
     //-----------------------------------------------------------------------------
     /**
      * Returns the libraries used by this instance to search the JDBC Driver

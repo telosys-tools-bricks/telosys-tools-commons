@@ -22,22 +22,12 @@ public class MethodInvokerTest {
 		public int getCode() {
 			return code;
 		}
-//		public void setCode(int code) {
-//			this.code = code;
-//		}
 		public String getName() {
 			return name;
 		}
-//		public void setName(String name) {
-//			this.name = name;
-//		}
 		public boolean isOk() {
 			return ok;
 		}
-//		public void setOk(boolean ok) {
-//			this.ok = ok;
-//		}
-		
 	}
 	
 	@Test
@@ -78,8 +68,6 @@ public class MethodInvokerTest {
 	public void testBooleanGetter() {
 		Person p = new Person(1, "Bart", true);
 		boolean ok   = MethodInvoker.invokeBooleanGetter(p, "isOk");
-		System.out.println("ok = " + ok);
-		assertNotNull(ok);
 		assertEquals(ok, true);
 		assertTrue(ok);
 	}

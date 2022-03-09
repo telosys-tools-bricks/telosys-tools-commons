@@ -26,6 +26,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
+ * Zip utility 
  * NB : Work In Progress ( 'unzip' is OK, 'zip' is not yet finished )
  * 
  * @author Laurent GUERIN
@@ -39,15 +40,15 @@ public class ZipUtil {
 	private ZipUtil() {
 	}
 	
-	//---------------------------------------------------------------------------------------------
 	/**
 	 * Unzip the given ZIP file in the output folder, without the root folder part 
 	 * @param zipFile
 	 * @param outputFolder
 	 * @param createFolder
+	 * @throws TelosysToolsException
 	 */
 	public static void unzip(final String zipFile, final String outputFolder,
-			final boolean createFolder) throws Exception {
+			final boolean createFolder) throws TelosysToolsException {
 
 		log("UnZip file '" + zipFile + "'");
 		log("        in '" + outputFolder + "'");
@@ -56,26 +57,22 @@ public class ZipUtil {
 		File folder = new File(outputFolder);
 		if (!folder.exists()) {
 			if (createFolder) {
-				// folder.mkdirs(); // creates all parent directories 
-				DirUtil.createDirectory( folder ); // v 3.0.0
+				// Create all parent directories 
+				DirUtil.createDirectory( folder );
 			} else {
-				throw new Exception("UnZip error : folder '" + outputFolder + "' doesn't exist");
+				throw new TelosysToolsException("UnZip error : folder '" + outputFolder + "' doesn't exist");
 			}
 		}
 
-		try {
-
-			//--- Read each entry in the zip file
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
-			
+		try ( ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile)) ) {
 			ZipEntry zipEntry = zis.getNextEntry();
 			while (zipEntry != null) {
 
 				final String zipEntryName = zipEntry.getName();
 				log(" . unzip entry '" + zipEntryName + "'");
 
-				// cut the root folder ( remove "basic-templates-TT207-master" ) 
-				String entryDestination = cutEntryName( zipEntryName ) ;
+				// cut the root folder (e.g.  remove "basic-templates-TT207-master" ) 
+				String entryDestination = cutEntryName(zipEntryName) ;
 				if ( entryDestination.length() > 0 ) {
 					//--- Install this entry
 					// build the destination file name
@@ -96,32 +93,49 @@ public class ZipUtil {
 				
 				zipEntry = zis.getNextEntry();
 			}
-
 			zis.closeEntry();
-			zis.close();
-
 			log("Done");
 
 		} catch (IOException ex) {
 			log("IOException : " + ex.getMessage() );
-			throw new Exception("UnZip Error (IOException)", ex);
+			throw new TelosysToolsException("UnZip Error (IOException)", ex);
 		}
 	}
 	
+	/**
+	 * Unzip the given entry (a single file stored in the zip file)
+	 * @param zis entry input stream
+	 * @param destinationFile the new file to be created
+	 * @throws IOException
+	 */
+	private static void unzipEntry(ZipInputStream zis, File destinationFile) throws IOException {
+
+		// create non existent parent folders (to avoid FileNotFoundException) ???
+
+		byte[] buffer = new byte[1024];
+		try ( FileOutputStream fos = new FileOutputStream(destinationFile) ) {
+			int len;
+			while ((len = zis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+			}
+		}
+	}
+
+
 	//---------------------------------------------------------------------------------------------
 	/**
 	 * Zip the given directory
 	 * @param directory
 	 * @param zipFile
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	public static void zipDirectory( final File directory, final File zipFile ) throws Exception {
-		if ( directory.isDirectory() == false ) {
+	public static void zipDirectory( final File directory, final File zipFile ) throws IOException {
+		if ( ! directory.isDirectory() ) {
 			throw new IllegalArgumentException("The given file is not a directory");
 		}
 		//--- Build the list of files
 		List<String> fileNames = DirUtil.getDirectoryFiles(directory, true) ;
-		List<File> files = new LinkedList<File>() ;
+		List<File> files = new LinkedList<>() ;
 		for ( String fileAbsolutePath : fileNames ) {
 			files.add( new File(fileAbsolutePath) ) ;
 		}
@@ -134,11 +148,11 @@ public class ZipUtil {
 	 * @param files
 	 * @param zipFile
 	 * @param baseDir
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	public static void zip( List<File> files, File zipFile, File baseDir ) throws Exception {
+	public static void zip( List<File> files, File zipFile, File baseDir ) throws IOException {
 
-		if ( baseDir.isDirectory() == false ) {
+		if ( ! baseDir.isDirectory() ) {
 			throw new IllegalArgumentException("The base directory is not a directory");
 		}
 		
@@ -163,46 +177,36 @@ public class ZipUtil {
 	 * Zip the given file in the given ZipOutputStream
 	 * @param file
 	 * @param zout
-	 * @throws Exception
+	 * @param baseDir
+	 * @throws IOException
 	 */
-	private static void zip(final File file, final ZipOutputStream zout, File baseDir ) throws Exception {
+	private static void zip(File file, ZipOutputStream zout, File baseDir) throws IOException {
 		
 		String baseDirAbsolutePath = baseDir.getCanonicalPath();
 		log("baseDirAbsolutePath = " + baseDirAbsolutePath );
 		
 		byte[] buffer = new byte[1024];
 		
-		FileInputStream fileInputStream = new FileInputStream(file);
-		//--- Step 1 : create a zip entry 
-		String fileAbsolutePath = file.getCanonicalPath();
-		log("fileAbsolutePath = " + fileAbsolutePath );
-		String fileEntryName = fileAbsolutePath.substring(baseDirAbsolutePath.length()+1);
-		log("fileEntryName = " + fileEntryName );
-		
-		ZipEntry zipEntry = new ZipEntry(fileEntryName);
-		zout.putNextEntry(zipEntry);
-		//--- Step 2 : zip the file
-		int length ;
-		while( ( length = fileInputStream.read(buffer) ) > 0 ) {
-			zout.write(buffer, 0, length);
+		try ( FileInputStream fileInputStream = new FileInputStream(file) ) {
+			//--- Step 1 : create a zip entry 
+			String fileAbsolutePath = file.getCanonicalPath();
+			log("fileAbsolutePath = " + fileAbsolutePath );
+			String fileEntryName = fileAbsolutePath.substring(baseDirAbsolutePath.length()+1);
+			log("fileEntryName = " + fileEntryName );
+			
+			ZipEntry zipEntry = new ZipEntry(fileEntryName);
+			zout.putNextEntry(zipEntry);
+			//--- Step 2 : zip the file
+			int length ;
+			while( ( length = fileInputStream.read(buffer) ) > 0 ) {
+				zout.write(buffer, 0, length);
+			}
+			zout.closeEntry();
 		}
-		zout.closeEntry();
-		fileInputStream.close();
 	}
 	
 	//---------------------------------------------------------------------------------------------
-	private static int getFirstSeparator(final String entryName) {
-		
-		for ( int i = 0 ; i < entryName.length() ; i++ ) {
-			char c = entryName.charAt(i);
-			if ( c == '/' || c == '\\' ) {
-				return i ;
-			}
-		}
-		return -1 ; // Not found
-	}
-	//---------------------------------------------------------------------------------------------
-	public static String cutEntryName(final String entryName) {
+	protected static String cutEntryName(String entryName) {
 		
         final int pos = getFirstSeparator(entryName) ;
         if ( pos < 0 ) {
@@ -214,58 +218,17 @@ public class ZipUtil {
             return entryName.substring(pos + 1);
         }
 	}
-	
-	//---------------------------------------------------------------------------------------------
-	/**
-	 * Unzip the given entry (a single file stored in the zip file)
-	 * @param zis entry input stream
-	 * @param newFile the new file to be created
-	 * @throws IOException
-	 */
-	private static void unzipEntry(ZipInputStream zis, File newFile) throws IOException {
-
-		// create non existent parent folders (to avoid FileNotFoundException) ???
-
-		byte[] buffer = new byte[1024];
-		FileOutputStream fos = new FileOutputStream(newFile);
-		int len;
-		while ((len = zis.read(buffer)) > 0) {
-			fos.write(buffer, 0, len);
+	private static int getFirstSeparator(String entryName) {
+		
+		for ( int i = 0 ; i < entryName.length() ; i++ ) {
+			char c = entryName.charAt(i);
+			if ( c == '/' || c == '\\' ) {
+				return i ;
+			}
 		}
-		fos.close();
+		return -1 ; // Not found
 	}
-
-//	//---------------------------------------------------------------------------------------------
-//	/**
-//	 * Return the substring located AFTER the first occurrence of the given separator. <br>
-//	 * . substringAfter("abcd",   "b")   : "cd"  <br>
-//	 * . substringAfter("aaa/bb", "/") : "bb"  <br>
-//	 * 
-//	 * @param str
-//	 * @param separator
-//	 * @return
-//	 */
-//	public static String substringAfter(final String str, final String separator) {
-//        if ( str == null ) {
-//            return null;
-//        }
-//        if ( str.length() == 0 ) {
-//            return str;
-//        }
-//        if (separator == null) {
-//        	// no separator => nothing before
-//            return "";
-//        }
-//        final int pos = str.indexOf(separator); 
-//        if (pos < 0 ) {
-//        	// separator not found => nothing before
-//            return "";
-//        }
-//        else {
-//        	// separator found => cut before
-//            return str.substring(pos + separator.length());
-//        }
-//    }
+	
 	//---------------------------------------------------------------------------------------------
 	private static void log(String msg) {
 		// Log here if necessary
