@@ -32,7 +32,7 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	//----------------------------------------------------------------------------------
 	@Override
 	public final void log(Object object, String s) {
-		if ( LoggerConfig.LOG ) {
+		if ( GlobalLoggingConfig.isLogEnabled() ) {
 			String className = "???" ;
 			if ( object != null ) {
 				className = object.getClass().getSimpleName();
@@ -44,7 +44,7 @@ public abstract class GenericLogger implements TelosysToolsLogger
 	//----------------------------------------------------------------------------------
 	@Override
 	public final void log(String s) {
-		if ( LoggerConfig.LOG ) {
+		if ( GlobalLoggingConfig.isLogEnabled() ) {
 			print("[LOG] " + s);
 		}
 	}

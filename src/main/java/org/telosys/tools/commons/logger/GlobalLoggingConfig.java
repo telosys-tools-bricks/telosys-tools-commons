@@ -17,13 +17,25 @@ package org.telosys.tools.commons.logger;
 
 
 /**
- * Logging configuration
+ * Global logging configuration applicable to all loggers
  *
  */
-public class LoggerConfig
-{
-	// public static boolean DEBUG = false ;
+public class GlobalLoggingConfig {
 	
-	public static boolean LOG   = false ;
+	private static boolean logStatus = false ;
 	
+	private GlobalLoggingConfig() {
+	}
+	
+	public static boolean isLogEnabled() {
+		return logStatus;
+	}
+	
+	public static void enableLog() {
+		logStatus = true ;
+	}
+	
+	public static void disableLog() {
+		logStatus = false ;
+	}
 }

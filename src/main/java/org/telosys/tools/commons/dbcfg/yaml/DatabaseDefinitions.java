@@ -66,4 +66,13 @@ public class DatabaseDefinitions {
 		}
 		return null;
 	}
+	
+	/**
+	 * Returns true if the current database definitions contains the given databaseId
+	 * @param databaseId
+	 * @return
+	 */
+	public boolean containsDatabase(String databaseId) {
+		return getDatabaseDefinition(databaseId) != null ;
+	}
 }

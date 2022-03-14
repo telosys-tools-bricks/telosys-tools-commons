@@ -59,23 +59,32 @@ public class DatabaseDefinition {
     public DatabaseDefinition() {
     	super();
     }
+    
+    /**
+     * To avoid null value if nothing in YAML file (eg "tableTypes:" (no value) )
+     * @param s
+     * @return
+     */
+    private String voidIfNull(String s) {
+    	return s != null ? s : "" ;
+    }
 
 	public String getId() {
-		return id;
+		return voidIfNull(id);
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
 
 	public String getName() {
-		return name;
+		return voidIfNull(name);
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	public String getType() {
-		return type;
+		return voidIfNull(type);
 	}
 	public void setType(String type) {
 		this.type = type;
@@ -84,28 +93,28 @@ public class DatabaseDefinition {
 	//----------------------------------------------------------------------------------
 
 	public String getUrl() {
-		return url;
+		return voidIfNull(url);
 	}
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
 	public String getDriver() {
-		return driver;
+		return voidIfNull(driver);
 	}
 	public void setDriver(String driver) {
 		this.driver = driver;
 	}
 
 	public String getUser() {
-		return user;
+		return voidIfNull(user);
 	}
 	public void setUser(String user) {
 		this.user = user;
 	}
 
 	public String getPassword() {
-		return password;
+		return voidIfNull(password);
 	}
 	public void setPassword(String password) {
 		this.password = password;
@@ -114,58 +123,63 @@ public class DatabaseDefinition {
 	//----------------------------------------------------------------------------------
 
 	public String getCatalog() {
-		return catalog;
+		return voidIfNull(catalog);
 	}
 	public void setCatalog(String catalog) {
 		this.catalog = catalog;
 	}
 
 	public String getSchema() {
-		return schema;
+		return voidIfNull(schema);
 	}
 	public void setSchema(String schema) {
 		this.schema = schema;
 	}
 
 	public String getTableNamePattern() {
-		return tableNamePattern;
+		return voidIfNull(tableNamePattern);
 	}
 	public void setTableNamePattern(String tableNamePattern) {
 		this.tableNamePattern = tableNamePattern;
 	}
 
 	public String getTableNameInclude() {
-		return tableNameInclude;
+		return voidIfNull(tableNameInclude);
 	}
 	public void setTableNameInclude(String tableNameInclude) {
 		this.tableNameInclude = tableNameInclude;
 	}
 
 	public String getTableNameExclude() {
-		return tableNameExclude;
+		return voidIfNull(tableNameExclude);
 	}
 	public void setTableNameExclude(String tableNameExclude) {
 		this.tableNameExclude = tableNameExclude;
 	}
 
 	public String getTableTypes() {
-		return tableTypes;
+		return voidIfNull(tableTypes);
 	}
-	public void setTableTypes(String tableTypes) {
+	public void setTableTypes(String tableTypes) { // used by yaml parser
 		this.tableTypes = tableTypes;
 	}
 	public String[] getTableTypesArray() {
-	    StringTokenizer st = new StringTokenizer(tableTypes);
-	    int n = st.countTokens();
-	    String[] array = new String[n];
-	    for ( int i = 0 ; i < n ; i++ ) {
-	    	array[i] = st.nextToken();
-	    }
-	    return array ;
+		if ( tableTypes != null ) {
+		    StringTokenizer st = new StringTokenizer(tableTypes);
+		    int n = st.countTokens();
+		    String[] array = new String[n];
+		    for ( int i = 0 ; i < n ; i++ ) {
+		    	array[i] = st.nextToken();
+		    }
+		    return array ;
+		}
+		else {
+			return new String[0];
+		}
 	}
 
 	public String getDbModelName() {
-		return dbModelName;
+		return voidIfNull(dbModelName);
 	}
 	public void setDbModelName(String dbModelName) {
 		this.dbModelName = dbModelName;
