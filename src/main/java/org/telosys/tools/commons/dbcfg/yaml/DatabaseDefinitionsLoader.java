@@ -16,16 +16,11 @@
 package org.telosys.tools.commons.dbcfg.yaml;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
 import org.telosys.tools.commons.StrUtil;
+import org.telosys.tools.commons.YamlFileManager;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 public class DatabaseDefinitionsLoader {
 
@@ -68,23 +63,28 @@ public class DatabaseDefinitionsLoader {
     	return loadYaml(databasesFile);
 	}
 	
-	private DatabaseDefinitions loadYaml(File file) {
-		try (InputStream inputStream = new FileInputStream(file)) {
-			return loadYaml(inputStream, file.getName() );
-		} catch (FileNotFoundException e) {
-			throw new TelosysRuntimeException("File '" + file.getName() + "' not found" );
-		} catch (IOException e) {
-			throw new TelosysRuntimeException("Cannot close file " + file.getName() );
-		}
-	}
+//	private DatabaseDefinitions loadYaml(File file) {
+//		try (InputStream inputStream = new FileInputStream(file)) {
+//			return loadYaml(inputStream, file.getName() );
+//		} catch (FileNotFoundException e) {
+//			throw new TelosysRuntimeException("File '" + file.getName() + "' not found" );
+//		} catch (IOException e) {
+//			throw new TelosysRuntimeException("Cannot close file " + file.getName() );
+//		}
+//	}
+//	
+//	private DatabaseDefinitions loadYaml(InputStream inputStream, String fileName) {
+//		try {
+//			Yaml yaml = new Yaml(new Constructor(DatabaseDefinitions.class));
+//			return yaml.load(inputStream);
+//		} catch (Exception e) {
+//			throw new TelosysRuntimeException("Cannot load databases from YAML file " + fileName, e);
+//		}
+//	}
 	
-	private DatabaseDefinitions loadYaml(InputStream inputStream, String fileName) {
-		try {
-			Yaml yaml = new Yaml(new Constructor(DatabaseDefinitions.class));
-			return yaml.load(inputStream);
-		} catch (Exception e) {
-			throw new TelosysRuntimeException("Cannot load databases from YAML file " + fileName, e);
-		}
+	private DatabaseDefinitions loadYaml(File file) {
+		YamlFileManager yamlFileManager = new YamlFileManager();
+		return yamlFileManager.load(file, DatabaseDefinitions.class);
 	}
 
 }
