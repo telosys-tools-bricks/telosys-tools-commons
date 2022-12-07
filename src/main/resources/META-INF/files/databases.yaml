@@ -9,6 +9,8 @@
 #    . tableTypes       : the types to retrieve, separated by blanks ( ex : "TABLE", "TABLE VIEW", ... ) 
 #    . tableNameExclude : the pattern used to exclude tables
 #    . tableNameInclude : the pattern used to include tables
+# 
+# NB: this a YAML file, don't forget to use QUOTES when a special character is used
 
 databases :
 
@@ -22,8 +24,8 @@ databases :
     user: sa
     password: sa
     # Metadata parameters
-    catalog: !
-    schema: !
+    catalog: '!'
+    schema: '!'
     tableNamePattern:
     tableNameInclude:
     tableNameExclude:
@@ -84,13 +86,19 @@ databases :
 #   schema: dbo
 
 # ============================================ 
-# ORACLE 8i, 9i, 10g, 11g  
-# The JDBC Driver is in "ojdbc14.jar" or "ojdbc5.jar (JDK 1.5) or "ojdbc6.jar" (JDK 1.6)
-#     ( or "classes12.jar" or "classes12.zip" for 8i )
-#     schema: "HR" to use the demo database provided with Oracle XE
+# ORACLE 
+# JDBC Driver jar files :
+# See https://www.oracle.com/fr/database/technologies/appdev/jdbc-downloads.html
+#   for Oracle versions 21c, 19c, 18c, and 12.2 : 
+#     . ojdbc11.jar ( JDBC 4.3 / JDK11 and JDK17 )
+#     . ojdbc10.jar ( JDBC 4.3 / JDK11 )
+#     . ojdbc8.jar  ( JDBC 4.2 / JDK8  and JDK11 ) 
+#   other old jars examples: ojdbc14.jar, ojdbc6.jar (JDK 1.6), ojdbc5.jar (JDK 1.5) 
+# schema: "HR" to use the demo database provided with Oracle XE
 #---------------- 
 #   driver: oracle.jdbc.driver.OracleDriver 
-#   url: jdbc:oracle:thin:@localhost:1521/XE
-#   catalog: ! 
+#   url for SID:     jdbc:oracle:thin:@[HOST][:PORT]:SID     (older format)
+#   url for SERVICE: jdbc:oracle:thin:@[HOST][:PORT]/SERVICE (newer format)
+#   url example for XE: jdbc:oracle:thin:@localhost:1521/XE
+#   catalog: '!'
 #   schema: HR
-
