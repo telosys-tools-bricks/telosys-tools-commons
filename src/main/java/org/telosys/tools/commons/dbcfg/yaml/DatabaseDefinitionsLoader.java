@@ -63,25 +63,6 @@ public class DatabaseDefinitionsLoader {
     	return loadYaml(databasesFile);
 	}
 	
-//	private DatabaseDefinitions loadYaml(File file) {
-//		try (InputStream inputStream = new FileInputStream(file)) {
-//			return loadYaml(inputStream, file.getName() );
-//		} catch (FileNotFoundException e) {
-//			throw new TelosysRuntimeException("File '" + file.getName() + "' not found" );
-//		} catch (IOException e) {
-//			throw new TelosysRuntimeException("Cannot close file " + file.getName() );
-//		}
-//	}
-//	
-//	private DatabaseDefinitions loadYaml(InputStream inputStream, String fileName) {
-//		try {
-//			Yaml yaml = new Yaml(new Constructor(DatabaseDefinitions.class));
-//			return yaml.load(inputStream);
-//		} catch (Exception e) {
-//			throw new TelosysRuntimeException("Cannot load databases from YAML file " + fileName, e);
-//		}
-//	}
-	
 	private DatabaseDefinitions loadYaml(File file) {
 		YamlFileManager yamlFileManager = new YamlFileManager();
 		return yamlFileManager.load(file, DatabaseDefinitions.class);

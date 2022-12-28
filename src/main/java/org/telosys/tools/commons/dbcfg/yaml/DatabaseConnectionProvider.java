@@ -15,7 +15,6 @@
  */
 package org.telosys.tools.commons.dbcfg.yaml;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -53,13 +52,6 @@ public class DatabaseConnectionProvider {
 		
 		// init database definitions from Telosys project
     	DatabaseDefinitionsLoader loader = new DatabaseDefinitionsLoader();
-//    	File dbFile = new File(telosysToolsCfg.getDatabasesDbCfgFileAbsolutePath());
-//    	if ( dbFile.exists() && dbFile.isFile() ) {
-//    		this.databaseDefinitions = loader.load(dbFile);
-//    	}
-//    	else {
-//    		this.databaseDefinitions = null;
-//    	}
     	this.databaseDefinitions = loader.load(telosysToolsCfg);
     }
     
@@ -92,14 +84,6 @@ public class DatabaseConnectionProvider {
         if ( databaseDefinition == null ) {
         	throw new IllegalArgumentException("DatabaseDefinition is null");
         }
-//		Connection con = createConnection(databaseDefinition);
-//        //--- Check connection
-//        if ( con != null ) {
-//            return con ;
-//        }
-//        else {
-//            throw new TelosysToolsException( "Cannot get database connection (connection is null)");
-//        }
 		//--- Connection parameters
 		String driverClass = databaseDefinition.getDriver();
 		String jdbcUrl     = databaseDefinition.getUrl();
@@ -110,17 +94,6 @@ public class DatabaseConnectionProvider {
 		return createConnection(driverClass, jdbcUrl, prop);
     }
     
-//    private Connection createConnection(DatabaseDefinition databaseDefinition) throws TelosysToolsException {        
-//		//--- Connection parameters
-//		String driverClass = databaseDefinition.getDriver();
-//		String jdbcUrl     = databaseDefinition.getUrl();
-//		Properties prop = new Properties() ;
-//		prop.put("user",     databaseDefinition.getUser() ) ; 
-//		prop.put("password", databaseDefinition.getPassword() ) ;
-//		//--- Connection creation
-//		return createConnection(driverClass, jdbcUrl, prop);
-//    }
-
     /**
      * Creates a new connection using the given parameters 
      * 
