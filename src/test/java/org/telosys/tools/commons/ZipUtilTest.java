@@ -78,21 +78,9 @@ public class ZipUtilTest {
 		assertNotNull(error);
 	}
 
-//	public void testUnZip2() throws Exception {
-//		System.out.println("Unzip file... ");
-//		Exception error = null ;
-//		try {
-//			ZipUtil.unzip("D:/tmp/telosys-tools-tests/TelosysTools/downloads/persistence-jpa-TT210-R2.zip", 
-//					"D:/tmp/telosys-tools-tests/TelosysTools/templates/inex", false);
-//		} catch (Exception e) {
-//			error = e ;
-//		}
-//		System.out.println("Expected error : " + error.getMessage() );
-//		assertNotNull(error);
-//	}
 	@Test
 	public void testZipFiles() throws Exception {
-		List<File> files = new LinkedList<File>();
+		List<File> files = new LinkedList<>();
 		files.add( new File("src/test/resources/telosys-tools.cfg") );
 		files.add( new File("src/test/resources/dbcfg/databases.dbcfg") );
 			
@@ -104,15 +92,4 @@ public class ZipUtilTest {
 		assertTrue(zipFile.isFile());
 	}
 	
-//	@Test
-//	public void testZipZeroFiles() throws Exception {
-//		List<File> files = new LinkedList<File>();
-//			
-//		File zipFile = TestsEnv.getTmpFile("archive2.zip");
-//		zipFile.delete();
-//		ZipUtil.zip(files, zipFile, new File ("src/test/resources/") );
-//		
-//		assertTrue(zipFile.exists());
-//		assertTrue(zipFile.isFile());
-//	}	
 }

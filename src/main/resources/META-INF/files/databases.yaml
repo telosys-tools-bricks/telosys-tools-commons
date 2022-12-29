@@ -30,16 +30,15 @@ databases :
     tableNameInclude:
     tableNameExclude:
     tableTypes:
-    # DB model creation
-    dbModelName:
     # Telosys DSL model creation 
     linksManyToOne: true
-    linksOneToMany: false
+    linksOneToMany: true
+    linksManyToMany: true
     
 # ============================================ 
 # DERBY (the JDBC Driver is in "derbyclient.jar" )
 #   driver: org.apache.derby.jdbc.ClientDriver 
-#   url: jdbc:derby://localhost:1527/bookstore 
+#   url: jdbc:derby://localhost:1527/mydb 
 #   user: root
 #   password: admin
 #   schema: ROOT
@@ -47,7 +46,7 @@ databases :
 # ============================================
 # MYSQL (the JDBC Driver is in "mysql-connector-java-x.x.x-bin.jar")
 #   driver: com.mysql.jdbc.Driver 
-#   url: jdbc:mysql://localhost:3306/bookstore 
+#   url: jdbc:mysql://localhost:3306/mydb 
 #   user: root
 #   password:
 
@@ -68,7 +67,7 @@ databases :
 # ============================================ 
 # POSTGRESQL 
 #   driver: org.postgresql.Driver 
-#   url: jdbc:postgresql://localhost:5432/bookstore
+#   url: jdbc:postgresql://localhost:5432/mydb
 
 # ============================================ 
 # HSQL-DB 

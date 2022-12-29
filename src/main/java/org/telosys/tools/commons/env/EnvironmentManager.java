@@ -97,7 +97,7 @@ public class EnvironmentManager {
 		createFolder( telosysToolsEnv.getLibrariesFolder(), sb );
 		createFolder( telosysToolsEnv.getTemplatesFolder(), sb );
 		createFolder( telosysToolsEnv.getModelsFolder(), sb ); // v 3.4.0
-		//--- Init 'databases.dbcfg' file
+		//--- Init 'databases.yaml' file
 		initDatabasesConfigFile(sb);
 		//--- Init 'telosys-tools.cfg' file
 		try {
@@ -128,8 +128,8 @@ public class EnvironmentManager {
 
 	//-----------------------------------------------------------------------------------------------------	
 	/**
-	 * Returns the 'databases.dbcfg' full path (OS full path)<br>
-	 * ( e.g. 'X:/dir/myproject/TelosysTools/databases.dbcfg' )
+	 * Returns the 'databases.yaml' full path (OS full path)<br>
+	 * ( e.g. 'X:/dir/myproject/TelosysTools/databases.yaml' )
 	 * @return
 	 */
 	protected String getDatabasesDbCfgFullPath() {

@@ -48,7 +48,8 @@ public class DatabaseDefinition {
 	private String     dbModelName  = VOID ; // for db-model filename
     //--- DSL model creation
 	private boolean    linksManyToOne  = true ; 
-	private boolean    linksOneToMany  = false ;
+	private boolean    linksOneToMany  = true ;
+	private boolean    linksManyToMany = true ; 
 	//--- Other info
 	//     dialect  ?? 
 
@@ -198,5 +199,13 @@ public class DatabaseDefinition {
 	public void setLinksOneToMany(boolean linksOneToMany) {
 		this.linksOneToMany = linksOneToMany;
 	}
+
+	public boolean isLinksManyToMany() {
+		return linksManyToMany;
+	}
+	public void setLinksManyToMany(boolean linksManyToMany) {
+		this.linksManyToMany = linksManyToMany;
+	}
+	
 	
 }

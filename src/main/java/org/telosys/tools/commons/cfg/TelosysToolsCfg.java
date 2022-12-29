@@ -237,27 +237,23 @@ public class TelosysToolsCfg
 	}
 
     //==============================================================================
-    // "databases.dbcfg" file  
+    // "databases.yaml" file  
     //==============================================================================
     /**
-     * Returns the "databases.dbcfg" in the current project (relative path in the project) <br>
-     * ( e.g. 'TelosysTools/databases.dbcfg' )
+     * Returns the "databases.yaml" in the current project (relative path in the project) <br>
+     * ( e.g. 'TelosysTools/databases.yaml' )
      * @return
      */
     public String getDatabasesDbCfgFile() {
-//    	// v 3.0.0
-//    	return FileUtil.buildFilePath(getModelsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
     	// v 3.4.0 
     	return FileUtil.buildFilePath(getTelosysToolsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}
     /**
-     * Returns the absolute file name of the "databases.dbcfg" file 
-     * ( e.g. 'X:/dir/myproject/TelosysTools/databases.dbcfg' )
+     * Returns the absolute file name of the "databases.yaml" file 
+     * ( e.g. 'X:/dir/myproject/TelosysTools/databases.yaml' )
      * @return
      */
     public String getDatabasesDbCfgFileAbsolutePath() {
-//    	// v 3.0.0
-//    	return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
     	// v 3.4.0 
     	return FileUtil.buildFilePath(getTelosysToolsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
 	}

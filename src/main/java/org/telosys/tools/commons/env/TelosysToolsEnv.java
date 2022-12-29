@@ -41,7 +41,6 @@ public class TelosysToolsEnv
 	
 	private static final String TELOSYS_TOOLS_FOLDER = "TelosysTools" ;
 	
-//	private static final String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER ; 
 	private static final String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER + "/models" ;  // v 3.4.0
 	private static final String TEMPLATES_FOLDER     = TELOSYS_TOOLS_FOLDER + "/templates" ; 
 	private static final String DOWNLOADS_FOLDER     = TELOSYS_TOOLS_FOLDER + "/downloads" ; 
@@ -50,10 +49,8 @@ public class TelosysToolsEnv
 	private static final String TELOSYS_TOOLS_CFG_FILE_NAME = "telosys-tools.cfg" ;
 	private static final String TELOSYS_TOOLS_CFG_FILE_PATH = TELOSYS_TOOLS_FOLDER + "/telosys-tools.cfg" ;
 	
-//	private static final String DATABASES_DBCFG_FILE_NAME   = "databases.dbcfg";
-//	private static final String DATABASES_DBCFG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.dbcfg";
-	private static final String DATABASES_DBCFG_FILE_NAME   = "databases.yaml"; // v 3.4.0
-	private static final String DATABASES_DBCFG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.yaml"; // v 3.4.0
+	private static final String DATABASES_CONFIG_FILE_NAME   = "databases.yaml"; // v 3.4.0
+	private static final String DATABASES_CONFIG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.yaml"; // v 3.4.0
 	
 	//----------------------------------------------------------------------------------------
     /**
@@ -85,21 +82,20 @@ public class TelosysToolsEnv
 	}
 
     /**
-     * Returns the "databases.dbcfg" file name <br>
-     * ( e.g. 'databases.dbcfg' )
+     * Returns the "databases.yaml" file name 
      * @return
      */
     public String getDatabasesDbCfgFileName() {
-    	return DATABASES_DBCFG_FILE_NAME ;
+    	return DATABASES_CONFIG_FILE_NAME ;
 	}
     
     /**
-     * Returns the "databases.dbcfg" file path in the current project (relative path in the project) <br>
-     * ( e.g. 'TelosysTools/databases.dbcfg' )
+     * Returns the "databases.yaml" file path in the current project (relative path in the project) <br>
+     * ( e.g. 'TelosysTools/databases.yaml' )
      * @return
      */
     public String getDatabasesDbCfgFilePath() {
-    	return DATABASES_DBCFG_FILE_PATH ;
+    	return DATABASES_CONFIG_FILE_PATH ;
 	}
     
 	//==============================================================================
