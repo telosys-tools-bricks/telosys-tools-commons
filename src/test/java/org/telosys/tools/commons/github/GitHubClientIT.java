@@ -18,7 +18,7 @@ import junit.env.telosys.tools.commons.TestsEnv;
  */
 public class GitHubClientIT {
 
-	private final static String GITHUB_USER = "telosys-tools" ;
+	private static final String GITHUB_USER = "telosys-templates" ; // "telosys-tools" ;
 
 	private void printJavaVersion() {
 		System.out.println("Setting system property 'https.protocols'... ");
@@ -79,7 +79,7 @@ public class GitHubClientIT {
 		Properties properties = TestsEnv.loadSpecificProxyProperties() ;
 		GitHubClient gitHubClient = new GitHubClient( properties);
 		
-		String repoName = "basic-templates-TT210" ;
+		String repoName = "plantuml" ; // "basic-templates-TT210" ;
 		String destinationFile = TestsEnv.getTmpDownloadFolderFullPath() + "/" + repoName + ".zip" ;
 		System.out.println("Download repository " + repoName );
 		System.out.println("                 to " + destinationFile );
@@ -100,15 +100,16 @@ public class GitHubClientIT {
 		System.out.println("Reset date : " + rateLimit.getResetDate()); 
 	}
 
-	@Test(expected=Exception.class)
+	@Test // NO ERROR for unknown user // (expected=Exception.class)
 	public void testGetRateLimitWithBadUser() throws Exception {
 
-		GitHubUser.set("bad-user", "xxxxx");
+		// User + password
+		GitHubUser.set("fake-user-azer7766-OuPMK", "xxxxx");
 		
 		GitHubClient gitHubClient = new GitHubClient(null);
-		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(); // Staus code 401 --> Exception
+		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(); 
 		
-		System.out.println(rateLimit);
+		System.out.println(rateLimit); // limit='60', remaining='60'
 		System.out.println("Response body : \n" + rateLimit.getResponseBody());
 		System.out.println("Reset date : " + rateLimit.getResetDate()); 
 	}

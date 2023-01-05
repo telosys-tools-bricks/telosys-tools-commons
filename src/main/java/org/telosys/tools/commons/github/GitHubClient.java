@@ -194,10 +194,10 @@ public class GitHubClient {
 	}
 	
 	/**
-	 * Downloads a GitHub repository (e.g. "https://github.com/telosys-templates-v3/{REPOSITORY}-master.zip" )<br>
+	 * Downloads a GitHub repository (e.g. "https://github.com/telosys-templates/{REPOSITORY}-master.zip" )<br>
 	 * Simple HTTP download, doesn't use the GitHub API <br>
 	 * 
-	 * @param userName GitHub user name or organization name ( e.g. "telosys-templates-v3" )
+	 * @param userName GitHub user name or organization name ( e.g. "telosys-templates" )
 	 * @param repoName GitHub repository name ( e.g. "php7-web-mvc" or "python-web-rest-bottle" )
 	 * @param destinationFile the full file name on the filesystem 
 	 * @return file size (bytes count)

@@ -20,8 +20,8 @@ import junit.framework.TestCase;
 public class HttpClientIT extends TestCase {
 
 	private static final String URL_GOOGLE_FR  = "https://www.google.fr" ;
-	private static final String URL_GITHUB_COM = "https://github.com/telosys-templates-v3" ;
-	private static final String URL_GITHUB_API = "https://api.github.com/users/telosys-templates-v3/repos";
+	private static final String URL_GITHUB_COM = "https://github.com/telosys-templates" ;
+	private static final String URL_GITHUB_API = "https://api.github.com/users/telosys-templates/repos";
 	
 	private Map<String, String> getHeaders() {
 		Map<String, String> headers = new HashMap<>();

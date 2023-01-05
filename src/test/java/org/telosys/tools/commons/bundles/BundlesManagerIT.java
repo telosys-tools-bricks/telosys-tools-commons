@@ -20,9 +20,11 @@ import junit.framework.TestCase;
  */
 public class BundlesManagerIT extends TestCase {
 
-	private static final String GITHUB_STORE = "telosys-templates-v3" ;
+	private static final String GITHUB_STORE = "telosys-templates" ; // changed in v 4.1.0 ( old = "telosys-templates-v3" )
 	
-	private static final String BUNDLE_NAME = "basic-templates-samples-T300" ;
+	private static final String BUNDLE_NAME = "java-domain-example" ; // changed in v 4.1.0 ( old = "basic-templates-samples-T300" )
+	
+	private static final String BUNDLE_NAME2 = "java-jdbc" ;
 	
 	private TelosysToolsCfg telosysToolsCfg = null ;
 	
@@ -94,7 +96,7 @@ public class BundlesManagerIT extends TestCase {
 		return bm;
 	}
 	
-	public void testFolder() throws TelosysToolsException {
+	public void testFolder() {
 		System.out.println("========== File system folder  ");
 
 		String bundlesFolderInConfig = TestsEnv.getTmpBundlesFolderFullPath();
@@ -133,14 +135,14 @@ public class BundlesManagerIT extends TestCase {
 		System.out.println("Message : " + bundles.getRateLimitMessage() );
 	}
 	
-	public void testIsBundleInstalled() throws TelosysToolsException {
+	public void testIsBundleInstalled() {
 		System.out.println("========== isBundleAlreadyInstalled  ");
 		BundlesManager bm = getBundlesManager();
 		boolean b = bm.isBundleAlreadyInstalled("no-installed");
 		assertFalse(b);
 	}
 
-	public void testDownloadBundle() throws TelosysToolsException {
+	public void testDownloadBundle() {
 		System.out.println("========== Download  ");
 		BundlesManager bm = getBundlesManager();
 		System.out.println("Downloading bundle '" + BUNDLE_NAME + "'...");
@@ -156,7 +158,7 @@ public class BundlesManagerIT extends TestCase {
 		assertNull(status.getException());
 	}
 
-	public void testDownloadBundleInSpecificFolder() throws TelosysToolsException {
+	public void testDownloadBundleInSpecificFolder() {
 		System.out.println("========== Download in specific folder ");
 		BundlesManager bm = getBundlesManager();
 		System.out.println("Downloading bundle '" + BUNDLE_NAME + "'...");
@@ -173,7 +175,7 @@ public class BundlesManagerIT extends TestCase {
 		assertNull(status.getException());
 	}
 
-	public void testDownloadBundleInNonExistentFolder() throws TelosysToolsException {
+	public void testDownloadBundleInNonExistentFolder() {
 		System.out.println("========== Download in non existent folder ");
 		BundlesManager bm = getBundlesManager();
 		System.out.println("Downloading bundle '" + BUNDLE_NAME + "'...");
@@ -189,13 +191,13 @@ public class BundlesManagerIT extends TestCase {
 		assertNotNull(status.getException());
 	}
 
-	public void testDownloadThenInstallBundle() throws TelosysToolsException {
+	public void testDownloadThenInstallBundle() { 
 		System.out.println("========== Download + Install ");
-		String bundleName = "persistence-jpa-TT210-R2" ;
+		String bundleName = BUNDLE_NAME2 ; 
 		BundlesManager bm = getBundlesManager();
 		System.out.println("Downloading bundle '" + bundleName + "'...");
 		
-		BundleStatus status = bm.downloadBundle("telosys-tools", bundleName);
+		BundleStatus status = bm.downloadBundle(GITHUB_STORE, bundleName);
 
 		System.out.println("Satus message : " + status.getMessage() );
 		System.out.println("Satus is done ? : " + status.isDone() );
@@ -218,12 +220,11 @@ public class BundlesManagerIT extends TestCase {
 		}
 	}
 
-	public void testDownloadAndInstallBundle() throws TelosysToolsException {
+	public void testDownloadAndInstallBundle() { 
 		System.out.println("========== downloadAndInstallBundle ");
-		String bundleName = "persistence-jpa-TT210-R2" ;
 		BundlesManager bm = getBundlesManager();
 
-		BundleStatus status = bm.downloadAndInstallBundle("telosys-tools", bundleName);
+		BundleStatus status = bm.downloadAndInstallBundle(GITHUB_STORE, BUNDLE_NAME2);
 
 		System.out.println("Satus message : " + status.getMessage() );
 		System.out.println("Satus is done ? : " + status.isDone() );

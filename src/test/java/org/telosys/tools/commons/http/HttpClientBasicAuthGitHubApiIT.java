@@ -17,7 +17,7 @@ import junit.framework.TestCase;
  * @author L. Guerin
  *
  */
-public class HttpClientBasicAuthIT extends TestCase {
+public class HttpClientBasicAuthGitHubApiIT extends TestCase {
 
 	private void printResponse(HttpResponse response) {
 		System.out.println(" Ret Code = " +response.getStatusCode() );
@@ -56,7 +56,8 @@ public class HttpClientBasicAuthIT extends TestCase {
 	public void testGet1() throws Exception {
 		System.out.println("--- Test http GET 1 --- ");	
 		
-		test("aaa", "bbb", 401); // Bad : 401 Unauthorized
+		//test("aaa", "bbb", 401); // Bad : 401 Unauthorized
+		test("aaa", "bbb", 200); // 200 OK it works in new GitHub API version
 		
 		// Test with a real user password below
 		// test("xxx", "xxx", 200); // 200 OK

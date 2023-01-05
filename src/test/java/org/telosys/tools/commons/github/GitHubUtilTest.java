@@ -25,7 +25,7 @@ public class GitHubUtilTest {
 		print("URL pattern : " + pattern ) ;
 		String url = GitHubUtil.buildGitHubURL(GitHubTestsConst.GITHUB_USER, "php7-web-mvc", pattern);
 		print("URL result  : " + url ) ;
-		assertEquals("https://github.com/telosys-templates-v3/php7-web-mvc/archive/master.zip", url);
+		assertEquals("https://github.com/telosys-templates/php7-web-mvc/archive/master.zip", url);
 	}
 	
 }
