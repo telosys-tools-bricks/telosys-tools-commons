@@ -17,8 +17,6 @@ package org.telosys.tools.commons.dbcfg.yaml;
 
 import java.util.StringTokenizer;
 
-
-
 /**
  * Database definition loaded from YAML file 
  * 
@@ -44,14 +42,16 @@ public class DatabaseDefinition {
     private String     tableNameInclude = VOID;
     private String     tableNameExclude = VOID;
     private String     tableTypes       = VOID;
+    
     //--- DB model creation
 	private String     dbModelName  = VOID ; // for db-model filename
     //--- DSL model creation
 	private boolean    linksManyToOne  = true ; 
-	private boolean    linksOneToMany  = true ;
-	private boolean    linksManyToMany = true ; 
+	private boolean    linksOneToMany  = false ; 
+	private boolean    linksManyToMany = false ; 
 	//--- Other info
-	//     dialect  ?? 
+	private boolean    databaseDefaultValue = true ;  // v 4.1.0
+	private boolean    databaseComment      = true ;  // v 4.1.0
 
 	//----------------------------------------------------------------------------------
     /**
@@ -186,6 +186,7 @@ public class DatabaseDefinition {
 		this.dbModelName = dbModelName;
 	}
 
+	//----------------------------------------------------------------------------------
 	public boolean isLinksManyToOne() {
 		return linksManyToOne;
 	}
@@ -206,6 +207,20 @@ public class DatabaseDefinition {
 	public void setLinksManyToMany(boolean linksManyToMany) {
 		this.linksManyToMany = linksManyToMany;
 	}
-	
-	
+
+	//----------------------------------------------------------------------------------
+	public boolean isDatabaseDefaultValue() { // v 4.1.0
+		return databaseDefaultValue;
+	}
+	public void setDatabaseDefaultValue(boolean databaseDefaultValue) { // v 4.1.0
+		this.databaseDefaultValue = databaseDefaultValue;
+	}
+
+	public boolean isDatabaseComment() { // v 4.1.0
+		return databaseComment;
+	}
+	public void setDatabaseComment(boolean databaseComment) { // v 4.1.0
+		this.databaseComment = databaseComment;
+	}
+
 }

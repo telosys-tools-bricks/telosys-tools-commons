@@ -16,11 +16,17 @@ databases :
     tableNameInclude:
     tableNameExclude:
     tableTypes:
-    # DB model creation
+    # ---- DB model creation
+    # keep 'dbModelName' (unused) but just for backward compatibility
     dbModelName:
-    # Telosys DSL model creation 
+    # if property 'foo' in YAML file and undefined in Java Bean => YAML error  
+    # foo: "abc"
+    # Telosys DSL model creation options 
     linksManyToOne: true
-    linksOneToMany: false
+    linksOneToMany: true
+    linksManyToMany: true
+    databaseDefaultValue: false
+    databaseComment: true
     
   # Second DB identified by "bbb"
   - id: bbb
@@ -37,8 +43,9 @@ databases :
     tableNameInclude:
     tableNameExclude:
     tableTypes:
-    # DB model creation
-    dbModelName:
-    # Telosys DSL model creation 
-    linksManyToOne: true
-    linksOneToMany: false
+    # -- all default values for the following options : 
+    # linksManyToOne
+    # linksOneToMany
+    # linksManyToMany
+    # databaseDefaultValue
+    # databaseComment

@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.telosys.tools.commons.FileUtil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public class DatabaseDefinitionsLoaderTest {
 
@@ -45,6 +48,28 @@ public class DatabaseDefinitionsLoaderTest {
 		
 		assertEquals("bbb", dbList.get(1).getId() );
 		assertEquals("", dbList.get(1).getType() ); // not defined in file
+		
+		assertNull( databaseDefinitions.getDatabaseDefinition("invalid-db-id") );
+		
+		//--- test database "aaa"
+		DatabaseDefinition dd = databaseDefinitions.getDatabaseDefinition("aaa");
+		assertTrue(dd.isLinksManyToOne());
+		assertTrue(dd.isLinksManyToMany());
+		assertTrue(dd.isLinksOneToMany());
+		
+		print("isDatabaseDefaultValue : " + dd.isDatabaseDefaultValue());
+		print("isDatabaseComment      : " + dd.isDatabaseComment());
+		assertFalse(dd.isDatabaseDefaultValue());
+		assertTrue(dd.isDatabaseComment());
+		
+		//-- test database "bbb" 
+		dd = databaseDefinitions.getDatabaseDefinition("bbb");
+		// following properties are not defined in YAML file => check default values
+		assertTrue(dd.isLinksManyToOne());
+		assertFalse(dd.isLinksManyToMany());
+		assertFalse(dd.isLinksOneToMany());
+		assertTrue(dd.isDatabaseDefaultValue());
+		assertTrue(dd.isDatabaseComment());
 	}
 
 }
