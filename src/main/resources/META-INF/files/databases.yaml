@@ -34,6 +34,8 @@ databases :
     linksManyToOne: true
     linksOneToMany: true
     linksManyToMany: true
+    databaseDefaultValue: true
+    databaseComment: true
     
 # ============================================ 
 # DERBY (the JDBC Driver is in "derbyclient.jar" )
