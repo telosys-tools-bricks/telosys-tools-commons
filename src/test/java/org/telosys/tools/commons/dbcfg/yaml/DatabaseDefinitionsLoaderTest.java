@@ -18,14 +18,14 @@ public class DatabaseDefinitionsLoaderTest {
 	}
 	
 	@Test(expected=Exception.class)
-	public void testLoad0() {
+	public void testLoadErrorNoFile() {
 		print("--- testLoad0");
 		DatabaseDefinitionsLoader loader = new DatabaseDefinitionsLoader();
 		loader.load(FileUtil.getFileByClassPath("/yaml/no-file.yaml"));
 	}
 	
 	@Test
-	public void testLoad1() {
+	public void testLoadDatabasesYaml() {
 		print("--- testLoad1");
 		
 		File file = FileUtil.getFileByClassPath("/yaml/databases.yaml") ;
@@ -57,10 +57,19 @@ public class DatabaseDefinitionsLoaderTest {
 		assertTrue(dd.isLinksManyToMany());
 		assertTrue(dd.isLinksOneToMany());
 		
-		print("isDatabaseDefaultValue : " + dd.isDatabaseDefaultValue());
-		print("isDatabaseComment      : " + dd.isDatabaseComment());
-		assertFalse(dd.isDatabaseDefaultValue());
-		assertTrue(dd.isDatabaseComment());
+		print("isDbDefaultValue : " + dd.isDbDefaultValue());
+		print("isDbComment      : " + dd.isDbComment());
+		assertFalse(dd.isDbDefaultValue());
+		assertFalse(dd.isDbComment());
+		assertFalse(dd.isDbDefaultValue());
+		assertFalse(dd.isDbComment());
+		assertFalse(dd.isDbCatalog());
+		assertFalse(dd.isDbDefaultValue());
+		assertFalse(dd.isDbName());
+		assertFalse(dd.isDbSchema());
+		assertFalse(dd.isDbTable());
+		assertFalse(dd.isDbView());
+		
 		
 		//-- test database "bbb" 
 		dd = databaseDefinitions.getDatabaseDefinition("bbb");
@@ -68,8 +77,16 @@ public class DatabaseDefinitionsLoaderTest {
 		assertTrue(dd.isLinksManyToOne());
 		assertFalse(dd.isLinksManyToMany());
 		assertFalse(dd.isLinksOneToMany());
-		assertTrue(dd.isDatabaseDefaultValue());
-		assertTrue(dd.isDatabaseComment());
+		
+		// TRUE for all by default
+		assertTrue(dd.isDbDefaultValue());
+		assertTrue(dd.isDbComment());
+		assertTrue(dd.isDbCatalog());
+		assertTrue(dd.isDbDefaultValue());
+		assertTrue(dd.isDbName());
+		assertTrue(dd.isDbSchema());
+		assertTrue(dd.isDbTable());
+		assertTrue(dd.isDbView());
 	}
 
 }

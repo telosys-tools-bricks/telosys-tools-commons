@@ -43,15 +43,23 @@ public class DatabaseDefinition {
     private String     tableNameExclude = VOID;
     private String     tableTypes       = VOID;
     
-    //--- DB model creation
-	private String     dbModelName  = VOID ; // for db-model filename
     //--- DSL model creation
+	private String     dbModelName  = VOID ; // UNUSED : just for backward compatibility with YAML parser 
+	// what kind of links to define in the model
 	private boolean    linksManyToOne  = true ; 
 	private boolean    linksOneToMany  = false ; 
 	private boolean    linksManyToMany = false ; 
-	//--- Other info
-	private boolean    databaseDefaultValue = true ;  // v 4.1.0
-	private boolean    databaseComment      = true ;  // v 4.1.0
+	// what kind of database information to define in the model (true by default for all)
+	private boolean    dbCatalog      = true ;  // v 4.1.0  @DbCatalog(string) / Entity 
+	private boolean    dbComment      = true ;  // v 4.1.0  @DbComment(string) / Entity & Attribute
+	private boolean    dbDefaultValue = true ;  // v 4.1.0  @DbDefaultValue(string) / Attribute 
+	private boolean    dbName         = true ;  // v 4.1.0  @DbName(string) / Attribute 
+	private boolean    dbSchema       = true ;  // v 4.1.0  @DbSchema(string) / Entity 
+	// Attribute : @DbSize(string) : deprecated 
+	private boolean    dbTable        = true ;  // v 4.1.0  @DbTable(string) / Entity 
+	// Entity : @DbTablespace(string) : not retrieved from metadata
+	private boolean    dbType         = true ;  // v 4.1.0  @DbType(string) / Attribute 
+	private boolean    dbView         = true ;  // v 4.1.0  @DbView / Entity 
 
 	//----------------------------------------------------------------------------------
     /**
@@ -209,18 +217,60 @@ public class DatabaseDefinition {
 	}
 
 	//----------------------------------------------------------------------------------
-	public boolean isDatabaseDefaultValue() { // v 4.1.0
-		return databaseDefaultValue;
+	public boolean isDbDefaultValue() { // v 4.1.0
+		return dbDefaultValue;
 	}
-	public void setDatabaseDefaultValue(boolean databaseDefaultValue) { // v 4.1.0
-		this.databaseDefaultValue = databaseDefaultValue;
+	public void setDbDefaultValue(boolean databaseDefaultValue) { // v 4.1.0
+		this.dbDefaultValue = databaseDefaultValue;
 	}
 
-	public boolean isDatabaseComment() { // v 4.1.0
-		return databaseComment;
+	public boolean isDbComment() { // v 4.1.0
+		return dbComment;
 	}
-	public void setDatabaseComment(boolean databaseComment) { // v 4.1.0
-		this.databaseComment = databaseComment;
+	public void setDbComment(boolean databaseComment) { // v 4.1.0
+		this.dbComment = databaseComment;
+	}
+
+	public boolean isDbCatalog() {
+		return dbCatalog;
+	}
+	public void setDbCatalog(boolean dbCatalog) {
+		this.dbCatalog = dbCatalog;
+	}
+
+	public boolean isDbName() {
+		return dbName;
+	}
+	public void setDbName(boolean dbName) {
+		this.dbName = dbName;
+	}
+
+	public boolean isDbSchema() {
+		return dbSchema;
+	}
+	public void setDbSchema(boolean dbSchema) {
+		this.dbSchema = dbSchema;
+	}
+
+	public boolean isDbTable() {
+		return dbTable;
+	}
+	public void setDbTable(boolean dbTable) {
+		this.dbTable = dbTable;
+	}
+
+	public boolean isDbType() {
+		return dbType;
+	}
+	public void setDbType(boolean dbType) {
+		this.dbType = dbType;
+	}
+
+	public boolean isDbView() {
+		return dbView;
+	}
+	public void setDbView(boolean dbView) {
+		this.dbView = dbView;
 	}
 
 }

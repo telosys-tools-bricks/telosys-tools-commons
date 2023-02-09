@@ -30,12 +30,22 @@ databases :
     tableNameInclude:
     tableNameExclude:
     tableTypes:
-    # Telosys DSL model creation 
+
+    #--- Telosys DSL model creation options 
+    # what kind of links to define in the model
     linksManyToOne: true
-    linksOneToMany: true
-    linksManyToMany: true
-    databaseDefaultValue: true
-    databaseComment: true
+    linksOneToMany: false
+    linksManyToMany: false
+    # what kind of database information to define in the model (true for all by default)
+    # dbComment: false # table & column -> entity & attribute
+    # dbCatalog: false   # table -> entity
+    # dbSchema: false    # table -> entity
+    # dbTable: false     # table -> entity
+    # dbView: false      # table -> entity
+    # dbName: false          # column -> attribute
+    # dbType: false          # column -> attribute
+    # dbDefaultValue: false  # column -> attribute
+    
     
 # ============================================ 
 # DERBY (the JDBC Driver is in "derbyclient.jar" )

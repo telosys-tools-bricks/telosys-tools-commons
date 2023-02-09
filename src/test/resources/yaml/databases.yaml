@@ -21,12 +21,20 @@ databases :
     dbModelName:
     # if property 'foo' in YAML file and undefined in Java Bean => YAML error  
     # foo: "abc"
-    # Telosys DSL model creation options 
+    #--- Telosys DSL model creation options 
+    # what kind of links to define in the model
     linksManyToOne: true
     linksOneToMany: true
     linksManyToMany: true
-    databaseDefaultValue: false
-    databaseComment: true
+    # what kind of database information to define in the model
+    dbComment: false # table & column -> entity & attribute
+    dbCatalog: false   # table -> entity
+    dbSchema: false    # table -> entity
+    dbTable: false     # table -> entity
+    dbView: false      # table -> entity
+    dbName: false          # column -> attribute
+    dbType: false          # column -> attribute
+    dbDefaultValue: false  # column -> attribute
     
   # Second DB identified by "bbb"
   - id: bbb
