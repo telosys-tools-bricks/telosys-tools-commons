@@ -1,0 +1,10 @@
+year : 2020
+department: History
+# all property must exist in Java bean : 'other' is not in Java Bean => error
+other: foo 
+courses :
+  - name: aaa
+    credits: 1200.50
+  - name: bbb
+    credits: 60.00
+  

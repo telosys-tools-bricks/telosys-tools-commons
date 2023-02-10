@@ -21,6 +21,7 @@ import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.YamlFileManager;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
+import org.telosys.tools.commons.exception.TelosysYamlException;
 
 public class DatabaseDefinitionsLoader {
 
@@ -33,7 +34,7 @@ public class DatabaseDefinitionsLoader {
 	 * @param telosysToolsCfg
 	 * @return
 	 */
-	public DatabaseDefinitions load(TelosysToolsCfg telosysToolsCfg) {
+	public DatabaseDefinitions load(TelosysToolsCfg telosysToolsCfg) throws TelosysYamlException {
 		String databasesFilePath = telosysToolsCfg.getDatabasesDbCfgFileAbsolutePath();
 		if ( ! StrUtil.nullOrVoid(databasesFilePath) ) {
 			// databases file is defined 
@@ -50,7 +51,7 @@ public class DatabaseDefinitionsLoader {
 	 * @param databasesFile
 	 * @return
 	 */
-	public DatabaseDefinitions load(File databasesFile) {
+	public DatabaseDefinitions load(File databasesFile) throws TelosysYamlException {
 		if ( databasesFile == null ) {
 			throw new TelosysRuntimeException("Databases file is null");
 		}
@@ -63,7 +64,7 @@ public class DatabaseDefinitionsLoader {
     	return loadYaml(databasesFile);
 	}
 	
-	private DatabaseDefinitions loadYaml(File file) {
+	private DatabaseDefinitions loadYaml(File file) throws TelosysYamlException {
 		YamlFileManager yamlFileManager = new YamlFileManager();
 		return yamlFileManager.load(file, DatabaseDefinitions.class);
 	}

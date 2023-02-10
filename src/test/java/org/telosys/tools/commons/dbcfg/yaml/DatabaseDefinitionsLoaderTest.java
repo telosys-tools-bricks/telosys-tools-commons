@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.exception.TelosysYamlException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -18,14 +19,14 @@ public class DatabaseDefinitionsLoaderTest {
 	}
 	
 	@Test(expected=Exception.class)
-	public void testLoadErrorNoFile() {
+	public void testLoadErrorNoFile() throws TelosysYamlException {
 		print("--- testLoad0");
 		DatabaseDefinitionsLoader loader = new DatabaseDefinitionsLoader();
 		loader.load(FileUtil.getFileByClassPath("/yaml/no-file.yaml"));
 	}
 	
 	@Test
-	public void testLoadDatabasesYaml() {
+	public void testLoadDatabasesYaml() throws TelosysYamlException {
 		print("--- testLoad1");
 		
 		File file = FileUtil.getFileByClassPath("/yaml/databases.yaml") ;

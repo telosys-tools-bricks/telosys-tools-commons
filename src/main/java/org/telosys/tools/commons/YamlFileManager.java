@@ -25,9 +25,11 @@ import java.io.Writer;
 import java.util.Map;
 
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
+import org.telosys.tools.commons.exception.TelosysYamlException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * YAML file utility class 
@@ -44,52 +46,79 @@ public class YamlFileManager {
 	public YamlFileManager() {
 		super();
 	}
-	
-	/**
-	 * Loads a map from the given YAML file
-	 * @param file
-	 * @return
-	 */
-	public Map<String, Object> load(File file) {
-		try (InputStream inputStream = new FileInputStream(file)) {
-			return loadYaml(file.getName(), inputStream);
-		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("No YAML file " + file.getName() + " (file not found)" );
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Cannot close YAML file " + file.getName() );
-		}
-	}
-	private Map<String, Object> loadYaml(String fileName, InputStream inputStream) {
-		try {
-			Yaml yaml = new Yaml(); // no constructor => Map as default type
-			return yaml.load(inputStream);
-		} catch (Exception e) {
-			throw new TelosysRuntimeException("Cannot load map from YAML file " + fileName, e );
-		}
-	}
-	
+
 	/**
 	 * Loads an instance of the given class from the given YAML file
 	 * @param file
 	 * @param clazz
 	 * @return
+	 * @throws TelosysYamlException
 	 */
-	public <T> T load(File file, Class<T> clazz) {
+	public <T> T load(File file, Class<T> clazz) throws TelosysYamlException {
 		try (InputStream inputStream = new FileInputStream(file)) {
-			return loadYaml(file.getName(), inputStream, clazz);
+			return loadSpecificObjectFromYaml(file.getName(), inputStream, clazz);
 		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("No YAML file " + file.getName() + " (file not found)" );
+			throw new TelosysRuntimeException("No YAML file " + file.getName() + " (file not found)" );
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Cannot close YAML file " + file.getName() );
+			// IOException is thrown by automatic close() invocation on inputStream
+			throw new TelosysRuntimeException("Cannot close YAML file " + file.getName() );
 		}
 	}
-	private <T> T loadYaml(String fileName, InputStream inputStream, Class<T> clazz) {
+
+	/**
+	 * Loads a map from the given YAML file
+	 * @param file
+	 * @return
+	 */
+	public Map<String, Object> load(File file) throws TelosysYamlException {
+		try (InputStream inputStream = new FileInputStream(file)) {
+			return loadMapFromYaml(file.getName(), inputStream);
+		} catch (FileNotFoundException e) {
+			throw new TelosysRuntimeException("No YAML file " + file.getName() + " (file not found)" );
+		} catch (IOException e) { 
+			// IOException is thrown by automatic close() invocation on inputStream
+			throw new TelosysRuntimeException("Cannot close YAML file " + file.getName() );
+		}
+	}
+	
+	/**
+	 * Loads a map from the given YAML file using Snake Yaml 
+	 * @param fileName
+	 * @param inputStream
+	 * @return
+	 * @throws TelosysYamlException
+	 */
+	private Map<String, Object> loadMapFromYaml(String fileName, InputStream inputStream) throws TelosysYamlException {
+		try {
+			Yaml yaml = new Yaml(); // no constructor => Map as default type
+			return yaml.load(inputStream);
+		} catch (YAMLException yamlException) {
+			// YAML error in the file
+			throw new TelosysYamlException(fileName, yamlException);
+		} catch (Exception e) {
+			// any other unexpected exception
+			throw new TelosysRuntimeException("Cannot load map from YAML file " + fileName, e );
+		}
+	}
+	
+	/**
+	 * Loads an instance of the given class from the given YAML file using Snake Yaml 
+	 * @param fileName
+	 * @param inputStream
+	 * @param clazz
+	 * @return
+	 * @throws TelosysYamlException
+	 */
+	private <T> T loadSpecificObjectFromYaml(String fileName, InputStream inputStream, Class<T> clazz) throws TelosysYamlException {
 		try {
 			Yaml yaml = new Yaml(new Constructor(clazz));
 			return yaml.load(inputStream);
+		} catch (YAMLException yamlException) {
+			// YAML error in the file
+			throw new TelosysYamlException(fileName, yamlException);
 		} catch (Exception e) {
-			throw new TelosysRuntimeException("Cannot load instance of " + clazz.getSimpleName()
-				+ " from YAML file " + fileName, e );
+			// any other unexpected exception
+			throw new TelosysRuntimeException("Cannot load '" + clazz.getSimpleName() + "' from YAML file '" + fileName + "'", e );
 		}
 	}
 	
@@ -105,8 +134,8 @@ public class YamlFileManager {
 		Writer writer;
 		try {
 			writer = new FileWriter(file);
-		} catch (IOException e1) {
-			throw new IllegalArgumentException("Yaml save : IOException : " + e1.getMessage() );
+		} catch (IOException e) {
+			throw new TelosysRuntimeException("Yaml save : Cannot create FileWriter (IOException) : " + e.getMessage() );
 		}
 
 		// Write data in YAML file writer
@@ -118,14 +147,14 @@ public class YamlFileManager {
 		try {
 			yaml.dump(data, writer);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Yaml save : Cannot write file " + file.getName() );
+			throw new TelosysRuntimeException("Yaml save : Cannot write file " + file.getName(), e );
 		}
 		
 		// Close file writer
 		try {
 			writer.close();
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Yaml save : Cannot close file " + file.getName() );
+			throw new TelosysRuntimeException("Yaml save : Cannot close file " + file.getName() + " (IOException)", e );
 		}
 	}
 }
