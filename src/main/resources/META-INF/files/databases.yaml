@@ -14,12 +14,19 @@
 
 databases :
 
-  # First DB identified by "aaa"
-  - id: aaa
+# ============================================ 
+# H2 database identified by "h2" - H2 embedded ( ':jdbc:h2:mem:' = 'in memory' )
+  - id: h2
     name: my H2 database
     type: H2 
     # JDBC connection
-    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=0
+    # H2 embedded file storage : jdbc:h2:[file:][<path>]<databaseName>
+    # H2 embedded in-memory    : jdbc:h2:mem:<databaseName>
+    # H2 remote file storage   : jdbc:h2:tcp://<server>[:<port>]/[<path>]<databaseName>
+    # H2 remote in-memory      : jdbc:h2:tcp://<server>[:<port>]/mem:<databaseName>
+    # H2 remote SSL : replace "tcp" by "ssl"
+    # url: jdbc:h2:mem:mydatabase;DB_CLOSE_DELAY=0
+    url: jdbc:h2:tcp://localhost/mem:mydatabase
     driver: org.h2.Driver
     user: sa
     password: sa
@@ -31,7 +38,7 @@ databases :
     tableNameExclude:
     tableTypes:
 
-    #--- Telosys DSL model creation options 
+    #--- Telosys model creation 
     # what kind of links to define in the model
     linksManyToOne: true
     linksOneToMany: false
@@ -46,14 +53,97 @@ databases :
     # dbType: false          # column -> attribute
     # dbDefaultValue: false  # column -> attribute
     
-    
 # ============================================ 
-# DERBY (the JDBC Driver is in "derbyclient.jar" )
-#   driver: org.apache.derby.jdbc.ClientDriver 
-#   url: jdbc:derby://localhost:1527/mydb 
-#   user: root
-#   password: admin
-#   schema: ROOT
+# PostgreSQL database identified by "pg"
+  - id: pg
+    name: PostgreSQL database 
+    type: POSTGRESQL 
+    # JDBC driver 
+    driver: org.postgresql.Driver 
+    # JDBC url: jdbc:postgresql://{HOST}:{PORT}/{DATABASE}
+    url: jdbc:postgresql://myhost:5432/mydatabase
+    user: bob
+    password: secret
+    # Metadata parameters
+    catalog: '!'
+    # schema: '!' ok to get tables but not to get columns, etc
+    schema: public
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes: TABLE
+    #--- Telosys model creation 
+    # what kind of links to define in the model
+    linksManyToOne: true
+    linksOneToMany: false
+    linksManyToMany: false
+    # what kind of database information to define in the model (true for all by default)
+    dbComment: false
+    dbCatalog : true
+    dbSchema : true
+    dbTable : true
+    dbView : false
+    dbName : true    
+    dbType : true    
+    dbDefaultValue: false
+
+# ============================================ 
+# Oracle database identified by "oracle"
+  - id: oracle
+    name: Oracle database
+    type: oracle 
+    # JDBC driver 
+    driver: oracle.jdbc.OracleDriver
+    # JDBC connection
+    #   url for SID:     jdbc:oracle:thin:@[HOST][:PORT]:SID     (older format)
+    #   url for SERVICE: jdbc:oracle:thin:@[HOST][:PORT]/SERVICE (newer format)
+    url: jdbc:oracle:thin:@localhost:1521/MYDBSERVICE
+    user: SCOTT
+    password: TIGER
+    # Metadata parameters
+    catalog: '!'
+    schema: MYSCHEMA
+    tableNamePattern: '%'
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes: TABLE
+    #--- Telosys model creation 
+    # what kind of links to define in the model
+    linksManyToOne: true
+    linksOneToMany: false
+    linksManyToMany: false
+    # what kind of database information to define in the model (true for all by default)
+    dbComment: false
+    dbCatalog : true
+    dbSchema : true
+    dbTable : true
+    dbView : false
+    dbName : true    
+    dbType : true    
+    dbDefaultValue: false
+# ============================================ 
+# Derby database identified by "derby"
+  - id: derby
+    name: my Derby database
+    type: Derby 
+    # JDBC connection
+    driver: org.apache.derby.jdbc.ClientDriver 
+    url: jdbc:derby://localhost:1527/mydatabase;create=true
+    user: root
+    password: admin
+    schema: ROOT
+    # Metadata parameters
+    catalog:
+    schema:
+    tableNamePattern:
+    tableNameInclude:
+    tableNameExclude:
+    tableTypes:
+    #--- Telosys model creation 
+    # what kind of links to define in the model
+    linksManyToOne: true
+    linksOneToMany: false
+    linksManyToMany: false
 
 # ============================================
 # MYSQL (the JDBC Driver is in "mysql-connector-java-x.x.x-bin.jar")
@@ -63,23 +153,6 @@ databases :
 #   password:
 
 # ============================================ 
-# H2 embedded (the JDBC Driver is in "h2-x.x.xxx.jar")
-#   driver: org.h2.Driver 
-#   url: jdbc:h2:mem 
-#   user: sa
-#   password:
-
-# ============================================ 
-# H2 server  (the JDBC Driver is in "h2-x.x.xxx.jar")
-#   driver: org.h2.Driver 
-#   url: jdbc:h2:tcp://localhost/~/test
-#   user: sa
-#   password:
-
-# ============================================ 
-# POSTGRESQL 
-#   driver: org.postgresql.Driver 
-#   url: jdbc:postgresql://localhost:5432/mydb
 
 # ============================================ 
 # HSQL-DB 
