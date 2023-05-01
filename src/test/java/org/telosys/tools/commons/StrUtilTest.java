@@ -251,5 +251,70 @@ public class StrUtilTest {
 		assertFalse(StrUtil.isLowerCase(" abc")) ;
 		assertFalse(StrUtil.isLowerCase("abc ")) ;
 	}
+
+	@Test
+	public void testIsQuoted() {
+		assertFalse(StrUtil.isQuoted(null));
+		assertFalse(StrUtil.isQuoted(""));
+		assertFalse(StrUtil.isQuoted("\""));
+		assertFalse(StrUtil.isQuoted("abc"));
+		
+		assertTrue(StrUtil.isQuoted("\"\""));
+		assertTrue(StrUtil.isQuoted("\"abc\""));
+		assertTrue(StrUtil.isQuoted("\"abc\"def\""));
+	}
+	@Test
+	public void testIsQuotedWithArg() {
+		char quote = '\'';
+		assertFalse(StrUtil.isQuoted(null, quote));
+		assertFalse(StrUtil.isQuoted("", quote));
+		assertFalse(StrUtil.isQuoted("'", quote));
+		assertFalse(StrUtil.isQuoted("abc", quote));
+		
+		assertTrue(StrUtil.isQuoted("''", quote));
+		assertTrue(StrUtil.isQuoted("'abc'", quote));
+		assertTrue(StrUtil.isQuoted("'abc'def'", quote));
+	}
+	@Test
+	public void testQuote() {
+		assertNull(StrUtil.quote(null));
+		assertEquals("\"abc\"",   StrUtil.quote("abc"));
+		assertEquals("\" abc \"", StrUtil.quote(" abc "));
+		assertEquals("\" a\\bc \"",   StrUtil.quote(" a\\bc ")); // [ a\bc ] --> [" a\bc "]
+		assertEquals("\" a\\\"bc \"", StrUtil.quote(" a\"bc ")); // [ a"bc ] --> [" a\"bc "]
+	}
+	
+	@Test
+	public void testUnquote() {
+		assertNull(StrUtil.unquote(null));
+		assertEquals("", StrUtil.unquote(""));
+		assertEquals(" ", StrUtil.unquote(" "));
+		assertEquals("abc", StrUtil.unquote("abc"));
+		
+		assertEquals("abc", StrUtil.unquote("\"abc\""));
+		assertEquals(" abc ", StrUtil.unquote("\" abc \""));
+		assertEquals(" a\\bc ", StrUtil.unquote("\" a\\bc \""));
+		assertEquals(" a\"bc ", StrUtil.unquote("\" a\\\"bc \""));
+		assertEquals("abc\\", StrUtil.unquote("\"abc\\\""));
+	}
+	
+	@Test
+	public void testQuoteUnquote() {
+		quoteUnquote("");
+		quoteUnquote("a");
+		quoteUnquote("abc");
+		quoteUnquote("a\\b\\c");
+		quoteUnquote("  ab  ");
+		quoteUnquote("a : \"bc\"");
+		quoteUnquote("a\\\\b");
+		quoteUnquote("abc\\");
+	}
+	public void quoteUnquote(String s1) {
+		String s2 = StrUtil.quote(s1) ;
+		String s3 = StrUtil.unquote( s2);
+		System.out.println("[" + s1 + "] ==> [" + s2 + "] ==> [" + s3 + "]" );
+		assertEquals(s1, s3);
+	}
+	
 	
 }

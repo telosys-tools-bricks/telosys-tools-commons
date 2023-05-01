@@ -472,7 +472,82 @@ public final class StrUtil
 		return originalString;
 	}
 
-    /**
+	/**
+	 * Returns true if the given string has a double quote character at the beginning and at the end
+	 * @param s
+	 * @return
+	 */
+	public static boolean isQuoted(String s) {
+		return isQuoted(s, '"');
+	}
+
+	/**
+	 * Returns true if the given string has the given quote character at the beginning and at the end
+	 * @param s
+	 * @param quote the character used as 'quote'
+	 * @return
+	 */
+	public static boolean isQuoted(String s, char quote) {
+		if (s == null) {
+			return false;
+		}
+        if ( s.length() > 1 ) {
+            return ( s.charAt(0) == quote && s.charAt(s.length()-1) == quote );
+        }
+        else {
+        	return false;
+        }
+	}
+	
+	/**
+	 * Adds a double quote character at the beginning and at the end of the given string <br>
+	 * Each double quote character already present in the string is protected with a backslash 
+	 * @param s
+	 * @return
+	 */
+	public static String quote(String s) {
+		char quote = '"' ;
+		if (s == null) {
+			return s;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(quote);
+		for (char c : s.toCharArray() ) {
+			if ( c == quote ) {
+				sb.append('\\');
+			}
+			sb.append(c);
+		}
+		sb.append(quote);
+		return sb.toString();
+	}
+
+	/**
+	 * Removes double quote character at the beginning and at the end of the given string <br>
+	 * If the string is not starting and ending with a double quote it is returned as is.
+	 * @param s
+	 * @return
+	 */
+	public static String unquote(String s) {
+		if (s == null) {
+			return s;
+		}
+		if ( s.startsWith("\"") && s.endsWith("\"") ) {
+			StringBuilder sb = new StringBuilder();
+			char[] characters = s.toCharArray() ;
+			for ( int i = 1 ; i < characters.length - 1 ; i++ ) {
+				char c = characters[i];
+				char next = ( i+1 < characters.length - 1 ) ? characters[i+1] : '\0';
+				if ( ( c != '\\' ) || ( c == '\\' && next != '\"' ) ) {
+					sb.append(c);
+				}
+			}
+			return sb.toString();
+		}
+		return s;
+	}
+
+	/**
      * Removes the quote characters if they are located at the first and last position of the string
      * The string is returned "as is" if there's no quotes at the begining and at the end
      * @param s the string 
