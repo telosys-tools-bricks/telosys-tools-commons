@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.telosys.tools.commons.beans.Course;
 import org.telosys.tools.commons.beans.Student;
@@ -26,6 +27,11 @@ public class YamlSnakeYamlTest {
 
 	public void print(String s) {
 		System.out.println(s);
+	}
+
+	@BeforeClass
+	public static void initAll() {
+		TestsEnv.getTmpExistingFolder("/yaml");
 	}
 	
 	@Test
