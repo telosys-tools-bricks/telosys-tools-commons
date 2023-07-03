@@ -186,10 +186,9 @@ public class BundlesManager {
 		for ( GitHubRepository repo : githubResponse.getRepositories() ) {
 			bundlesList.add( repo.getName() );
 		}
-		BundlesNames bundlesNames = new BundlesNames(bundlesList);
 		
 		// Result
-		return new BundlesFromGitHub(githubResponse.getHttpStatusCode(), bundlesNames, githubResponse.getRateLimit() );
+		return new BundlesFromGitHub(githubResponse.getHttpStatusCode(), bundlesList, githubResponse.getRateLimit() );
 	}
 
 	/**
@@ -288,7 +287,7 @@ public class BundlesManager {
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public BundlesNames getProjectBundlesList() throws TelosysToolsException {
+	public List<String> getProjectBundlesList() throws TelosysToolsException {
 		File dir = getBundlesFolder();
 		if ( dir.exists() ) {
 			if ( dir.isDirectory() ) {
@@ -307,7 +306,7 @@ public class BundlesManager {
 						}
 					}
 				}
-				return new BundlesNames(bundles) ;
+				return bundles;
 			}
 			else {
 				throw new TelosysToolsException("Templates folder '" + dir.getAbsolutePath() + "' is not a folder.");

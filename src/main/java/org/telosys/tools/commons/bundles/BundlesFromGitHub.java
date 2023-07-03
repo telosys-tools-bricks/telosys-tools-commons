@@ -16,7 +16,9 @@
 package org.telosys.tools.commons.bundles;
 
 import java.util.Date;
+import java.util.List;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
 import org.telosys.tools.commons.github.GitHubRateLimit;
 
 public class BundlesFromGitHub {
@@ -29,7 +31,7 @@ public class BundlesFromGitHub {
 	/**
 	 * Bundles names retrieved from GitHub
 	 */
-	private final BundlesNames bundlesNames ;
+	private final List<String> bundles ;
 	
 	/**
 	 * API rate limit
@@ -39,20 +41,20 @@ public class BundlesFromGitHub {
 	/**
 	 * Constructor
 	 * @param httpStatusCode
-	 * @param bundlesNames
+	 * @param bundles
 	 * @param githubRateLimit
 	 */
-	public BundlesFromGitHub(int httpStatusCode, BundlesNames bundlesNames, GitHubRateLimit githubRateLimit) {
+	public BundlesFromGitHub(int httpStatusCode, List<String> bundles, GitHubRateLimit githubRateLimit) {
 		super();
 		this.httpStatusCode = httpStatusCode ;
 		
-		if ( bundlesNames == null ) {
-			throw new IllegalStateException("bundlesList is null");
+		if ( bundles == null ) {
+			throw new TelosysRuntimeException("bundlesList is null");
 		}
 		if ( githubRateLimit == null ) {
-			throw new IllegalStateException("githubRateLimit is null");
+			throw new TelosysRuntimeException("githubRateLimit is null");
 		}
-		this.bundlesNames    = bundlesNames ;
+		this.bundles         = bundles ;
 		this.githubRateLimit = githubRateLimit  ;
 	}
 
@@ -68,8 +70,8 @@ public class BundlesFromGitHub {
 	 * Returns the bundles names object
 	 * @return
 	 */
-	public BundlesNames getBundlesNames() {
-		return bundlesNames;
+	public List<String> getBundles() {
+		return bundles;
 	}
 
 	/**
