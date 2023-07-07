@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.telosys.tools.commons.beans.Course;
 import org.telosys.tools.commons.beans.Student;
@@ -17,8 +18,8 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 
@@ -27,6 +28,15 @@ public class YamlSnakeYamlTest {
 	public void print(String s) {
 		System.out.println(s);
 	}
+
+	@BeforeClass
+	public static void initAll() {
+		// Fix PR : Make sure that tests doesn't rely on specific execution order
+		// Currently test `testSaveBean` and `testSaveAndLoadBean` defined in `YamlSnakeYamlTest` failed if `yaml` folder doesn't exist in `target/tests-tmp`. 
+		// It might exist if `YamlFileManagerTest` is executed before `YamlSnakeYamlTest` but there is no such guaranty.
+		// Adding the creation of the folder before all tests in `YamlSnakeYamlTest` avoid the issue.
+		TestsEnv.getTmpExistingFolder("/yaml");
+	}
 	
 	@Test
 	public void testLoadPrometheusCfg() throws IOException {
@@ -34,9 +44,6 @@ public class YamlSnakeYamlTest {
 		File file = FileUtil.getFileByClassPath("/yaml/prometheus-cfg.yaml");
 		
 		Yaml yaml = new Yaml();
-//		InputStream inputStream = this.getClass()
-//		  .getClassLoader()
-//		  .getResourceAsStream("customer.yaml");
 		InputStream inputStream = new FileInputStream(file);
 		Map<String, Object> map = yaml.load(inputStream);
 		
@@ -53,12 +60,9 @@ public class YamlSnakeYamlTest {
 //		print(ruleFiles);
 
 		List<Map<String, Object>> scrapeConfigs = (List<Map<String, Object>>) map.get("scrape_configs");
-		//print(scrapeConfigs);
 		print("scrape_configs count = " + scrapeConfigs.size());
 		for ( Map<String, Object> scrapeConfig : scrapeConfigs ) {
-			// print("- " +scrapeConfig);
 			print("  " + scrapeConfig.get("job_name") + " : " + scrapeConfig.get("scrape_interval") );
-			
 		}
 	}
 
