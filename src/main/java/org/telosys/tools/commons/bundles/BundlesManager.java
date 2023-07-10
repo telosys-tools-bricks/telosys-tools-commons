@@ -102,7 +102,18 @@ public class BundlesManager {
 	 * @return the File instance
 	 */
 	public File getBundleConfigFile(String bundleName) {
-		File bundleFolder = getBundleFolder(bundleName) ;
+//		File bundleFolder = getBundleFolder(bundleName) ;
+//		return new File( FileUtil.buildFilePath(bundleFolder.getAbsolutePath(), TEMPLATES_CFG ) ) ;
+		return getBundleConfigFile(getBundleFolder(bundleName)) ;
+	}
+	
+	/**
+	 * Returns the 'templates.cfg' File object for the given bundle folder <br>
+	 * There's no guarantee the returned file exists
+	 * @param bundleFolder
+	 * @return
+	 */
+	public File getBundleConfigFile(File bundleFolder) {
 		return new File( FileUtil.buildFilePath(bundleFolder.getAbsolutePath(), TEMPLATES_CFG ) ) ;
 	}
 	
@@ -257,65 +268,81 @@ public class BundlesManager {
 	 * @return true if found and deleted, false if not found
 	 * @throws TelosysToolsException
 	 */
-	public boolean deleteBundle( String bundleName ) throws TelosysToolsException {
+	public boolean deleteBundle( String bundleName ) {
 		
 		// Build the folder full path for the given folder name
-		String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ; // v 3.0.0
-		
+		String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName);
 		File file = new File(bundleFolder);
-		if ( file.exists() ) {
-			if ( file.isDirectory() ) {
-				// Bundle directory found => deleted it 
-				try {
-					DirUtil.deleteDirectory(file);
-					return true ;
-				} catch (Exception e) {
-					throw new TelosysToolsException("Cannot delete bundle '" + bundleName + "'", e);
-				}
-			}
-			else {
-				throw new TelosysToolsException("Bundle path '" + bundleFolder + "' is not a directory");
-			}
+		if ( file.exists() && file.isDirectory() ) {
+			// Bundle directory found => deleted it 
+			DirUtil.deleteDirectory(file);
+			return true ;
 		}
-		else {
-			return false ;
-		}
+		return false ;
 	}
 	
+// Removed in 4.1.0
+//	/**
+//	 * Returns the list of bundles defined in the project <br>
+//	 * @return
+//	 * @throws TelosysToolsException
+//	 */
+//	public List<String> getProjectBundlesList() throws TelosysToolsException {
+//		File dir = getBundlesFolder();
+//		if ( dir.exists() ) {
+//			if ( dir.isDirectory() ) {
+//				List<String> bundles = new LinkedList<>();
+//				for ( File bundleDir : dir.listFiles() ) {
+//					if ( bundleDir.isDirectory() ) {
+//						if ( telosysToolsCfg.hasSpecificTemplatesFolders() ) {
+//							// Can contains any kind of folders => check existence of "templates.cfg" 
+//							if ( isBundleConfigFileExists( bundleDir.getName() ) ) {
+//								bundles.add(bundleDir.getName());
+//							}
+//						}
+//						else {
+//							// No specific templates folder => just keep all folders
+//							bundles.add(bundleDir.getName());
+//						}
+//					}
+//				}
+//				return bundles;
+//			}
+//			else {
+//				throw new TelosysToolsException("Templates folder '" + dir.getAbsolutePath() + "' is not a folder.");
+//			}
+//		}
+//		else {
+//			throw new TelosysToolsException("Templates folder '" +  dir.getAbsolutePath() + "' not found.");
+//		}
+//	}	
+	
 	/**
-	 * Returns the list of bundles defined in the project <br>
+	 * Returns all the bundles in the project (each bundle as a directory) 
 	 * @return
-	 * @throws TelosysToolsException
+	 * @since 4.1.0
 	 */
-	public List<String> getProjectBundlesList() throws TelosysToolsException {
-		File dir = getBundlesFolder();
-		if ( dir.exists() ) {
-			if ( dir.isDirectory() ) {
-				List<String> bundles = new LinkedList<>();
-				for ( File bundleDir : dir.listFiles() ) {
-					if ( bundleDir.isDirectory() ) {
-						if ( telosysToolsCfg.hasSpecificTemplatesFolders() ) {
-							// Can contains any kind of folders => check existence of "templates.cfg" 
-							if ( isBundleConfigFileExists( bundleDir.getName() ) ) {
-								bundles.add(bundleDir.getName());
-							}
-						}
-						else {
-							// No specific templates folder => just keep all folders
-							bundles.add(bundleDir.getName());
-						}
-					}
+	public List<File> getBundles() {
+		List<File> bundles = new LinkedList<>();
+		File bundlesFolder = getBundlesFolder();
+		if ( bundlesFolder.exists() && bundlesFolder.isDirectory() ) {
+			for ( File file : bundlesFolder.listFiles() ) {
+				if ( isBundle(file) ) {
+					bundles.add(file);
 				}
-				return bundles;
-			}
-			else {
-				throw new TelosysToolsException("Templates folder '" + dir.getAbsolutePath() + "' is not a folder.");
 			}
 		}
-		else {
-			throw new TelosysToolsException("Templates folder '" +  dir.getAbsolutePath() + "' not found.");
-		}
+		return bundles;
 	}	
+	
+	/**
+	 * Returns true if the given file is a 'bundle' ( a directory containing a bundle configuration file )
+	 * @param file
+	 * @return
+	 */
+	public boolean isBundle(File file) {
+		return file != null && file.isDirectory() && isBundleConfigFileExists(file.getName() ) ;
+	}
 	
 	/**
 	 * Returns the target definitions for the given bundle name
