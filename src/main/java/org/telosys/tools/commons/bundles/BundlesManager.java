@@ -53,6 +53,10 @@ public class BundlesManager {
 		this.telosysToolsCfg = cfg;
 	}
 
+	private GitHubClient getGitHubClient() {
+		return new GitHubClient( telosysToolsCfg.getCfgFileAbsolutePath() ) ; 
+	}
+	
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Returns the DOWNLOADS folder's full path in the file system <br>
@@ -162,7 +166,8 @@ public class BundlesManager {
 	 */
 	public BundleStatus downloadBundle( String userName, String bundleName, String downloadFolderInProject )  {
 		BundleStatus status = new BundleStatus();
-		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
+		// GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ;
+		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
 		String destinationFile = buildDestinationFileName(bundleName, downloadFolderInProject) ;
 		status.log("-> Download bundle '" + bundleName + "' ");
 		status.log("   in '" + destinationFile + "' ");
@@ -189,7 +194,8 @@ public class BundlesManager {
 	public BundlesFromGitHub getGitHubBundlesList( String githubUserName ) throws Exception {
 		
 		// HTTP request to GitHub 
-		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
+		// GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ;  
+		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
 		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(githubUserName);
 		
 		// Build list of bundles names (can be void)
@@ -210,7 +216,8 @@ public class BundlesManager {
 	public GitHubRateLimitResponse getGitHubRateLimit() throws Exception {
 		
 		// HTTP request to GitHub 
-		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
+		// GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getProperties() ) ; 
+		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
 		return gitHubClient.getRateLimit();
 	}
 	

@@ -53,11 +53,16 @@ public class GitHubClientIT {
 		getRepositories( null );
 	}
 	
+	private GitHubClient buildGitHubClient() {
+		return new GitHubClient( TestsEnv.getTestFile("cfg/telosys-tools.cfg").getAbsolutePath() ); // v 4.1.1
+	}
+	
 	private void getRepositories( Properties properties ) throws Exception  {
 		System.out.println("Getting repositories... ");
 		printJavaVersion() ;
 
-		GitHubClient gitHubClient = new GitHubClient( properties );
+//		GitHubClient gitHubClient = new GitHubClient( properties );
+		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
 		
 		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(GITHUB_USER);
 		
@@ -76,8 +81,9 @@ public class GitHubClientIT {
 
 		printJavaVersion() ;
 		
-		Properties properties = TestsEnv.loadSpecificProxyProperties() ;
-		GitHubClient gitHubClient = new GitHubClient( properties);
+//		Properties properties = TestsEnv.loadSpecificProxyProperties() ;
+//		GitHubClient gitHubClient = new GitHubClient( properties);
+		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
 		
 		String repoName = "plantuml" ; // "basic-templates-TT210" ;
 		String destinationFile = TestsEnv.getTmpDownloadFolderFullPath() + "/" + repoName + ".zip" ;
@@ -92,7 +98,8 @@ public class GitHubClientIT {
 
 		GitHubUser.clear();
 
-		GitHubClient gitHubClient = new GitHubClient(null);
+//		GitHubClient gitHubClient = new GitHubClient(null);
+		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
 		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
 		
 		System.out.println(rateLimit);
@@ -106,7 +113,8 @@ public class GitHubClientIT {
 		// User + password
 		GitHubUser.set("fake-user-azer7766-OuPMK", "xxxxx");
 		
-		GitHubClient gitHubClient = new GitHubClient(null);
+//		GitHubClient gitHubClient = new GitHubClient(null);
+		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
 		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(); 
 		
 		System.out.println(rateLimit); // limit='60', remaining='60'
