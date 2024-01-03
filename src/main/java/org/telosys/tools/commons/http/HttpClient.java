@@ -26,110 +26,35 @@ import java.util.Properties;
 
 public class HttpClient {
 
-	public static final String VERSION = "4 (2018-04-09)" ;
+	public static final String VERSION = "5 (2024-01-05)" ;
 
 	// Default "User-Agent" value 
 	private static final String USER_AGENT       = "User-Agent" ;
 	private static final String USER_AGENT_VALUE = "Telosys-HttpClient" ;
-
-	//------------------------------------------------------------------------------
-	// TLS ver 1.2 configuration ( TLS 1.2 not defined by default with Java 7 )  
-	// TLS 1.2 is required for GitHub https URLs
-	//------------------------------------------------------------------------------
-	private static final String HTTPS_PROTOCOLS = "https.protocols" ;
-	private static final String TLS_VER_1_2     = "TLSv1.2" ;
-
-	private static final void configTLSv2() {
-		String httpsProtocols = System.getProperty(HTTPS_PROTOCOLS);
-		if ( httpsProtocols != null && httpsProtocols.contains(TLS_VER_1_2) ) {
-			// TLS v 1.2 is already set in the system property
-			return ; // Nothing to do
-		}
-		else {
-			System.setProperty(HTTPS_PROTOCOLS, TLS_VER_1_2);
-		}
-	}
-	//------------------------------------------------------------------------------
-	
-	private final HttpClientConfig configuration ;
-	private boolean isConfigured = false ;
 	
 	/**
-	 * Constructor without http configuration (no proxy)
+	 * Constructor without http configuration properties <br>
+	 * Default properties will be used (java.net.useSystemProxies=true)
 	 */
 	public HttpClient() {
 		super();
-		this.configuration = null;
-		init();
-	}
-	
-	/**
-	 * Constructor with http configuration (proxy)
-	 * @param configuration
-	 */
-	public HttpClient(HttpClientConfig configuration) {
-		super();
-		this.configuration = configuration;
-		init();
+		HttpSystemConfig.init();
 	}
 	
 	/**
 	 * Constructor with http configuration defined by properties
-	 * @param proxyProperties proxy properties or null if none
+	 * @param properties proxy properties or null if none
 	 */
-	public HttpClient(Properties proxyProperties) {
+	public HttpClient(Properties properties) {
 		super();
-		if ( proxyProperties != null ) {
-			this.configuration = new HttpClientConfig(proxyProperties);
+		if ( properties != null ) {
+			HttpSystemConfig.init(properties);
 		}
 		else {
-			this.configuration = null ;
-		}
-		init();
-	}
-	
-	/**
-	 * Post construction initialization
-	 */
-	private final void init() {
-		if ( ! isConfigured ) {
-			if ( configuration != null ) {
-				if ( configuration.isUseSystemProxies() ) {
-					useSystemProxies() ;
-				}
-				else {
-					proxyConfig( configuration.getHttpProxy() );
-					proxyConfig( configuration.getHttpsProxy() );
-				}
-			}
-			else {
-				useSystemProxies() ;
-			}
-			isConfigured = true ;
-		}
-		configTLSv2();
-	}
-	
-	private void proxyConfig(HttpProxy proxy ) {
-		if ( proxy != null ) {
-			Properties systemProperties = System.getProperties();		
-			systemProperties.setProperty( proxy.getProtocol() + ".proxySet",  "true");
-			systemProperties.setProperty( proxy.getProtocol() + ".proxyHost", proxy.getHost() );
-			systemProperties.setProperty( proxy.getProtocol() + ".proxyPort", String.valueOf(proxy.getPort()) );
-			if ( proxy.getUser() != null ) {
-				systemProperties.setProperty( proxy.getProtocol() + ".proxyUser", String.valueOf(proxy.getUser()) );
-				if ( proxy.getPassword() != null ) {
-					systemProperties.setProperty( proxy.getProtocol() + ".proxyPassword", String.valueOf(proxy.getPassword()) );
-				}
-			}
+			HttpSystemConfig.init();
 		}
 	}
 	
-	private void useSystemProxies() {
-		Properties systemProperties = System.getProperties();
-		systemProperties.setProperty( "java.net.useSystemProxies",  "true");
-	}	
-
 	//---------------------------------------------------------------------
 	// GET
 	//---------------------------------------------------------------------
@@ -275,7 +200,7 @@ public class HttpClient {
 			connection.connect();
 			return connection;
 		} catch (Exception e) {
-			throw new Exception("Connection failed");
+			throw new Exception("Connection failed", e);
 		}
 	}
 	
@@ -346,8 +271,6 @@ public class HttpClient {
 			throw new Exception ("Unexpected HTTP Response Code " + responseCode);
 		}
 		
-		// String contentType = connection.getContentType();
-		
         long totalBytesRead = 0L;		
 		try (	InputStream      inputStream  = connection.getInputStream(); 
 				FileOutputStream outputStream = new FileOutputStream(destFileName) ) {
@@ -361,35 +284,6 @@ public class HttpClient {
 		}		        
 		return totalBytesRead ;
 	}
-	
-//	private long downloadFileViaURL(URL url, String destFileName ) throws Exception {
-//
-//		checkDestination(destFileName);
-//		
-//        long totalBytesRead = 0L;		
-//        try {
-//			url.openConnection();
-//			InputStream reader = url.openStream();
-//			
-//	        FileOutputStream writer = new FileOutputStream(destFileName);
-//	        byte[] buffer = new byte[BUFFER_SIZE];
-//	        int bytesRead = 0;
-//	 
-//	        while ((bytesRead = reader.read(buffer)) > 0)
-//	        {  
-//	           writer.write(buffer, 0, bytesRead);
-//	           buffer = new byte[BUFFER_SIZE];
-//	           totalBytesRead += bytesRead;
-//	        }
-//
-//	        writer.close();
-//	        reader.close();
-//	 
-//		} catch (IOException e) {
-//			throw new Exception ("IOException", e);
-//		}
-//		return totalBytesRead ;
-//	}
 	
 	private void checkDestination(String destFileName) throws Exception {
 		File file = new File (destFileName) ;

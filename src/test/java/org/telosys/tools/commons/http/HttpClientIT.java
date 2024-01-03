@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
@@ -22,6 +23,7 @@ public class HttpClientIT extends TestCase {
 	private static final String URL_GOOGLE_FR  = "https://www.google.fr" ;
 	private static final String URL_GITHUB_COM = "https://github.com/telosys-templates" ;
 	private static final String URL_GITHUB_API = "https://api.github.com/users/telosys-templates/repos";
+	private static final boolean PRINT_HEADERS = false ;
 	
 	private Map<String, String> getHeaders() {
 		Map<String, String> headers = new HashMap<>();
@@ -32,22 +34,24 @@ public class HttpClientIT extends TestCase {
 	}
 
 	private HttpClient getHttpClient() {
-		return HttpTestConfig.getHttpClient();
+		Properties properties = TestsEnv.loadSpecificProxyProperties();
+		return new HttpClient(properties);
 	}
 	
 	private void checkResponse(HttpResponse response, int expectedRetCode) {
 		assertEquals(expectedRetCode, response.getStatusCode());
 		println(" Ret Code = " +response.getStatusCode() );
-
 		
-		println("Header keys : ");
-		Map<String,List<String>> map = response.getHeaderMap();
-		for ( String key : map.keySet() ) {
-			println(" . '" + key + "'");
+		if ( PRINT_HEADERS ) {
+			println("Header keys : ");
+			Map<String,List<String>> map = response.getHeaderMap();
+			for ( String key : map.keySet() ) {
+				println(" . '" + key + "'");
+			}
+			println(" Header 'cache-control' : " + response.getHeader("Cache-Control") );
+			println(" Header 'content-encoding' : " + response.getHeader("Content-Encoding") );
+			println(" Header 'xx-yy-zz' : " + response.getHeader("xx-yy-zz") );
 		}
-		println(" Header 'cache-control' : " + response.getHeader("Cache-Control") );
-		println(" Header 'content-encoding' : " + response.getHeader("Content-Encoding") );
-		println(" Header 'xx-yy-zz' : " + response.getHeader("xx-yy-zz") );
 		
 		println(" ---------- " );
 	}
@@ -71,39 +75,42 @@ public class HttpClientIT extends TestCase {
 
 	//==========================================================================================
 
-	public void testGet1() throws Exception {
-		println("--- Test http GET 1 --- ");		
-		HttpClient httpClient = getHttpClient();
+	private HttpRequest buildRequest(String url) {
+		return new HttpRequest(url, getHeaders() );
+	}
+	private void httpGet(HttpClient httpClient) throws Exception {
+		println("--- Test http GET : " + URL_GOOGLE_FR );
 		checkResponse(httpClient.get(URL_GOOGLE_FR, getHeaders()), 200);
+		
+		println("--- Test http GET : " + URL_GOOGLE_FR );
+		checkResponse(httpClient.get(buildRequest(URL_GOOGLE_FR)), 200);
+		
+		println("--- Test http GET : " + URL_GITHUB_COM );
+		checkResponse(httpClient.get(buildRequest(URL_GITHUB_COM)), 200);
 	}
-	
-	public void testGet2() throws Exception {
-		println("--- Test http GET 2 --- ");		
-		HttpClient httpClient = getHttpClient();
-		HttpRequest request = new HttpRequest(URL_GOOGLE_FR, getHeaders() );
-		checkResponse(httpClient.get(request), 200);
-	}
-
-	public void testGet3() throws Exception {
-		println("--- Test http GET 3 --- ");		
-		HttpClient httpClient = getHttpClient();
-		checkResponse(httpClient.get(URL_GITHUB_COM, getHeaders()), 200);
-	}
-	
-	public void testGetGitHubAPI() throws Exception {
-		println("--- Test http GET 3 --- ");		
-		HttpClient httpClient = getHttpClient();
+	private void httpGetGitHubAPI(HttpClient httpClient) throws Exception {
 		HashMap<String,String> headers = new HashMap<>();
+		println("--- Test http GET : " + URL_GITHUB_API );
 		HttpResponse httpResponse = httpClient.get(URL_GITHUB_API, headers);
 		checkResponse(httpResponse, 200);
 		
-		printBody(httpResponse);
+		// printBody(httpResponse);
 		printStatus(httpResponse);
 		printHeader(httpResponse, "X-RateLimit-Limit");
 		printHeader(httpResponse, "X-RateLimit-Used");
 		printHeader(httpResponse, "X-RateLimit-Remaining");
 		printHeader(httpResponse, "X-RateLimit-Resource");
 		printHeader(httpResponse, "X-RateLimit-Reset");
+	}
+	
+	public void testHttpGet() throws Exception {
+		httpGet(getHttpClient());
+		httpGet(new HttpClient());
+	}
+	
+	public void testGetGitHubAPI() throws Exception {
+		httpGetGitHubAPI(getHttpClient());
+		httpGetGitHubAPI(new HttpClient());
 	}
 	
 	//==========================================================================================
@@ -155,10 +162,12 @@ public class HttpClientIT extends TestCase {
 	}
 
 	public void testDownload2() throws Exception {
-		println("Test DOWNLOAD 2 via HTTPS ... ");
+		println("Test DOWNLOAD 2 via HTTPS (SSL)... ");
 		
-		String urlString = "http://www.telosys.org/index.html";
-		// NB : https can raise an error ( javax.net.ssl.SSLException ) => use http  for tests
+		// NB : https can raise an error ( javax.net.ssl.SSLException ) 
+		HttpUtil.disableCertificateValidation(); // To avoid SSL error (due to self signed certificate)
+		
+		String urlString = "https://www.telosys.org/index.html";
 		String downloadFileName = TestsEnv.getTmpExistingFolderFullPath("download") + "/file2.tmp" ;
 
 		HttpClient httpClient = getHttpClient();

@@ -24,10 +24,6 @@ import java.util.Map;
 
 public class HttpResponse {
 
-	protected static final boolean STORE_RESPONSE_BODY = true ;
-	
-	protected static final boolean DO_NOT_STORE_RESPONSE_BODY = true ;
-	
 	private int    statusCode    = 0 ;
 	private String statusMessage = "" ;
 	
@@ -40,7 +36,12 @@ public class HttpResponse {
 	private byte[]  bodyContent = new byte[0];
 	private boolean bodyContentAccessible = false ;
 	
-	public HttpResponse(HttpURLConnection connection) throws Exception 
+	/**
+	 * Constructor
+	 * @param connection
+	 * @throws IOException
+	 */
+	public HttpResponse(HttpURLConnection connection) throws IOException 
 	{
 		contentType     = connection.getContentType();
 		
@@ -53,11 +54,7 @@ public class HttpResponse {
 		statusCode      = connection.getResponseCode();
 		statusMessage   = connection.getResponseMessage();
 			
-		// Always try to read response body...
-//		if ( statusCode == HttpURLConnection.HTTP_OK ) {
-//			bodyContent = readResponseBody(connection);
-//			contentLength = bodyContent.length ;
-//		}
+		// Always try to read response body (whatever the response code)
 		bodyContent = readResponseBody(connection);
 		contentLength = bodyContent.length ;
 		

@@ -1,13 +1,11 @@
 package org.telosys.tools.commons.http;
 
-import org.telosys.tools.commons.http.HttpUtil;
-
 public class HttpUtilMain {
 
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		System.out.println("Getting current system proxies ...");
 		
 		HttpUtil.showSystemProxies(System.out);

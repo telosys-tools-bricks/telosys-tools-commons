@@ -20,7 +20,8 @@ import java.util.Map;
 
 public class HttpRequest {
 
-	private final static byte[] VOID_CONTENT = new byte[0];
+	private static final String ILLEGAL_ARG_URL = "URL cannot be null" ;
+	private static final byte[] VOID_CONTENT = new byte[0];
 	
 	private final String url ;
 
@@ -32,10 +33,12 @@ public class HttpRequest {
 	 * Constructor
 	 * @param url
 	 */
-	public HttpRequest(String url) 
-	{
+	public HttpRequest(String url) {
+		if ( url == null ) {
+			throw new IllegalArgumentException(ILLEGAL_ARG_URL);
+		}
 		this.url = url ;
-		this.headers = new HashMap<String, String>();
+		this.headers = new HashMap<>();
 	}
 	
 	/**
@@ -43,12 +46,14 @@ public class HttpRequest {
 	 * @param url
 	 * @param initialHeaders http headers (copied in the request)
 	 */
-	public HttpRequest(String url, Map<String, String> initialHeaders ) 
-	{
+	public HttpRequest(String url, Map<String, String> initialHeaders ) {
+		if ( url == null ) {
+			throw new IllegalArgumentException(ILLEGAL_ARG_URL);
+		}
 		this.url = url ;
-		this.headers = new HashMap<String, String>();
-		for ( String name : initialHeaders.keySet() ) {
-			headers.put(name, initialHeaders.get(name) ) ;
+		this.headers = new HashMap<>();
+		for (Map.Entry<String,String> entry : initialHeaders.entrySet())  { 
+			headers.put(entry.getKey(), entry.getValue() ) ;
 		}
 	}
 	
@@ -61,12 +66,21 @@ public class HttpRequest {
 	}
 	
 	/**
-	 * Set a request http header
+	 * Set a request header
 	 * @param name
 	 * @param value
 	 */
 	public void setHeader(String name, String value) {
 		this.headers.put(name, value);
+	}
+
+	/**
+	 * Get a request header by name
+	 * @param name
+	 * @return
+	 */
+	public String getHeader(String name) {
+		return this.headers.get(name);
 	}
 	
 	/**
