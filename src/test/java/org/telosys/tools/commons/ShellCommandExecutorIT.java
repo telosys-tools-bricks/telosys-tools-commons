@@ -22,13 +22,13 @@ public class ShellCommandExecutorIT extends TestCase {
 
 	@Test
 	public void testWindowsCmd1() {		
-		ShellCommandResult r = exec("cmd /c dir C:\\Temp");
+		ShellCommandResult r = exec("cmd /c dir C:\\Temp"); // only 1 arg
 		assertTrue( r.getExitValue() == 0 ); 
 	}
 
 	@Test
 	public void testWindowsCmd2() {		
-		ShellCommandResult r = exec("cmd /c dir", "C:\\Temp");
+		ShellCommandResult r = exec("cmd /c dir", "C:\\Temp"); // 2 args
 		assertTrue( r.getExitValue() == 0 ); 
 	}
 

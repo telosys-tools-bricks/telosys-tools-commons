@@ -39,8 +39,9 @@ public class HttpClientWithMockServerIT extends TestCase {
 	}
 
 	private HttpClient getHttpClient() {
-		Properties properties = TestsEnv.loadSpecificProxyProperties();
-		return new HttpClient(properties);	
+//		Properties properties = TestsEnv.loadSpecificProxyProperties();
+//		return new HttpClient(properties);	
+		return new HttpClient(TestsEnv.getTestFile("proxy.properties"));
 	}
 	
 	private void checkResponse(HttpResponse response, int expectedRetCode) {

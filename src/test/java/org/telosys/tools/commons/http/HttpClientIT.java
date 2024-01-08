@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
@@ -34,8 +33,9 @@ public class HttpClientIT extends TestCase {
 	}
 
 	private HttpClient getHttpClient() {
-		Properties properties = TestsEnv.loadSpecificProxyProperties();
-		return new HttpClient(properties);
+//		Properties properties = TestsEnv.loadSpecificProxyProperties();
+//		return new HttpClient(properties);
+		return new HttpClient(TestsEnv.getTestFile("proxy.properties"));
 	}
 	
 	private void checkResponse(HttpResponse response, int expectedRetCode) {

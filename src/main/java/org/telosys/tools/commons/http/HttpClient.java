@@ -26,7 +26,7 @@ import java.util.Properties;
 
 public class HttpClient {
 
-	public static final String VERSION = "5 (2024-01-05)" ;
+	public static final String VERSION = "5.3 (2024-01-08)" ;
 
 	// Default "User-Agent" value 
 	private static final String USER_AGENT       = "User-Agent" ;
@@ -45,10 +45,10 @@ public class HttpClient {
 	 * Constructor with http configuration defined by properties
 	 * @param properties proxy properties or null if none
 	 */
-	public HttpClient(Properties properties) {
+	public HttpClient(File propertiesFile) {
 		super();
-		if ( properties != null ) {
-			HttpSystemConfig.init(properties);
+		if ( propertiesFile != null ) {
+			HttpSystemConfig.init(propertiesFile);
 		}
 		else {
 			HttpSystemConfig.init();

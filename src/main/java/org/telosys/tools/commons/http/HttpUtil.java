@@ -15,21 +15,16 @@
  */
 package org.telosys.tools.commons.http;
 
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
 public class HttpUtil {
 	
@@ -57,55 +52,21 @@ public class HttpUtil {
 		            return new X509Certificate[0];
 		        } 
 		        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+		        	// Empty method (nothing to do)
 		        } 
 		        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+		        	// Empty method (nothing to do)
 		        }
 		    } 
 		};
 		// Install the all-trusting trust manager
-		try {
-		    SSLContext sc = SSLContext.getInstance("SSL"); 
-		    sc.init(null, trustAllCerts, new java.security.SecureRandom()); 
-		    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		} catch (GeneralSecurityException e) {
-		} 
+	    try {
+			SSLContext sc = SSLContext.getInstance("SSL"); 
+			sc.init(null, trustAllCerts, new java.security.SecureRandom()); 
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} catch (KeyManagementException | NoSuchAlgorithmException e) {
+			throw new TelosysRuntimeException("Cannot disable SSL certificate validation", e);
+		}
 	}
-	
-	//------------------------------------------------------------------------------------------
-	public static final  void showSystemProxies(PrintStream out) {
-		// Show system proxies on Windows : 
-		// > netsh winhttp show proxy" 
-		// The proxy settings for WinHTTP are not the proxy settings for Microsoft Internet Explorer
 
-		out.println("Current system proxies : ");
-		//System.setProperty("java.net.useSystemProxies", "true");
-		
-		List<Proxy> list = null;
-		try {
-		    list = ProxySelector.getDefault().select(new URI("http://foo/bar"));
-		} 
-		catch (URISyntaxException e) {
-		    e.printStackTrace();
-		}
-		if (list != null) {
-			int n = 0 ;
-		    for ( Proxy proxy : list ) {
-		    	n++;
-		    	out.println("Proxy #" + n + " : " );
-		    	// Type type = proxy.type();
-		    	// . DIRECT : Represents a direct connection, or the absence of a proxy.
-		    	// . HTTP   : Represents proxy for high level protocols such as HTTP or FTP.
-		    	// . SOCKS  : Represents a SOCKS (V4 or V5) proxy.
-	    		out.println(" proxy type (DIRECT|HTTP|SOCKS) : " + proxy.type());
-	    		
-		    	InetSocketAddress addr = (InetSocketAddress) proxy.address();
-		    	if (addr == null) {
-		    		out.println(" no address (InetSocketAddress)");
-		    	} else {
-		    		out.println(" proxy host : " + addr.getHostName());
-		    		out.println(" proxy port : " + addr.getPort());
-		    	}
-		    }
-		}
-	}
 }

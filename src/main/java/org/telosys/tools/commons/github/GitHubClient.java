@@ -15,18 +15,16 @@
  */
 package org.telosys.tools.commons.github;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.telosys.tools.commons.PropertiesManager;
-import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.http.Base64;
 import org.telosys.tools.commons.http.HttpClient;
 import org.telosys.tools.commons.http.HttpResponse;
@@ -40,7 +38,7 @@ import org.telosys.tools.commons.http.HttpResponse;
 public class GitHubClient {
 
 //	public static final String VERSION = "2.1" ; // GitHub Client Version (for checking in CLI and Download)
-	public static final String VERSION = "3 (2024-01-05)" ; // GitHub Client Version (for checking in CLI and Download)
+	public static final String VERSION = "3.2 (2024-01-08)" ; // GitHub Client Version (for checking in CLI and Download)
 	
 	public static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
 	
@@ -67,17 +65,21 @@ public class GitHubClient {
 	}
 	
 	private HttpClient buildHttpClient() {
-		// TODO : load properties 
-		PropertiesManager propertiesManager = new PropertiesManager(propertiesFileAbsolutePath) ;
-		Properties properties = propertiesManager.load(); // Ret NULL if file not found
-		if ( properties != null ) {
-			return new HttpClient(properties);
+//		PropertiesManager propertiesManager = new PropertiesManager(propertiesFileAbsolutePath) ;
+//		Properties properties = propertiesManager.load(); // Ret NULL if file not found
+//		if ( properties != null ) {
+//			return new HttpClient(properties);
+//		}
+//		else {
+//			// Properties file not found, no properties loaded : use default values
+//			return new HttpClient();
+//		}
+		if ( propertiesFileAbsolutePath != null ) {
+			return new HttpClient(new File(propertiesFileAbsolutePath));
 		}
 		else {
-			// Properties file not found, no properties loaded : use default values
 			return new HttpClient();
 		}
-		
 	}
 	
 	private Map<String, String> buildRequestHeaders() {
