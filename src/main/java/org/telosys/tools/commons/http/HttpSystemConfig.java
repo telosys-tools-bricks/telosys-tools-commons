@@ -172,7 +172,7 @@ public class HttpSystemConfig {
 	 * @param protocol
 	 */
 	private static void getCurrentProxyConfig(String protocol, List<String> lines) {
-		lines.add("Proxies for '" + protocol + "' :");
+		lines.add("Proxy for '" + protocol + "' :");
 		URI uri;
 		try {
 			uri = new URI(protocol + "://foo");
