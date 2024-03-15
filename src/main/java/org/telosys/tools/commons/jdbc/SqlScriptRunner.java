@@ -15,6 +15,7 @@
  */
 package org.telosys.tools.commons.jdbc;
 
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,12 +29,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Tool to run database SQL scripts ( SQL files ) <br>
+ * SQL tool to run database SQL scripts ( SQL files ) <br>
  * The default configuration is : <br> 
- *  - SQL command delimiter = ';' <br>
+ *  - SQL command delimiter (at end of line) = ';' <br>
  *  - stop on error  = true <br>
  *  - auto-commit    = true <br>
- *  
+ *  - no log writer  <br>
+ *  - no error log writer  <br>
+ * 
+ *  @author Laurent Guerin
  */
 public class SqlScriptRunner {
 
@@ -42,8 +46,8 @@ public class SqlScriptRunner {
     private String      delimiter   = ";";
     private boolean     stopOnError = true ;
     private boolean     autoCommit  = true ;
-    private PrintWriter logWriter      = new PrintWriter(System.out);
-    private PrintWriter errorLogWriter = new PrintWriter(System.err);
+    private PrintWriter logWriter      = null; // new PrintWriter(System.out);
+    private PrintWriter errorLogWriter = null; // new PrintWriter(System.err);
 
     /**
      * Constructor
@@ -116,13 +120,7 @@ public class SqlScriptRunner {
      * @throws SQLException
      */
     public void runScript(File file) throws IOException, SQLException {
-//    	if ( ! file.exists()  ) {
-//    		throw new IllegalArgumentException("File " + file.getAbsolutePath() + " doesn't exist");
-//    	}
-//    	if ( ! file.isFile() ) {
-//    		throw new IllegalArgumentException("'" + file.getAbsolutePath() + "' is not a file");
-//    	}
-		FileReader fileReader = new FileReader(file);
+		FileReader fileReader = new FileReader(file); // FileNotFoundException if no file
 		runScript(fileReader);
 		fileReader.close();
     }
@@ -168,35 +166,19 @@ public class SqlScriptRunner {
                     command = new StringBuilder();
                 }
                 String trimmedLine = line.trim();
-                if (trimmedLine.startsWith("--")) 
-                {
-                    println(trimmedLine);
-                } 
-                else if (trimmedLine.length() < 1
-                        || trimmedLine.startsWith("//")) 
-                {
-                    // Do nothing
-                } 
-                else if (trimmedLine.length() < 1
-                        || trimmedLine.startsWith("--")) 
-                {
-                    // Do nothing
-                } 
-//                else if (!fullLineDelimiter 
-//                        && trimmedLine.endsWith(getDelimiter())
-//                        || fullLineDelimiter
-//                        && trimmedLine.equals(getDelimiter())) 
-                else if ( trimmedLine.endsWith(getDelimiter() ) )
-                {
-                    command.append(line.substring(0, line.lastIndexOf(getDelimiter())));
-                    command.append(" ");
-                    
-                    executeSqlCommand(conn, command.toString());
-                    command = null ;
-                    Thread.yield();
-                } else {
-                    command.append(line);
-                    command.append(" ");
+                
+                if ( isLineToBeProcessed(trimmedLine) ) {
+                    if ( trimmedLine.endsWith(getDelimiter() ) ) {
+                    	// ends with ";" => remove ";" and execute 
+                        command.append(line.substring(0, line.lastIndexOf(getDelimiter())));
+                        command.append(" ");
+                        // End of SQL statement => execute this statement 
+                        executeSqlCommand(conn, command.toString());
+                        command = null ;
+                    } else {
+                        command.append(line);
+                        command.append(" ");
+                    }
                 }
             }
             if (!autoCommit) {
@@ -213,6 +195,14 @@ public class SqlScriptRunner {
         }
     }
 
+    private boolean isLineToBeProcessed(String trimmedLine) {
+    	if (trimmedLine.length() == 0 ) return false ; // void line 
+    	if (trimmedLine.startsWith("--")) return false ; // comment 
+    	if (trimmedLine.startsWith("//")) return false ; // comment 
+    	// in any other cases => to be processed
+    	return true;
+    }
+    
     private void executeSqlCommand(Connection conn, String command) throws SQLException {
     	
         println(command);
