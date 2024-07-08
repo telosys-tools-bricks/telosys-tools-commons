@@ -18,10 +18,9 @@ package org.telosys.tools.commons;
 public class Status {
 
 	private boolean       done = false ;
-//	private int           code = 0 ;
 	private String        message = "" ;
 	private Exception     exception = null ;
-	private StringBuffer  log = new StringBuffer() ;
+	private StringBuilder log = new StringBuilder() ;
 
 	//----------------------------------------------------------------
 	public boolean isDone() {
@@ -30,13 +29,6 @@ public class Status {
 	public void setDone(boolean flag) {
 		this.done = flag;
 	}
-	//----------------------------------------------------------------
-//	public int getCode() {
-//		return code;
-//	}
-//	public void setCode(int code) {
-//		this.code = code;
-//	}
 	//----------------------------------------------------------------
 	public String getMessage() {
 		return message;
