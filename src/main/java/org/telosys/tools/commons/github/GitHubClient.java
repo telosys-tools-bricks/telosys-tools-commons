@@ -16,6 +16,7 @@
 package org.telosys.tools.commons.github;
 
 import java.io.File;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +26,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.telosys.tools.commons.http.Base64;
 import org.telosys.tools.commons.http.HttpClient;
 import org.telosys.tools.commons.http.HttpResponse;
 
@@ -37,25 +37,18 @@ import org.telosys.tools.commons.http.HttpResponse;
  */
 public class GitHubClient {
 
-//	public static final String VERSION = "2.1" ; // GitHub Client Version (for checking in CLI and Download)
-	public static final String VERSION = "3.2 (2024-01-08)" ; // GitHub Client Version (for checking in CLI and Download)
+	public static final String VERSION = "3.3 (2024-07-08)" ; // GitHub Client Version (for checking in CLI and Download)
 	
 	public static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
 	
 	public static final String GIT_HUB_REPO_URL_PATTERN =  "https://github.com/${USER}/${REPO}/archive/master.zip" ;
 
-	
-//	private final Properties proxyProperties ;
 	private final String propertiesFileAbsolutePath ;
 	
-//	/**
-//	 * Constructor
-//	 * @param proxyProperties
-//	 */
-//	public GitHubClient(Properties proxyProperties) {
-//		super();
-//		this.proxyProperties = proxyProperties;
-//	}
+	/**
+	 * Constructor
+	 * @param propertiesFileAbsolutePath
+	 */
 	public GitHubClient(String propertiesFileAbsolutePath) {
 		super();
 		if ( propertiesFileAbsolutePath == null ) {
@@ -65,15 +58,6 @@ public class GitHubClient {
 	}
 	
 	private HttpClient buildHttpClient() {
-//		PropertiesManager propertiesManager = new PropertiesManager(propertiesFileAbsolutePath) ;
-//		Properties properties = propertiesManager.load(); // Ret NULL if file not found
-//		if ( properties != null ) {
-//			return new HttpClient(properties);
-//		}
-//		else {
-//			// Properties file not found, no properties loaded : use default values
-//			return new HttpClient();
-//		}
 		if ( propertiesFileAbsolutePath != null ) {
 			return new HttpClient(new File(propertiesFileAbsolutePath));
 		}
@@ -87,7 +71,7 @@ public class GitHubClient {
 			Map<String, String> headers = new HashMap<>();
 			// Build User-Password string - Base64 encoded
 			String userPassword = GitHubUser.getUser() + ":" + GitHubUser.getPassword() ;
-			String userPasswordBase64 = Base64.encode(userPassword);
+			String userPasswordBase64 = Base64.getEncoder().encodeToString(userPassword.getBytes()); 
 			// Set "Authorization" header in the map
 			headers.put("Authorization", "Basic " + userPasswordBase64);
 			return headers ;
@@ -97,25 +81,27 @@ public class GitHubClient {
 		}
 	}
 	
-	private HttpResponse httpGet( String url ) throws Exception {
-//		HttpClient httpClient = new HttpClient(proxyProperties);
+	/**
+	 * @param url
+	 * @return
+	 * @throws GitHubClientException
+	 */
+	private HttpResponse httpGet( String url ) throws GitHubClientException {
 		HttpClient httpClient = buildHttpClient();
-		HttpResponse response;
 		try {
 			// Sometimes GitHub return a 403 status code 
-			response = httpClient.get(url, buildRequestHeaders() );
+			return httpClient.get(url, buildRequestHeaders() );
 		} catch (Exception e) {
-			throw new Exception ("HTTP 'GET' error", e);
+			throw new GitHubClientException ("HTTP 'GET' error", e);
 		}
-		return response ;
 	}
 	
 	/**
-	 * @param json response body in JSON format
+	 * @param responseBody
 	 * @return
-	 * @throws Exception
+	 * @throws GitHubClientException
 	 */
-	private List<GitHubRepository> getRepositoriesFromJSON(String responseBody) throws Exception {
+	private List<GitHubRepository> getRepositoriesFromJSON(String responseBody) throws GitHubClientException {
 
 		// JSON parsing
 		List<GitHubRepository> repositories = new LinkedList<>();
@@ -135,10 +121,10 @@ public class GitHubClient {
 				}
 			}
 			else {
-				throw new Exception ( "JSON error : array expected as root");
+				throw new GitHubClientException ( "JSON error : array expected as root");
 			}
 		} catch (ParseException e) {
-			throw new Exception ( "JSON error : cannot parse the JSON response.");
+			throw new GitHubClientException ( "JSON error : cannot parse the JSON response.");
 		}
 		return repositories;
 	}
@@ -147,12 +133,11 @@ public class GitHubClient {
 	 * Returns the GitHub response containing the repositories list for a given user 
 	 * @param userName
 	 * @return
-	 * @throws Exception
+	 * @throws GitHubClientException
 	 */
-	public GitHubRepositoriesResponse getRepositories(String userName) throws Exception {
+	public GitHubRepositoriesResponse getRepositories(String userName) throws GitHubClientException {
 
 		// Call GitHub API via HTTP
-		//HttpResponse response = getApiHttpResponse(userName);
 		String url = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
 		HttpResponse response = httpGet(url);
 
@@ -178,15 +163,16 @@ public class GitHubClient {
 	 * @param attributeName
 	 * @param defaultValue
 	 * @return
+	 * @throws GitHubClientException
 	 */
-	private String getStringAttribute( JSONObject jsonObject, String attributeName, String defaultValue ) throws Exception {
+	private String getStringAttribute( JSONObject jsonObject, String attributeName, String defaultValue ) throws GitHubClientException {
 		Object oAttributeValue = jsonObject.get( attributeName );
 		if ( oAttributeValue != null ) {
 			if ( oAttributeValue instanceof String) {
 				return (String)oAttributeValue ;
 			}
 			else {
-				throw new Exception ( "JSON error : attribute '" + attributeName + "' is not a String");
+				throw new GitHubClientException ( "JSON error : attribute '" + attributeName + "' is not a String");
 			}
 		}
 		else {
@@ -194,7 +180,7 @@ public class GitHubClient {
 				return defaultValue ;
 			}
 			else {
-				throw new Exception ( "JSON error : attribute '" + attributeName + "' not found");
+				throw new GitHubClientException ( "JSON error : attribute '" + attributeName + "' not found");
 			}
 		}
 	}
@@ -204,20 +190,21 @@ public class GitHubClient {
 	 * @param jsonObject
 	 * @param attributeName
 	 * @return
+	 * @throws GitHubClientException
 	 */
-	private long getLongAttribute( JSONObject jsonObject, String attributeName ) throws Exception{
+	private long getLongAttribute( JSONObject jsonObject, String attributeName ) throws GitHubClientException{
 		Object oAttributeValue = jsonObject.get( attributeName );
 		if ( oAttributeValue != null ) {
 			if ( oAttributeValue instanceof Long) {
 				return ((Long)oAttributeValue).longValue();
 			}
 			else {
-				throw new Exception ( "JSON error : attribute '" + attributeName 
+				throw new GitHubClientException ( "JSON error : attribute '" + attributeName 
 						+ "' is not a Integer ("+oAttributeValue.getClass().getCanonicalName()+")");
 			}
 		}
 		else {
-			throw new Exception ( "JSON error : attribute '" + attributeName + "' not found");
+			throw new GitHubClientException ( "JSON error : attribute '" + attributeName + "' not found");
 		}
 	}
 	
@@ -230,22 +217,21 @@ public class GitHubClient {
 	 * @param destinationFile the full file name on the filesystem 
 	 * @return file size (bytes count)
 	 */
-	public final long downloadRepository(String userName, String repoName, String destinationFile) throws Exception {
+	public final long downloadRepository(String userName, String repoName, String destinationFile) throws GitHubClientException {
 		String url = GitHubUtil.buildGitHubURL(userName, repoName, GIT_HUB_REPO_URL_PATTERN);
-
-		long bytesCount = 0 ;
-//		HttpClient httpClient = new HttpClient(proxyProperties);
-		HttpClient httpClient = buildHttpClient();
-		
-		bytesCount = httpClient.downloadFile(url, destinationFile);
-		return bytesCount ;
+		HttpClient httpClient = buildHttpClient();		
+		try {
+			return httpClient.downloadFile(url, destinationFile);
+		} catch (Exception e) {
+			throw new GitHubClientException("HTTP download error", e);
+		}
 	}
 	
 	/**
 	 * @return
-	 * @throws Exception
+	 * @throws GitHubClientException
 	 */
-	public GitHubRateLimitResponse getRateLimit() throws Exception {
+	public GitHubRateLimitResponse getRateLimit() throws GitHubClientException {
 		String url = GitHubClient.GIT_HUB_HOST_URL + "/rate_limit" ;
 		HttpResponse response = httpGet(url);
 		
@@ -253,7 +239,7 @@ public class GitHubClient {
 			return new GitHubRateLimitResponse(new GitHubRateLimit(response), new String(response.getBodyContent() ));
 		}
 		else {
-			throw new Exception ("Cannot get GitHub rate limit. HTTP status code = " + response.getStatusCode() );
+			throw new GitHubClientException ("Cannot get GitHub rate limit. HTTP status code = " + response.getStatusCode() );
 		}
 		// Example of response body :
 		//   {

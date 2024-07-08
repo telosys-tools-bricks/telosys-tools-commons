@@ -1,5 +1,6 @@
 package org.telosys.tools.commons.http;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class HttpClientBasicAuthGitHubApiIT extends TestCase {
 		System.out.println("--- Test http GET with Basic Auth --- ");	
 		
 		String userPassword = user + ":" + password ;
-		String userPasswordBase64 = Base64.encode(userPassword);
+		String userPasswordBase64 = Base64.getEncoder().encodeToString(userPassword.getBytes()); 
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Authorization", "Basic " + userPasswordBase64);
