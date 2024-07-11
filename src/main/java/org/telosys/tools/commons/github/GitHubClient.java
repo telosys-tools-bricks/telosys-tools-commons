@@ -26,6 +26,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.telosys.tools.commons.depot.DepotElement;
+import org.telosys.tools.commons.depot.DepotRateLimit;
+import org.telosys.tools.commons.depot.DepotResponse;
 import org.telosys.tools.commons.http.HttpClient;
 import org.telosys.tools.commons.http.HttpResponse;
 
@@ -37,7 +40,7 @@ import org.telosys.tools.commons.http.HttpResponse;
  */
 public class GitHubClient {
 
-	public static final String VERSION = "3.3 (2024-07-08)" ; // GitHub Client Version (for checking in CLI and Download)
+	public static final String VERSION = "3.4 (2024-07-11)" ; // GitHub Client Version (for checking in CLI and Download)
 	
 	public static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
 	
@@ -101,10 +104,38 @@ public class GitHubClient {
 	 * @return
 	 * @throws GitHubClientException
 	 */
-	private List<GitHubRepository> getRepositoriesFromJSON(String responseBody) throws GitHubClientException {
+//	private List<GitHubRepository> getRepositoriesFromJSON(String responseBody) throws GitHubClientException {
+//
+//		// JSON parsing
+//		List<GitHubRepository> repositories = new LinkedList<>();
+//		JSONParser parser = new JSONParser();
+//		try {
+//			Object oList = parser.parse(responseBody);
+//			if ( oList instanceof JSONArray ) {
+//				JSONArray repositoriesArray = (JSONArray) oList ;
+//				for ( Object repositoryObject: repositoriesArray ) {
+//					JSONObject repo = (JSONObject) repositoryObject ; 
+//					long   id   = getLongAttribute(repo, "id");
+//					String name = getStringAttribute(repo, "name", "(#"+id+"-no-name)");
+//					String description = getStringAttribute(repo, "description", "(no-description)");
+//					long   size = getLongAttribute(repo, "size");
+//					// Add the repository in the list
+//					repositories.add( new GitHubRepository(id, name, description, size ) );
+//				}
+//			}
+//			else {
+//				throw new GitHubClientException ( "JSON error : array expected as root");
+//			}
+//		} catch (ParseException e) {
+//			throw new GitHubClientException ( "JSON error : cannot parse the JSON response.");
+//		}
+//		return repositories;
+//	}
+	
+	private List<DepotElement> getRepositoriesFromJSON(String responseBody) throws GitHubClientException {
 
 		// JSON parsing
-		List<GitHubRepository> repositories = new LinkedList<>();
+		List<DepotElement> repositories = new LinkedList<>();
 		JSONParser parser = new JSONParser();
 		try {
 			Object oList = parser.parse(responseBody);
@@ -117,7 +148,7 @@ public class GitHubClient {
 					String description = getStringAttribute(repo, "description", "(no-description)");
 					long   size = getLongAttribute(repo, "size");
 					// Add the repository in the list
-					repositories.add( new GitHubRepository(id, name, description, size ) );
+					repositories.add( new DepotElement(id, name, description, size ) );
 				}
 			}
 			else {
@@ -135,18 +166,41 @@ public class GitHubClient {
 	 * @return
 	 * @throws GitHubClientException
 	 */
-	public GitHubRepositoriesResponse getRepositories(String userName) throws GitHubClientException {
+//	public GitHubRepositoriesResponse getRepositories(String userName) throws GitHubClientException {
+//
+//		// Call GitHub API via HTTP
+//		String url = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
+//		HttpResponse response = httpGet(url);
+//
+//		
+//		GitHubRateLimit rateLimit = new GitHubRateLimit(response);
+//		
+//		String responseBody = new String(response.getBodyContent());
+//		
+//		List<GitHubRepository> repositories = new LinkedList<>();
+//		if ( response.getStatusCode() == 200 ) { 
+//			// Parse the response body (repositories list in JSON format) 
+//			repositories = getRepositoriesFromJSON(responseBody);
+//		}
+//		// If status is 403 : noting to do (the ratelimit is provided in the result)
+//
+//		// Return the result
+//		return new GitHubRepositoriesResponse(response.getStatusCode(), repositories, rateLimit, responseBody);
+//	}
+	public DepotResponse getRepositories(String userName) throws GitHubClientException {
 
 		// Call GitHub API via HTTP
 		String url = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
 		HttpResponse response = httpGet(url);
 
+		// Rate Limit from http headers 
+		GitHubRateLimit rl = new GitHubRateLimit(response);
+		DepotRateLimit rateLimit = new DepotRateLimit(rl.getLimit(), rl.getRemaining(), rl.getReset());
 		
-		GitHubRateLimit rateLimit = new GitHubRateLimit(response);
-		
+		// Repositories from http response body  
 		String responseBody = new String(response.getBodyContent());
 		
-		List<GitHubRepository> repositories = new LinkedList<>();
+		List<DepotElement> repositories = new LinkedList<>();
 		if ( response.getStatusCode() == 200 ) { 
 			// Parse the response body (repositories list in JSON format) 
 			repositories = getRepositoriesFromJSON(responseBody);
@@ -154,9 +208,8 @@ public class GitHubClient {
 		// If status is 403 : noting to do (the ratelimit is provided in the result)
 
 		// Return the result
-		return new GitHubRepositoriesResponse(response.getStatusCode(), repositories, rateLimit, responseBody);
+		return new DepotResponse(response.getStatusCode(), repositories, rateLimit, responseBody);
 	}
-
 	/**
 	 * Returns the String value for the given attribute name
 	 * @param jsonObject

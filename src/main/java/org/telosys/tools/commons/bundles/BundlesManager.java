@@ -25,11 +25,10 @@ import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+import org.telosys.tools.commons.depot.DepotElement;
+import org.telosys.tools.commons.depot.DepotResponse;
 import org.telosys.tools.commons.github.GitHubClient;
 import org.telosys.tools.commons.github.GitHubDownloader;
-import org.telosys.tools.commons.github.GitHubRateLimitResponse;
-import org.telosys.tools.commons.github.GitHubRepositoriesResponse;
-import org.telosys.tools.commons.github.GitHubRepository;
 
 /**
  * Utility class for bundles management (including GitHub access)
@@ -158,38 +157,43 @@ public class BundlesManager {
 
 	//--------------------------------------------------------------------------------------------------
 	/**
-	 * Return a list of bundles available on GitHub for the given user's name
-	 * @param githubUserName the GitHub user name
+	 * Return a list of bundles available on depot (GitHub,..) for the given user's name
+	 * @param depotName the depot name, ie GitHub user name or org name
 	 * @return
 	 * @throws Exception
 	 */
-	public BundlesFromGitHub getGitHubBundlesList( String githubUserName ) throws Exception {
+	public BundlesFromDepot getBundlesFromDepot( String depotName ) throws Exception {
 		
 		// HTTP request to GitHub 
 		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
-		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(githubUserName);
+//		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(githubUserName);
+		DepotResponse depotResponse = gitHubClient.getRepositories(depotName); // v 4.2.0
 		
 		// Build list of bundles names (can be void)
 		List<String> bundlesList = new LinkedList<>();
-		for ( GitHubRepository repo : githubResponse.getRepositories() ) {
+//		for ( GitHubRepository repo : githubResponse.getRepositories() ) {
+//			bundlesList.add( repo.getName() );
+//		}
+		for ( DepotElement repo : depotResponse.getElements() ) {
 			bundlesList.add( repo.getName() );
 		}
 		
 		// Result
-		return new BundlesFromGitHub(githubResponse.getHttpStatusCode(), bundlesList, githubResponse.getRateLimit() );
+//		return new BundlesFromGitHub(githubResponse.getHttpStatusCode(), bundlesList, githubResponse.getRateLimit() );
+		return new BundlesFromDepot(depotResponse.getHttpStatusCode(), bundlesList, depotResponse.getRateLimit() );
 	}
 
-	/**
-	 * Returns the current GitHub API rate limit for the current IP address
-	 * @return
-	 * @throws Exception
-	 */
-	public GitHubRateLimitResponse getGitHubRateLimit() throws Exception {
-		
-		// HTTP request to GitHub 
-		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
-		return gitHubClient.getRateLimit();
-	}
+//	/**
+//	 * Returns the current GitHub API rate limit for the current IP address
+//	 * @return
+//	 * @throws Exception
+//	 */
+//	public GitHubRateLimitResponse getGitHubRateLimit() throws Exception {
+//		
+//		// HTTP request to GitHub 
+//		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
+//		return gitHubClient.getRateLimit();
+//	}
 	
 	//--------------------------------------------------------------------------------------------------
 //	/**

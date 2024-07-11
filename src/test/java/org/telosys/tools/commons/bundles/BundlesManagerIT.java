@@ -129,7 +129,8 @@ public class BundlesManagerIT extends TestCase {
 
 		BundlesManager bm = getBundlesManager();
 		//List<String> bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
-		BundlesFromGitHub bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
+//		BundlesFromGitHub bundles = bm.getGitHubBundlesList(GITHUB_STORE) ;
+		BundlesFromDepot bundles = bm.getBundlesFromDepot(GITHUB_STORE) ;
 		for ( String s : bundles.getBundles() ) {
 			System.out.println(" . " + s );
 		}

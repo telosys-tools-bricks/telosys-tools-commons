@@ -18,10 +18,11 @@ package org.telosys.tools.commons.bundles;
 import java.util.Date;
 import java.util.List;
 
+import org.telosys.tools.commons.depot.DepotRateLimit;
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
 import org.telosys.tools.commons.github.GitHubRateLimit;
 
-public class BundlesFromGitHub {
+public class BundlesFromDepot {
 
 	/**
 	 * HTTP Status Code returned by GitHub
@@ -36,26 +37,26 @@ public class BundlesFromGitHub {
 	/**
 	 * API rate limit
 	 */
-	private final GitHubRateLimit githubRateLimit ;
+	private final DepotRateLimit depotRateLimit ;
 	
 	/**
 	 * Constructor
 	 * @param httpStatusCode
 	 * @param bundles
-	 * @param githubRateLimit
+	 * @param depotRateLimit
 	 */
-	public BundlesFromGitHub(int httpStatusCode, List<String> bundles, GitHubRateLimit githubRateLimit) {
+	public BundlesFromDepot(int httpStatusCode, List<String> bundles, DepotRateLimit depotRateLimit) {
 		super();
 		this.httpStatusCode = httpStatusCode ;
 		
 		if ( bundles == null ) {
 			throw new TelosysRuntimeException("bundlesList is null");
 		}
-		if ( githubRateLimit == null ) {
+		if ( depotRateLimit == null ) {
 			throw new TelosysRuntimeException("githubRateLimit is null");
 		}
-		this.bundles         = bundles ;
-		this.githubRateLimit = githubRateLimit  ;
+		this.bundles        = bundles ;
+		this.depotRateLimit = depotRateLimit  ;
 	}
 
 	/**
@@ -79,7 +80,7 @@ public class BundlesFromGitHub {
 	 * @return
 	 */
 	public int getLimit() {
-		return githubRateLimit.getLimitAsInt();
+		return depotRateLimit.getLimitAsInt();
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class BundlesFromGitHub {
 	 * @return
 	 */
 	public int getRemaining() {
-		return githubRateLimit.getRemainingAsInt();
+		return depotRateLimit.getRemainingAsInt();
 	}
 
 	/**
@@ -95,11 +96,11 @@ public class BundlesFromGitHub {
 	 * @return
 	 */
 	public Date getReset() {
-		return githubRateLimit.getResetAsDate();
+		return depotRateLimit.getResetAsDate();
 	}
 	
 	public String getRateLimitMessage() {
-		return githubRateLimit.getStandardMessage();
+		return depotRateLimit.getStandardMessage();
 	}
 	
 }

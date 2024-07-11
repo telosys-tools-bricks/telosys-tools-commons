@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.junit.Test;
+import org.telosys.tools.commons.depot.DepotElement;
+import org.telosys.tools.commons.depot.DepotResponse;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 
@@ -18,7 +20,7 @@ import junit.env.telosys.tools.commons.TestsEnv;
  */
 public class GitHubClientIT {
 
-	private static final String GITHUB_USER = "telosys-templates" ; // "telosys-tools" ;
+	private static final String GITHUB_USER = "telosys-templates" ;
 
 	private void printJavaVersion() {
 		System.out.println("Setting system property 'https.protocols'... ");
@@ -61,16 +63,15 @@ public class GitHubClientIT {
 		System.out.println("Getting repositories... ");
 		printJavaVersion() ;
 
-//		GitHubClient gitHubClient = new GitHubClient( properties );
-		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
+		GitHubClient gitHubClient = buildGitHubClient();
 		
-		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(GITHUB_USER);
+		DepotResponse githubResponse = gitHubClient.getRepositories(GITHUB_USER);
 		
 		System.out.println( githubResponse.getResponseBody() );
 		
-		List<GitHubRepository> repositories = githubResponse.getRepositories();
+		List<DepotElement> repositories = githubResponse.getElements();
 		System.out.println("Repositories (" + repositories.size() + ") : ");
-		for ( GitHubRepository repo : repositories ) {
+		for ( DepotElement repo : repositories ) {
 			System.out.println(" .  '" + repo.getName() + "' / " 
 					+ repo.getId() + " / '" + repo.getDescription() + "' / " + repo.getSize() );
 		}
@@ -81,11 +82,9 @@ public class GitHubClientIT {
 
 		printJavaVersion() ;
 		
-//		Properties properties = TestsEnv.loadSpecificProxyProperties() ;
-//		GitHubClient gitHubClient = new GitHubClient( properties);
-		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
+		GitHubClient gitHubClient = buildGitHubClient(); 
 		
-		String repoName = "plantuml" ; // "basic-templates-TT210" ;
+		String repoName = "plantuml" ;
 		String destinationFile = TestsEnv.getTmpDownloadFolderFullPath() + "/" + repoName + ".zip" ;
 		System.out.println("Download repository " + repoName );
 		System.out.println("                 to " + destinationFile );
@@ -98,8 +97,7 @@ public class GitHubClientIT {
 
 		GitHubUser.clear();
 
-//		GitHubClient gitHubClient = new GitHubClient(null);
-		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
+		GitHubClient gitHubClient = buildGitHubClient();
 		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
 		
 		System.out.println(rateLimit);
@@ -113,8 +111,7 @@ public class GitHubClientIT {
 		// User + password
 		GitHubUser.set("fake-user-azer7766-OuPMK", "xxxxx");
 		
-//		GitHubClient gitHubClient = new GitHubClient(null);
-		GitHubClient gitHubClient = buildGitHubClient(); // v 4.1.1
+		GitHubClient gitHubClient = buildGitHubClient(); 
 		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(); 
 		
 		System.out.println(rateLimit); // limit='60', remaining='60'

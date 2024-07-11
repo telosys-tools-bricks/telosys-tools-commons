@@ -36,22 +36,22 @@ public class GitHubUtil {
 	private GitHubUtil() {
 	}
 
-	/**
-	 * Sorts the given list of repositories (sort by name).
-	 * 
-	 * @param list
-	 */
-	protected static void sortByName( List<GitHubRepository> list ) {
-		Collections.sort(list, new Comparator<GitHubRepository>() {
-
-			@Override
-			public int compare(GitHubRepository repo1, GitHubRepository repo2) {
-				String name1 = repo1.getName();
-				String name2 = repo2.getName();
-				return name1.compareTo(name2);
-			}
-		});
-	}
+//	/**
+//	 * Sorts the given list of repositories (sort by name).
+//	 * 
+//	 * @param list
+//	 */
+//	protected static void sortByName( List<GitHubRepository> list ) {
+//		Collections.sort(list, new Comparator<GitHubRepository>() {
+//
+//			@Override
+//			public int compare(GitHubRepository repo1, GitHubRepository repo2) {
+//				String name1 = repo1.getName();
+//				String name2 = repo2.getName();
+//				return name1.compareTo(name2);
+//			}
+//		});
+//	}
 
 	//--------------------------------------------------------------------------------------------------
 	/**

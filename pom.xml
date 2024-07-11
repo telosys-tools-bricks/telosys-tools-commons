@@ -15,9 +15,12 @@
 	<version>4.2.0</version>
 	<packaging>jar</packaging>
 
-
-	<!-- TEMPORARELY -->
-	<!-- <properties> <skip-license>true</skip-license> </properties> -->
+	<properties>
+		<maven.build.timestamp.format>yyMMdd.HHmm.S</maven.build.timestamp.format>	<!-- day in the year . min . milliseconds -->	
+		<build.id>${maven.build.timestamp}</build.id> <!-- for resource filtering -->
+		<!-- TEMPORARELY -->
+		<!-- <properties> <skip-license>true</skip-license> </properties> -->
+	</properties>
 
 	<dependencies>
 
@@ -43,5 +46,24 @@
 
 	</dependencies>
 
+	<build>
+	    <resources>
+	    	<!-- Filtering file with build.id  -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>telosys-commons-build.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>telosys-commons-build.properties</exclude>
+				</excludes>
+			</resource>
+	    </resources>
+	</build>
 
 </project>

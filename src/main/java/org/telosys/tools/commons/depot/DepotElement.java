@@ -13,15 +13,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.telosys.tools.commons.github;
+package org.telosys.tools.commons.depot;
 
 /**
- * This class holds few information about GitHub repository
+ * This class holds few information about generic depot element.<br>
+ * A "depot element" can be : a GitHub repository, a GitLab repository, etc 
  * 
  * @author L. Guerin
  *
  */
-public class GitHubRepository {
+public class DepotElement {
 
 	private final long   id ;
 	
@@ -39,7 +40,7 @@ public class GitHubRepository {
 	 * @param description
 	 * @param size
 	 */
-	public GitHubRepository(long id, String name, String description, long size) {
+	public DepotElement(long id, String name, String description, long size) {
 		super();
 		this.id = id;
 		this.name = name;
