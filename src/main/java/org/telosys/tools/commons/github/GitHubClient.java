@@ -132,7 +132,7 @@ public class GitHubClient {
 //		return repositories;
 //	}
 	
-	private List<DepotElement> getRepositoriesFromJSON(String responseBody) throws GitHubClientException {
+	private List<DepotElement> getDepotElementsFromJSON(String responseBody) throws GitHubClientException {
 
 		// JSON parsing
 		List<DepotElement> repositories = new LinkedList<>();
@@ -161,36 +161,15 @@ public class GitHubClient {
 	}
 	
 	/**
-	 * Returns the GitHub response containing the repositories list for a given user 
-	 * @param userName
+	 * Returns a DepotResponse containing the repositories list for a given depotName 
+	 * @param depotName
 	 * @return
 	 * @throws GitHubClientException
 	 */
-//	public GitHubRepositoriesResponse getRepositories(String userName) throws GitHubClientException {
-//
-//		// Call GitHub API via HTTP
-//		String url = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
-//		HttpResponse response = httpGet(url);
-//
-//		
-//		GitHubRateLimit rateLimit = new GitHubRateLimit(response);
-//		
-//		String responseBody = new String(response.getBodyContent());
-//		
-//		List<GitHubRepository> repositories = new LinkedList<>();
-//		if ( response.getStatusCode() == 200 ) { 
-//			// Parse the response body (repositories list in JSON format) 
-//			repositories = getRepositoriesFromJSON(responseBody);
-//		}
-//		// If status is 403 : noting to do (the ratelimit is provided in the result)
-//
-//		// Return the result
-//		return new GitHubRepositoriesResponse(response.getStatusCode(), repositories, rateLimit, responseBody);
-//	}
-	public DepotResponse getRepositories(String userName) throws GitHubClientException {
+	public DepotResponse getRepositories(String depotName) throws GitHubClientException {
 
 		// Call GitHub API via HTTP
-		String url = GIT_HUB_HOST_URL + "/users/" + userName + "/repos" ;
+		String url = GIT_HUB_HOST_URL + "/users/" + depotName + "/repos" ; // for GitHub 'depotName' = 'GitHub user name'
 		HttpResponse response = httpGet(url);
 
 		// Rate Limit from http headers 
@@ -200,15 +179,15 @@ public class GitHubClient {
 		// Repositories from http response body  
 		String responseBody = new String(response.getBodyContent());
 		
-		List<DepotElement> repositories = new LinkedList<>();
+		List<DepotElement> depotElements = new LinkedList<>();
 		if ( response.getStatusCode() == 200 ) { 
 			// Parse the response body (repositories list in JSON format) 
-			repositories = getRepositoriesFromJSON(responseBody);
+			depotElements = getDepotElementsFromJSON(responseBody);
 		}
 		// If status is 403 : noting to do (the ratelimit is provided in the result)
 
 		// Return the result
-		return new DepotResponse(response.getStatusCode(), repositories, rateLimit, responseBody);
+		return new DepotResponse(depotName, url, response.getStatusCode(), depotElements, rateLimit, responseBody);
 	}
 	/**
 	 * Returns the String value for the given attribute name

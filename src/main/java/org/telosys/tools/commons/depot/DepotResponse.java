@@ -30,6 +30,16 @@ import java.util.List;
 public class DepotResponse {
 
 	/**
+	 * URL of the depot (GitHub URL, ... )
+	 */
+	private final String depotURL ;
+	
+	/**
+	 * Name of the depot 
+	 */
+	private final String depotName ;
+	
+	/**
 	 * HTTP Status Code returned by the depot (GitHub, ... )
 	 */
 	private final int httpStatusCode ;
@@ -51,13 +61,17 @@ public class DepotResponse {
 
 	/**
 	 * Constructor
+	 * @param depotName
+	 * @param depotURL
 	 * @param httpStatusCode
 	 * @param elements
 	 * @param rateLimit
 	 * @param responseBody
 	 */
-	public DepotResponse(int httpStatusCode, List<DepotElement> elements, DepotRateLimit rateLimit, String responseBody) {
+	public DepotResponse(String depotName, String depotURL, int httpStatusCode, List<DepotElement> elements, DepotRateLimit rateLimit, String responseBody) {
 		super();
+		this.depotName = depotName;
+		this.depotURL = depotURL;
 		this.httpStatusCode = httpStatusCode;
 		this.elements = elements;
 		sortByName(this.elements);
@@ -72,17 +86,27 @@ public class DepotResponse {
 	 * @param list
 	 */
 	private void sortByName( List<DepotElement> list ) {
-//		Collections.sort(list, new Comparator<DepotElement>() {
-//			@Override
-//			public int compare(DepotElement repo1, DepotElement repo2) {
-//				String name1 = repo1.getName();
-//				String name2 = repo2.getName();
-//				return name1.compareTo(name2);
-//			}
-//		});
 		Collections.sort(list, (e1, e2) -> e1.getName().compareTo(e2.getName()) ) ;
 	}
+
 	
+	/**
+	 * Returns the depot name
+	 * @return
+	 */
+	public String getDepotName() {
+		return depotName;
+	}
+
+	/**
+	 * Returns the URL used to call the depot API 
+	 * @return
+	 */
+	public String getDepotURL() {
+		return depotURL;
+	}
+
+
 	/**
 	 * Returns the HTTP Status Code ( e.g. : 200, 403, etc)
 	 * @return
@@ -103,14 +127,14 @@ public class DepotResponse {
 	 * Returns a list of element names (repository names)
 	 * @return
 	 */
-	public List<String> getElementsNames() {
-		List<String> bundles = new LinkedList<>();
+	public List<String> getElementNames() {
+		List<String> names = new LinkedList<>();
 		if ( elements != null ) {
 			for ( DepotElement e : elements ) {
-				bundles.add( e.getName() );				
+				names.add( e.getName() );				
 			}
 		}
-		return bundles ;
+		return names;
 	}
 
 	public DepotRateLimit getRateLimit() {
