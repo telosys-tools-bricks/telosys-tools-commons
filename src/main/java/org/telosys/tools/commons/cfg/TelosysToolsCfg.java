@@ -15,7 +15,7 @@
  */
 package org.telosys.tools.commons.cfg;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,44 +40,56 @@ import org.telosys.tools.commons.variables.VariablesUtil;
  */
 public class TelosysToolsCfg 
 {
-	private static final String SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
-	private static final String SPECIFIC_TEMPLATES_FOLDER    = "SpecificTemplatesFolder";
-	private static final String SPECIFIC_MODELS_FOLDER       = "SpecificModelsFolder"; // V 3.4.0
     
 	//----------------------------------------------------------------------------------------
-	private final String     _projectAbsolutePath ; 
-	private final String     _cfgFileAbsolutePath ; 
-	private final boolean    _initializedFromFile ; 
+	private final String     projectAbsolutePath ; 
+	private final String     cfgFileAbsolutePath ; 
+	private final boolean    initializedFromFile ; 
 
 	//----------------------------------------------------------------------------------------
-	//--- Project folders default values
-	private final String _sTelosysToolsFolder ;
-	private final String _sModelsFolder ; 
-	private final String _sTemplatesFolder    ; 
-	private final String _sDownloadsFolder    ; 
-	private final String _sLibrariesFolder    ; 
+	//--- Project folders standard/default values
+	private final String telosysToolsFolder ;
+	private final String modelsFolder ; 
+	private final String templatesFolder ; 
+	private final String downloadsFolder ; 
+	private final String librariesFolder ; 
+	private static final String STANDARD_DEPOT_NAME_FOR_MODELS  = "telosys-models";    // v 4.2.0
+	private static final String STANDARD_DEPOT_NAME_FOR_BUNDLES = "telosys-templates"; // v 4.2.0
 	
-	//----------------------------------------------------------------------------------------
-	//--- Standard variables : packages default values
-	private String _ENTITY_PKG = "org.demo.bean" ;
-	private String _ROOT_PKG   = "org.demo" ;
+	//--- Project specific values
+	private static final String PROPERTY_SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
+	private String specificDestinationFolder = "" ;  // v 3.0.0
 
-	//--- Standard variables : folders default values
-	private String _SRC      =  "src/main/java" ;
-	private String _RES      =  "src/main/resources" ;
-	private String _WEB      =  "src/main/webapp" ;
-	private String _TEST_SRC =  "src/test/java" ;
-	private String _TEST_RES =  "src/test/resources" ;
-	private String _DOC      =  "doc" ;
-	private String _TMP      =  "tmp" ;
+	private static final String PROPERTY_SPECIFIC_TEMPLATES_FOLDER    = "SpecificTemplatesFolder";
+	private String specificTemplatesFolder   = "" ;  // v 3.0.0
 	
-	private String _specificDestinationFolder = "" ;  // v 3.0.0
-	private String _specificTemplatesFolder   = "" ;  // v 3.0.0
+	private static final String PROPERTY_SPECIFIC_MODELS_FOLDER       = "SpecificModelsFolder"; // V 3.4.0
 	private String specificModelsFolder = "" ;  // v 3.4.0
 	
+	private static final String PROPERTY_SPECIFIC_DEPOT_NAME_FOR_MODELS = "SpecificDepotNameForModels"; // 4.2.0
+	private String specificDepotNameForModels = ""; // v 4.2.0
+
+	private static final String PROPERTY_SPECIFIC_DEPOT_NAME_FOR_BUNDLES = "SpecificDepotNameForBundles"; // 4.2.0
+	private String specificDepotNameForBundles = ""; // v 4.2.0
+
 	//----------------------------------------------------------------------------------------
+	// Variables
+	//----------------------------------------------------------------------------------------
+	//--- Standard variables : packages default values
+	private String varEntityPkg = "org.demo.bean" ;
+	private String varRootPkg   = "org.demo" ;
+
+	//--- Standard variables : folders default values
+	private String varSrc     =  "src/main/java" ;
+	private String varRes     =  "src/main/resources" ;
+	private String varWeb     =  "src/main/webapp" ;
+	private String varTestSrc =  "src/test/java" ;
+	private String varTestRes =  "src/test/resources" ;
+	private String varDoc     =  "doc" ;
+	private String varTmp     =  "tmp" ;
+	
 	//--- Specific variables defined by the user for the current project
-	private LinkedList<Variable> _specificVariables = new LinkedList<>() ; // v 3.0.0
+	private LinkedList<Variable> specificVariables = new LinkedList<>() ; // v 3.0.0
 
 	//----------------------------------------------------------------------------------------
     /**
@@ -89,11 +101,11 @@ public class TelosysToolsCfg
     protected TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop ) { // v 3.0.0
     	// v 3.0.0
     	TelosysToolsEnv env = TelosysToolsEnv.getInstance();
-    	_sTelosysToolsFolder = env.getTelosysToolsFolder();
-    	_sModelsFolder       = env.getModelsFolder() ; // "TelosysTools/models" since v 3.4.0
-    	_sTemplatesFolder    = env.getTemplatesFolder() ; 
-    	_sDownloadsFolder    = env.getDownloadsFolder() ; 
-    	_sLibrariesFolder    = env.getLibrariesFolder() ;
+    	telosysToolsFolder = env.getTelosysToolsFolder();
+    	modelsFolder       = env.getModelsFolder() ; // "TelosysTools/models" since v 3.4.0
+    	templatesFolder    = env.getTemplatesFolder() ; 
+    	downloadsFolder    = env.getDownloadsFolder() ; 
+    	librariesFolder    = env.getLibrariesFolder() ;
     	
     	if ( projectAbsolutePath == null ) {
     		throw new IllegalArgumentException("projectAbsolutePath is null");
@@ -101,35 +113,37 @@ public class TelosysToolsCfg
     	if ( cfgFileAbsolutePath == null ) {
     		throw new IllegalArgumentException("cfgFileAbsolutePath is null");
     	}
-    	_projectAbsolutePath = projectAbsolutePath ;
-    	_cfgFileAbsolutePath = cfgFileAbsolutePath ;
+    	this.projectAbsolutePath = projectAbsolutePath ;
+    	this.cfgFileAbsolutePath = cfgFileAbsolutePath ;
     	
-    	_initializedFromFile = initFromProperties(prop);
+    	this.initializedFromFile = initFromProperties(prop);
     }
     
 	//------------------------------------------------------------------------------------------------------
     protected boolean initFromProperties(Properties prop) {
     	if ( prop != null ) {    	
-    		// v 3.0.0
-	    	_specificDestinationFolder = prop.getProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder);
-	    	_specificTemplatesFolder   = prop.getProperty(SPECIFIC_TEMPLATES_FOLDER, _specificTemplatesFolder);
-	    	specificModelsFolder       = prop.getProperty(SPECIFIC_MODELS_FOLDER, specificModelsFolder); // v 3.4.0
+	    	specificDestinationFolder = prop.getProperty(PROPERTY_SPECIFIC_DESTINATION_FOLDER, specificDestinationFolder);
+	    	specificTemplatesFolder   = prop.getProperty(PROPERTY_SPECIFIC_TEMPLATES_FOLDER, specificTemplatesFolder);
+	    	specificModelsFolder      = prop.getProperty(PROPERTY_SPECIFIC_MODELS_FOLDER, specificModelsFolder); // v 3.4.0
+
+	    	specificDepotNameForModels  = prop.getProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_MODELS,  specificDepotNameForModels ); // v 4.2.0
+	    	specificDepotNameForBundles = prop.getProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_BUNDLES, specificDepotNameForBundles); // v 4.2.0
 	    	
 	    	//--- Packages 
-	    	_ROOT_PKG   = prop.getProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
-	    	_ENTITY_PKG = prop.getProperty(VariablesNames.ENTITY_PKG, _ENTITY_PKG);
+	    	varRootPkg   = prop.getProperty(VariablesNames.ROOT_PKG,   varRootPkg);
+	    	varEntityPkg = prop.getProperty(VariablesNames.ENTITY_PKG, varEntityPkg);
 	
 	    	//--- Folders  
-	    	_SRC      =  prop.getProperty(VariablesNames.SRC,      _SRC);
-	    	_RES      =  prop.getProperty(VariablesNames.RES,      _RES);
-	    	_WEB      =  prop.getProperty(VariablesNames.WEB,      _WEB);
-	    	_TEST_SRC =  prop.getProperty(VariablesNames.TEST_SRC, _TEST_SRC);
-	    	_TEST_RES =  prop.getProperty(VariablesNames.TEST_RES, _TEST_RES);
-	    	_DOC      =  prop.getProperty(VariablesNames.DOC,      _DOC);
-	    	_TMP      =  prop.getProperty(VariablesNames.TMP,      _TMP);
+	    	varSrc     =  prop.getProperty(VariablesNames.SRC,      varSrc);
+	    	varRes     =  prop.getProperty(VariablesNames.RES,      varRes);
+	    	varWeb     =  prop.getProperty(VariablesNames.WEB,      varWeb);
+	    	varTestSrc =  prop.getProperty(VariablesNames.TEST_SRC, varTestSrc);
+	    	varTestRes =  prop.getProperty(VariablesNames.TEST_RES, varTestRes);
+	    	varDoc     =  prop.getProperty(VariablesNames.DOC,      varDoc);
+	    	varTmp     =  prop.getProperty(VariablesNames.TMP,      varTmp);
 	    	
 	    	//--- Project user defined variables
-	    	_specificVariables = VariablesUtil.getSpecificVariablesFromProperties( prop );
+	    	specificVariables = VariablesUtil.getSpecificVariablesFromProperties( prop );
 	    	return true ;
     	}
     	else {
@@ -145,21 +159,21 @@ public class TelosysToolsCfg
      * @return
      */
     public boolean hasBeenInitializedFromFile() {
-    	return _initializedFromFile ;
+    	return initializedFromFile ;
     }
 	
-    //------------------------------------------------------------------------------------------------------
-    protected Variable[] getDefaultSpecificVariables()
-	{
-    	Variable[] v = new Variable[4] ;
-    	int i = 0 ;
-    	//-- In alphabetic order
-    	v[i++] = new Variable("MAVEN_ARTIFACT_ID", "artifact-to-be-defined"); // for pom.xml artifactId
-    	v[i++] = new Variable("MAVEN_GROUP_ID",    "group.to.be.defined" ); // for pom.xml artifactId
-    	v[i++] = new Variable("PROJECT_NAME",      "myproject");
-    	v[i++] = new Variable("PROJECT_VERSION",   "0.1");
-    	return v ;
-	}
+//   Removed in 4.2.0
+//    protected Variable[] getDefaultSpecificVariables()
+//	{
+//    	Variable[] v = new Variable[4] ;
+//    	int i = 0 ;
+//    	//-- In alphabetic order
+//    	v[i++] = new Variable("MAVEN_ARTIFACT_ID", "artifact-to-be-defined"); // for pom.xml artifactId
+//    	v[i++] = new Variable("MAVEN_GROUP_ID",    "group.to.be.defined" ); // for pom.xml artifactId
+//    	v[i++] = new Variable("PROJECT_NAME",      "myproject");
+//    	v[i++] = new Variable("PROJECT_VERSION",   "0.1");
+//    	return v ;
+//	}
 	//------------------------------------------------------------------------------------------------------
     /**
      * Returns a set of properties containing the current configuration
@@ -168,25 +182,28 @@ public class TelosysToolsCfg
     public Properties getProperties() {
     	Properties properties = new Properties();  // v 3.0.0
     	
-    	properties.setProperty(SPECIFIC_DESTINATION_FOLDER, _specificDestinationFolder );
-    	properties.setProperty(SPECIFIC_TEMPLATES_FOLDER,   _specificTemplatesFolder );
-    	properties.setProperty(SPECIFIC_MODELS_FOLDER,      specificModelsFolder ); // v 3.4.0
+    	properties.setProperty(PROPERTY_SPECIFIC_DESTINATION_FOLDER, specificDestinationFolder );
+    	properties.setProperty(PROPERTY_SPECIFIC_TEMPLATES_FOLDER,   specificTemplatesFolder );
+    	properties.setProperty(PROPERTY_SPECIFIC_MODELS_FOLDER,      specificModelsFolder ); // v 3.4.0
+
+    	properties.setProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_MODELS,  specificDepotNameForModels );  // v 4.2.0
+    	properties.setProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_BUNDLES, specificDepotNameForBundles ); // v 4.2.0
     	
     	//--- Packages 
-    	properties.setProperty(VariablesNames.ROOT_PKG,   _ROOT_PKG);
-    	properties.setProperty(VariablesNames.ENTITY_PKG, _ENTITY_PKG);
+    	properties.setProperty(VariablesNames.ROOT_PKG,   varRootPkg);
+    	properties.setProperty(VariablesNames.ENTITY_PKG, varEntityPkg);
 
     	//--- Folders  
-    	properties.setProperty(VariablesNames.SRC,      _SRC);
-    	properties.setProperty(VariablesNames.RES,      _RES);
-    	properties.setProperty(VariablesNames.WEB,      _WEB);
-    	properties.setProperty(VariablesNames.TEST_SRC, _TEST_SRC);
-    	properties.setProperty(VariablesNames.TEST_RES, _TEST_RES);
-    	properties.setProperty(VariablesNames.DOC,      _DOC);
-    	properties.setProperty(VariablesNames.TMP,      _TMP);
+    	properties.setProperty(VariablesNames.SRC,      varSrc);
+    	properties.setProperty(VariablesNames.RES,      varRes);
+    	properties.setProperty(VariablesNames.WEB,      varWeb);
+    	properties.setProperty(VariablesNames.TEST_SRC, varTestSrc);
+    	properties.setProperty(VariablesNames.TEST_RES, varTestRes);
+    	properties.setProperty(VariablesNames.DOC,      varDoc);
+    	properties.setProperty(VariablesNames.TMP,      varTmp);
 
     	//--- Variables  
-    	VariablesUtil.putSpecificVariablesInProperties(_specificVariables, properties);
+    	VariablesUtil.putSpecificVariablesInProperties(specificVariables, properties);
     	
     	return properties ;
 	}
@@ -197,7 +214,7 @@ public class TelosysToolsCfg
      * @return
      */
     public String getProjectAbsolutePath() {
-    	return _projectAbsolutePath ;
+    	return projectAbsolutePath ;
 	}
     
 	//------------------------------------------------------------------------------------------------------
@@ -206,7 +223,6 @@ public class TelosysToolsCfg
      * @return
      */
     public TelosysToolsLogger getLogger() {
-    	// TODO
     	return new ConsoleLogger()  ; // To be replaced by the future "FileLogger" ( log files in "log" folder )
 	}
     
@@ -218,12 +234,12 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDestinationFolderAbsolutePath() {
-    	if ( StrUtil.nullOrVoid( _specificDestinationFolder ) ) {
+    	if ( StrUtil.nullOrVoid( specificDestinationFolder ) ) {
     		//--- No specific destination folder => use the project folder
-    		return _projectAbsolutePath;
+    		return projectAbsolutePath;
     	}
     	else {
-    		return _specificDestinationFolder ;
+    		return specificDestinationFolder ;
     	}
 	}
     
@@ -233,7 +249,7 @@ public class TelosysToolsCfg
      * @return
      */
     public String getCfgFileAbsolutePath() {
-    	return _cfgFileAbsolutePath;
+    	return cfgFileAbsolutePath;
 	}
 
     //==============================================================================
@@ -266,14 +282,14 @@ public class TelosysToolsCfg
      * @return
      */
     public String getSRC() {
-    	return _SRC;
+    	return varSrc;
 	}
     /**
      * Set the "source folder" ( $SRC predefined variable )
      * @param srcFolder
      */
     public void setSRC(String srcFolder) {
-    	_SRC = srcFolder ;
+    	varSrc = srcFolder ;
 	}
     
 	//--------------------------------------------------------------------------------
@@ -282,14 +298,14 @@ public class TelosysToolsCfg
      * @return
      */
     public String getRES() {
-    	return _RES;
+    	return varRes;
 	}
     /**
      * Set the "resources folder" ( $RES predefined variable )
      * @param resourcesFolder
      */
     public void setRES(String resourcesFolder) {
-    	_RES = resourcesFolder ;
+    	varRes = resourcesFolder ;
 	}
     
 	//--------------------------------------------------------------------------------
@@ -298,14 +314,14 @@ public class TelosysToolsCfg
      * @return
      */
     public String getWEB() {
-    	return _WEB;
+    	return varWeb;
 	}
     /**
      * Set the "web folder" ( $WEB predefined variable )
      * @param webFolder
      */
     public void setWEB(String webFolder) {
-    	_WEB = webFolder ;
+    	varWeb = webFolder ;
 	}
     
 	//--------------------------------------------------------------------------------
@@ -314,14 +330,14 @@ public class TelosysToolsCfg
      * @return
      */
     public String getTEST_RES() {
-    	return _TEST_RES;
+    	return varTestRes;
 	}
     /**
      * Set the "test resources folder" ( $TEST_RES predefined variable )
      * @param testResourcesFolder
      */
     public void setTEST_RES(String testResourcesFolder) {
-    	_TEST_RES = testResourcesFolder ;
+    	varTestRes = testResourcesFolder ;
 	}
     
 	//--------------------------------------------------------------------------------
@@ -330,14 +346,14 @@ public class TelosysToolsCfg
      * @return
      */
     public String getTEST_SRC() {
-    	return _TEST_SRC;
+    	return varTestSrc;
 	}
     /**
      * Set the "test source folder" ( $TEST_SRC predefined variable )
      * @param testSourceFolder
      */
     public void setTEST_SRC(String testSourceFolder) {
-    	_TEST_SRC = testSourceFolder ;
+    	varTestSrc = testSourceFolder ;
 	}
     
 	//--------------------------------------------------------------------------------
@@ -346,14 +362,14 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDOC(){
-    	return _DOC;
+    	return varDoc;
 	}
     /**
      * Set the "documentation folder" ( $DOC predefined variable )
      * @param docFolder
      */
     public void setDOC(String docFolder) {
-    	_DOC = docFolder ;
+    	varDoc = docFolder ;
 	}
     
 	//--------------------------------------------------------------------------------
@@ -362,14 +378,14 @@ public class TelosysToolsCfg
      * @return
      */
     public String getTMP() {
-    	return _TMP;
+    	return varTmp;
 	}
     /**
      * Set the "temporary folder" ( $TMP predefined variable )
      * @param tmpFolder
      */
     public void setTMP(String tmpFolder) {
-    	_TMP = tmpFolder ;
+    	varTmp = tmpFolder ;
 	}
     
 	//------------------------------------------------------------------------------------------------------
@@ -379,7 +395,7 @@ public class TelosysToolsCfg
      * @return
      */
     public String getTelosysToolsFolder() {
-    	return _sTelosysToolsFolder;
+    	return telosysToolsFolder;
 	}
     /**
      * Returns the 'TelosysTools' folder absolute path <br>
@@ -387,7 +403,7 @@ public class TelosysToolsCfg
      * @return
      */
     public String getTelosysToolsFolderAbsolutePath() {
-    	return FileUtil.buildFilePath(_projectAbsolutePath, _sTelosysToolsFolder ) ;
+    	return FileUtil.buildFilePath(projectAbsolutePath, telosysToolsFolder ) ;
 	}
     
 	//------------------------------------------------------------------------------------------------------
@@ -399,11 +415,11 @@ public class TelosysToolsCfg
     public String getTemplatesFolderAbsolutePath() {
     	if ( this.hasSpecificTemplatesFolders() ) {
     		//--- Specific templates folder => use it  ( v 3.0.0 )
-    		return _specificTemplatesFolder ; 
+    		return specificTemplatesFolder ; 
     	}
     	else {
     		//--- Default templates location (in the current project)
-    		return FileUtil.buildFilePath(_projectAbsolutePath, _sTemplatesFolder ) ;
+    		return FileUtil.buildFilePath(projectAbsolutePath, templatesFolder ) ;
     	}    	
 	}
 
@@ -429,21 +445,6 @@ public class TelosysToolsCfg
     	
 	}
 
-// removed in v 3.4.0
-//    /**
-//     * Returns the absolute file name for the given model file name<br>
-//     * e.g. : 'X:/dir/myproject/TelosysTools/aaa.model' for 'aaa.model'
-//     * @param modelFileName the model file name ( e.g. 'foo.model' )
-//     * @return
-//     */
-//    public String getDslModelFileAbsolutePath(String modelFileName) {
-//    	if ( modelFileName == null ) {
-//    		throw new IllegalArgumentException("model file name is null");
-//    	}
-//		return FileUtil.buildFilePath(getModelsFolderAbsolutePath(), modelFileName.trim() );
-//	}
-
-
 	//------------------------------------------------------------------------------------------------------
     /**
      * Returns the downloads folder in the current project (relative path in the project)<br>
@@ -451,7 +452,7 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDownloadsFolder() {
-    	return _sDownloadsFolder;
+    	return downloadsFolder;
     }
 
     /**
@@ -460,7 +461,7 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDownloadsFolderAbsolutePath() {
-    	return FileUtil.buildFilePath(_projectAbsolutePath, _sDownloadsFolder ) ;
+    	return FileUtil.buildFilePath(projectAbsolutePath, downloadsFolder ) ;
 	}
     
 	//------------------------------------------------------------------------------------------------------
@@ -470,7 +471,7 @@ public class TelosysToolsCfg
      * @return
      */
     public String getLibrariesFolder() {
-    	return _sLibrariesFolder ;
+    	return librariesFolder ;
     }
 
     /**
@@ -479,8 +480,58 @@ public class TelosysToolsCfg
      * @return
      */
     public String getLibrariesFolderAbsolutePath() {
-    	return FileUtil.buildFilePath(_projectAbsolutePath, _sLibrariesFolder ) ;
+    	return FileUtil.buildFilePath(projectAbsolutePath, librariesFolder ) ;
 	}
+    
+	//------------------------------------------------------------------------------------------------------
+    //--- Depot Name For Bundles (standard or specific)
+	/**
+	 * Returns true if a specific depot name for bundles of templates has been defined in config file
+	 * @return
+	 * @since 4.2.0
+	 */
+	public boolean hasSpecificDepotNameForBundles() { 
+		return ! StrUtil.nullOrVoid( specificDepotNameForBundles ) ;
+	}
+	
+    /**
+     * Returns the current depot name for bundles of templates (standard or specific if defined in config file)
+     * @return
+	 * @since 4.2.0
+     */
+    public String getDepotNameForBundles() {
+    	if ( this.hasSpecificDepotNameForBundles() ) {
+    		return specificDepotNameForBundles;
+    	}
+    	else {
+    		return STANDARD_DEPOT_NAME_FOR_BUNDLES ;
+    	}    	
+    }
+    
+	//------------------------------------------------------------------------------------------------------
+    //--- Depot Name For Models (standard or specific)
+	/**
+	 * Returns true if a specific depot name for models has been defined in config file
+	 * @return
+	 * @since 4.2.0
+	 */
+	public boolean hasSpecificDepotNameForModels() { 
+		return ! StrUtil.nullOrVoid( specificDepotNameForModels ) ;
+	}
+	
+    /**
+     * Returns the current depot name for models (standard or specific if defined in config file)
+     * @return
+	 * @since 4.2.0
+     */
+    public String getDepotNameForModels() {
+    	if ( this.hasSpecificDepotNameForModels() ) {
+    		return specificDepotNameForModels;
+    	}
+    	else {
+    		return STANDARD_DEPOT_NAME_FOR_MODELS ;
+    	}    	
+    }
     
 	//------------------------------------------------------------------------------------------------------
     /**
@@ -489,17 +540,9 @@ public class TelosysToolsCfg
      * @return
      */
     public String getModelsFolder() {
-    	return _sModelsFolder ;
+    	return modelsFolder ;
 	}
 
-//    /**
-//     * Returns the models folder absolute path <br>
-//     * ( e.g. 'X:/dir/myproject/TelosysTools' )
-//     * @return
-//     */
-//    public String getModelsFolderAbsolutePath() {
-//    	return FileUtil.buildFilePath(_projectAbsolutePath, _sModelsFolder ) ;
-//	}
     /**
      * Returns the models folder absolute path <br>
      * ( e.g. 'X:/dir/myproject/TelosysTools/models' )
@@ -512,7 +555,7 @@ public class TelosysToolsCfg
     	}
     	else {
     		//--- Default templates location (in the current project)
-    		return FileUtil.buildFilePath(_projectAbsolutePath, _sModelsFolder ) ;
+    		return FileUtil.buildFilePath(projectAbsolutePath, modelsFolder ) ;
     	}    	
 	}
 
@@ -545,7 +588,7 @@ public class TelosysToolsCfg
 	 * @return 
 	 */
 	public String getEntityPackage() {
-		return _ENTITY_PKG ;
+		return varEntityPkg ;
 	}
 	/**
 	 * Returns the package for entity classes ( $ENTITY_PKG predefined variable ) <br>
@@ -553,7 +596,7 @@ public class TelosysToolsCfg
 	 * @param entityPackage
 	 */
 	public void setEntityPackage(String entityPackage)  {
-		_ENTITY_PKG = entityPackage ;
+		varEntityPkg = entityPackage ;
 	}
 	
 	//------------------------------------------------------------------------------------------------------
@@ -563,7 +606,7 @@ public class TelosysToolsCfg
 	 * @return 
 	 */
 	public String getRootPackage() {
-		return _ROOT_PKG ;
+		return varRootPkg ;
 	}
 	/**
 	 * Set the root package ( $ROOT_PKG predefined variable )  <br> 
@@ -571,7 +614,7 @@ public class TelosysToolsCfg
 	 * @param rootPackage
 	 */
 	public void setRootPackage(String rootPackage) {
-		_ROOT_PKG = rootPackage ;
+		varRootPkg = rootPackage ;
 	}
 	
     //=======================================================================================================
@@ -585,7 +628,7 @@ public class TelosysToolsCfg
      * @since v 3.0.0
 	 */
 	public String getSpecificDestinationFolder() {
-		return _specificDestinationFolder ;
+		return specificDestinationFolder ;
 	}
 	
 	/**
@@ -594,12 +637,12 @@ public class TelosysToolsCfg
 	 * @param rootPackage
      * @since v 3.0.0
 	 */
-	public void setSpecificDestinationFolder(String specificDestinationFolder) {
-		if ( specificDestinationFolder == null ) {
-			_specificDestinationFolder = "" ;
+	public void setSpecificDestinationFolder(String newValue) {
+		if ( newValue == null ) {
+			specificDestinationFolder = "" ;
 		}
 		else {
-			_specificDestinationFolder = specificDestinationFolder.trim() ;
+			specificDestinationFolder = newValue.trim() ;
 		}
 	}
 	
@@ -612,7 +655,7 @@ public class TelosysToolsCfg
      * @since v 3.0.0
      */
     public String getSpecificTemplatesFolderAbsolutePath() {
-    	return _specificTemplatesFolder ;
+    	return specificTemplatesFolder ;
     }
     
     /**
@@ -627,15 +670,15 @@ public class TelosysToolsCfg
 	/**
 	 * Set the specific templates folder (absolute path) <br>
 	 * ( e.g. "X:/foo/bar/myfolder" or "" for not defined )
-	 * @param specificTemplatesFolder
+	 * @param newValue
      * @since v 3.0.0
 	 */
-	public void setSpecificTemplatesFolderAbsolutePath(String specificTemplatesFolder) {
-		if ( specificTemplatesFolder == null ) {
-			_specificTemplatesFolder = "" ;
+	public void setSpecificTemplatesFolderAbsolutePath(String newValue) {
+		if ( newValue == null ) {
+			specificTemplatesFolder = "" ;
 		}
 		else {
-			_specificTemplatesFolder = specificTemplatesFolder.trim() ;
+			specificTemplatesFolder = newValue.trim() ;
 		}
 	}
 	
@@ -645,12 +688,7 @@ public class TelosysToolsCfg
      * @since v 3.0.0
 	 */
 	public boolean hasSpecificTemplatesFolders() {
-		if ( StrUtil.nullOrVoid( _specificTemplatesFolder ) ) {
-			return false ;
-		}
-		else {
-			return true ;
-		}
+		return ! StrUtil.nullOrVoid( specificTemplatesFolder ) ;
 	}
 	
 	/**
@@ -668,12 +706,7 @@ public class TelosysToolsCfg
      * @since v 3.0.0
 	 */
 	public boolean hasSpecificDestinationFolder()  {
-		if ( StrUtil.nullOrVoid( _specificDestinationFolder ) ) {
-			return false ;
-		}
-		else {
-			return true ;
-		}
+		return ! StrUtil.nullOrVoid( specificDestinationFolder ) ;
 	}
     //=======================================================================================================
     // Variables 
@@ -683,7 +716,7 @@ public class TelosysToolsCfg
 	 * @return array of variables (never null, void array if none)
 	 */
 	public Variable[] getSpecificVariables() {
-		return _specificVariables.toArray(new Variable[0]); // v 3.0.0
+		return specificVariables.toArray(new Variable[0]); // v 3.0.0
 	}
 	
 	/**
@@ -692,7 +725,7 @@ public class TelosysToolsCfg
 	 * @return the variable or null if the variable is not defined
 	 */
 	public Variable getSpecificVariable(String variableName) { // v 3.0.0
-		for ( Variable var : _specificVariables ) { 
+		for ( Variable var : specificVariables ) { 
 			if ( var.getName().equals(variableName) ) {
 				return var ;
 			}
@@ -705,10 +738,7 @@ public class TelosysToolsCfg
 	 * @return
 	 */
 	public boolean hasSpecificVariables() {
-		if ( _specificVariables != null && _specificVariables.size() > 0 ) { // v 3.0.0
-			return true;
-		}
-		return false ; 
+		return ! specificVariables.isEmpty();
 	}
 	
 	/**
@@ -718,28 +748,28 @@ public class TelosysToolsCfg
 	public void setSpecificVariables(List<Variable> variables ) {
 		// v 3.0.0 : from Array to LinkedList
 		if ( variables != null ) {
-			_specificVariables = new LinkedList<>() ;
+			specificVariables = new LinkedList<>() ;
 			for ( Variable var : variables ) {
-				_specificVariables.add(var);
+				specificVariables.add(var);
 			}
 		}
 		else {
-			_specificVariables = new LinkedList<>() ;
+			specificVariables = new LinkedList<>() ;
 		}
 	}	
 	//------------------------------------------------------------------------------------------------------
 	public void setSpecificVariable(Variable variable) {
 		
-		for ( int index = 0 ; index < _specificVariables.size() ; index++ ) {
-			Variable var = _specificVariables.get(index);
+		for ( int index = 0 ; index < specificVariables.size() ; index++ ) {
+			Variable var = specificVariables.get(index);
 			if ( var.getName().equals(variable.getName()) ) {
 				// found => update with new variable
-				_specificVariables.set(index, variable);
+				specificVariables.set(index, variable);
 				return ;
 			}
 		}
 		// not found => add
-		_specificVariables.add(variable);
+		specificVariables.add(variable);
 	}	
 	//------------------------------------------------------------------------------------------------------
 	/**
@@ -754,24 +784,24 @@ public class TelosysToolsCfg
 	//------------------------------------------------------------------------------------------------------
 	private Variable[] buildAllVariablesArray() {
     	//--- All variables : specific project variables + predefined variables 
-    	Hashtable<String, String> allVariables = new Hashtable<>();
+    	HashMap<String, String> allVariables = new HashMap<>();
     	
     	//--- 1) Project specific variables (defined by user)
-    	for ( Variable v : _specificVariables ) {
+    	for ( Variable v : specificVariables ) {
     		allVariables.put(v.getName(), v.getValue());
     	}
     	
     	//--- 2) Predefined variables ( Packages, folders) at the end to override specific variables if any 
-    	allVariables.put( VariablesNames.ROOT_PKG,   _ROOT_PKG ); // v 2.0.6
-    	allVariables.put( VariablesNames.ENTITY_PKG, _ENTITY_PKG ); // v 2.0.6
+    	allVariables.put( VariablesNames.ROOT_PKG,   varRootPkg ); // v 2.0.6
+    	allVariables.put( VariablesNames.ENTITY_PKG, varEntityPkg ); // v 2.0.6
     	
-    	allVariables.put( VariablesNames.SRC,      _SRC      );
-    	allVariables.put( VariablesNames.RES,      _RES      );
-    	allVariables.put( VariablesNames.WEB,      _WEB      );
-    	allVariables.put( VariablesNames.TEST_SRC, _TEST_SRC );
-    	allVariables.put( VariablesNames.TEST_RES, _TEST_RES );
-    	allVariables.put( VariablesNames.DOC,      _DOC      );
-    	allVariables.put( VariablesNames.TMP,      _TMP      );
+    	allVariables.put( VariablesNames.SRC,      varSrc      );
+    	allVariables.put( VariablesNames.RES,      varRes      );
+    	allVariables.put( VariablesNames.WEB,      varWeb      );
+    	allVariables.put( VariablesNames.TEST_SRC, varTestSrc );
+    	allVariables.put( VariablesNames.TEST_RES, varTestRes );
+    	allVariables.put( VariablesNames.DOC,      varDoc      );
+    	allVariables.put( VariablesNames.TMP,      varTmp      );
     	
     	//--- 3) build the array
     	Variable[] allVariablesArray = new Variable[ allVariables.size() ];
