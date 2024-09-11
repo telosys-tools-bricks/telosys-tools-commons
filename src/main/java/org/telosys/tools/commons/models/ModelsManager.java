@@ -79,7 +79,7 @@ public class ModelsManager {
 	 * Return a list of models available in a depot 
 	 * @param depotName the depot name, ie GitHub user name or org name
 	 * @return
-	 * @throws Exception
+	 * @throws TelosysToolsException
 	 */
 	public DepotResponse getModelsFromDepot( String depotName ) throws TelosysToolsException {
 		// in the future switch : if depotType is GitHub, if depotType is GitLab, etc...
@@ -120,23 +120,6 @@ public class ModelsManager {
 		}
 	}
 
-//	/**
-//	 * Returns all the models in the project (each model as a directory) 
-//	 * @return
-//	 */
-//	public List<File> getModels() {
-//		List<File> bundles = new LinkedList<>();
-//		File folder = getModelsFolder();
-//		if ( folder.exists() && folder.isDirectory() ) {
-//			for ( File file : folder.listFiles() ) {
-//				if ( isBundle(file) ) {
-//					bundles.add(file);
-//				}
-//			}
-//		}
-//		return bundles;
-//	}	
-	
 	/**
 	 * Returns true if the given file/folder is a 'model' ( a directory containing a 'model.yaml' file )
 	 * @param file
@@ -166,14 +149,4 @@ public class ModelsManager {
 		return new File( FileUtil.buildFilePath(modelFolder.getAbsolutePath(), MODEL_YAML ) ) ;
 	}	
 
-//	/**
-//	 * Returns the 'templates.cfg' File object for the given bundle name <br>
-//	 * There's no guarantee the returned file exists
-//	 * @param bundleName
-//	 * @return the File instance
-//	 */
-//	public File getBundleConfigFile(String bundleName) {
-//		return getBundleConfigFile(getBundleFolder(bundleName)) ;
-//	}
-	
 }

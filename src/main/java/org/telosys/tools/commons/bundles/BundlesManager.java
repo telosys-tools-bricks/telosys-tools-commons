@@ -25,9 +25,9 @@ import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
-import org.telosys.tools.commons.depot.DepotElement;
 import org.telosys.tools.commons.depot.DepotResponse;
 import org.telosys.tools.commons.github.GitHubClient;
+import org.telosys.tools.commons.github.GitHubClientException;
 import org.telosys.tools.commons.github.GitHubDownloader;
 
 /**
@@ -140,76 +140,28 @@ public class BundlesManager {
 	}
 	
 	public boolean downloadAndInstallBundle(String userName, String bundleName) throws TelosysToolsException {
-		
-		// BundleStatus status1 = downloadBundle( userName, bundleName, telosysToolsCfg.getDownloadsFolder() ) ;
 		GitHubDownloader downloader = new GitHubDownloader(telosysToolsCfg); 
 		String downloadedFile = downloader.downloadRepo(userName, bundleName, telosysToolsCfg.getDownloadsFolder() ) ;
-		
-//		if ( status1.isDone() && status1.getException() == null ) {
-//			BundleStatus status2 = installBundle(status1.getZipFile(), bundleName);
-//			return status2 ;
-//		}
-//		else {
-//			return status1 ;
-//		}
 		return installBundle(downloadedFile, bundleName);
 	}
 
 	//--------------------------------------------------------------------------------------------------
 	/**
-	 * Return a list of bundles available on depot (GitHub,..) for the given user's name
+	 * Return a list of bundles available in a depot (GitHub,..)
 	 * @param depotName the depot name, ie GitHub user name or org name
 	 * @return
-	 * @throws Exception
+	 * @throws TelosysToolsException
 	 */
-	public BundlesFromDepot getBundlesFromDepot( String depotName ) throws Exception {
-		
-		// HTTP request to GitHub 
+	public DepotResponse getBundlesFromDepot( String depotName ) throws TelosysToolsException {	
+		// in the future switch : if depotType is GitHub, if depotType is GitLab, etc...
 		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
-//		GitHubRepositoriesResponse githubResponse = gitHubClient.getRepositories(githubUserName);
-		DepotResponse depotResponse = gitHubClient.getRepositories(depotName); // v 4.2.0
-		
-		// Build list of bundles names (can be void)
-		List<String> bundlesList = new LinkedList<>();
-//		for ( GitHubRepository repo : githubResponse.getRepositories() ) {
-//			bundlesList.add( repo.getName() );
-//		}
-		for ( DepotElement repo : depotResponse.getElements() ) {
-			bundlesList.add( repo.getName() );
-		}
-		
-		// Result
-//		return new BundlesFromGitHub(githubResponse.getHttpStatusCode(), bundlesList, githubResponse.getRateLimit() );
-		return new BundlesFromDepot(depotResponse.getHttpStatusCode(), bundlesList, depotResponse.getRateLimit() );
+		try {
+			return gitHubClient.getRepositories(depotName);
+		} catch (GitHubClientException e) {
+			throw new TelosysToolsException("GitHub client error", e);
+		}	
 	}
 
-//	/**
-//	 * Returns the current GitHub API rate limit for the current IP address
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	public GitHubRateLimitResponse getGitHubRateLimit() throws Exception {
-//		
-//		// HTTP request to GitHub 
-//		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
-//		return gitHubClient.getRateLimit();
-//	}
-	
-	//--------------------------------------------------------------------------------------------------
-//	/**
-//	 * Build the filesystem full path for the given repository name and destination folder
-//	 * @param repoName GitHub repository name
-//	 * @param sDownloadFolder
-//	 * @return
-//	 */
-//	private String buildDestinationFileName(String repoName, String sDownloadFolder) {
-//		// file path in project
-//		String sFile = repoName + ".zip" ;
-//		String pathInProject = FileUtil.buildFilePath(sDownloadFolder, sFile);
-//		// file path in Operating System 
-//		return FileUtil.buildFilePath(telosysToolsCfg.getProjectAbsolutePath(), pathInProject);
-//	}
-	
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Install (unzip) the given zip file in the bundle's destination folder 
@@ -218,31 +170,17 @@ public class BundlesManager {
 	 * @return
 	 */
 	public boolean installBundle( String zipFileName, String bundleName ) throws TelosysToolsException {
-		
-//		BundleStatus status = new BundleStatus();
-		
 		if ( isBundleAlreadyInstalled( bundleName ) ) {
-//			status.setDone(false);
-//			status.setMessage("Bundle already installed.");
-//			return status ;
 			return false ;
 		}
 		else {
 			String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ;
-//			status.log("-> Install '" + zipFileName + "' ");
-//			status.log("   in '" + bundleFolder + "' ");
 			try {
 				ZipUtil.unzip(zipFileName, bundleFolder, true ) ;
 				return true;
-//				status.setDone(true);
-//				status.setMessage("OK, bundle installed.");
 			} catch (Exception e) {
-//				status.setDone(false);
-//				status.setMessage("ERROR: Cannot unzip "+ zipFileName);
-//				status.setException(e);
 				throw new TelosysToolsException("Cannot unzip "+ zipFileName, e);
 			}
-//			return status ;
 		}
 	}
 
@@ -253,7 +191,6 @@ public class BundlesManager {
 	 * @throws TelosysToolsException
 	 */
 	public boolean deleteBundle( String bundleName ) {
-		
 		// Build the folder full path for the given folder name
 		String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName);
 		File file = new File(bundleFolder);
@@ -298,8 +235,7 @@ public class BundlesManager {
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public TargetsDefinitions getTargetsDefinitions(String bundleName) throws TelosysToolsException
-	{
+	public TargetsDefinitions getTargetsDefinitions(String bundleName) throws TelosysToolsException {
 		if ( StrUtil.nullOrVoid(bundleName) ) {
 			throw new TelosysToolsException("Invalid bundle name (null or void) : '" + bundleName + "'  ");
 		}
