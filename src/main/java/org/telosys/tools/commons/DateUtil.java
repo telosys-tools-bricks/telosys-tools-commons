@@ -253,9 +253,7 @@ public final class DateUtil
         throw new TelosysRuntimeException("Cannot parse date & time '" + sDateTime + "' : " + sMsg );
     }
     
-    private static final String INVALID_DATE_FORMAT     = "invalid format 'YYYY-MM-DD' expected" ;
     private static final String INVALID_TIME_FORMAT     = "invalid format 'HH:MM:SS' expected" ;
-    private static final String INVALID_DATETIME_FORMAT = "invalid format 'YYYY-MM-DD HH:MM:SS' expected" ;
     
     //-----------------------------------------------------------------------------------------
     /**
@@ -269,20 +267,6 @@ public final class DateUtil
     {
         if ( sDate == null ) return null ;
         if ( sDate.length() == 0 ) return null ;
-        
-//        char c = 0 ;
-//        for ( int i = 0 ; i < 10 ; i++ ) // the length is 10 "YYYY-MM-DD"
-//        {
-//            c = sDate.charAt(i);
-//            if ( ( c < '0' || c > '9') && ( c != '-' ) )  
-//            {
-//                throwParseDateException(sDate, INVALID_DATE_FORMAT );
-//            }
-//            if ( c == '-' && ( i != 4 && i != 7 ) )
-//            {
-//                throwParseDateException(sDate, INVALID_DATE_FORMAT );
-//            }
-//        }
         
         java.util.Date ret = null ;
         try {
@@ -351,28 +335,6 @@ public final class DateUtil
         if ( sDateTime == null ) return null ;
         if ( sDateTime.length() == 0 ) return null ;
 
-//        char c = 0 ;
-//        for ( int i = 0 ; i < 19 ; i++ ) // the length is 19 "YYYY-MM-DD HH:MM:SS"
-//        {
-//            c = sDateTime.charAt(i);
-//            if ( ( c < '0' || c > '9') && ( c != '-' && c != ':' && c != ' ' ) )  
-//            {
-//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-//            }
-//            if ( c == '-' && ( i != 4 && i != 7 ) )
-//            {
-//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-//            }
-//            if ( c == ' ' && ( i != 10 ) ) 
-//            {
-//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-//            }
-//            if ( c == ':' && ( i != 13 && i != 16 ) )
-//            {
-//                throwParseDateTimeException(sDateTime, INVALID_DATETIME_FORMAT );
-//            }
-//        }
-//
         java.util.Date ret = null ;
         try {
             //--- Try to parse the input datetime ( with non lenient parsing => check validity )

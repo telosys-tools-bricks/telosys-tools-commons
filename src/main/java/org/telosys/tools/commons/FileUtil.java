@@ -113,13 +113,6 @@ public class FileUtil {
     public static void copy(String inputFileName, String outputFileName, boolean createFolder) //throws Exception
     {
         //--- Open input file
-//		FileInputStream fis = null;
-//        try {
-//            fis = new FileInputStream(inputFileName);
-//        } 
-//        catch (FileNotFoundException ex) {
-//            throw new TelosysRuntimeException("copy : cannot open input file", ex);
-//        }
     	File inputFile = new File(inputFileName);
     	File outputFile = new File(outputFileName);
     	
@@ -131,14 +124,6 @@ public class FileUtil {
         }
     	
         //--- Open output file
-//		FileOutputStream fos = null;
-//        try {
-//            fos = new FileOutputStream(outputFileName);
-//        } 
-//        catch (FileNotFoundException ex) {
-//        	close(fis);
-//            throw new TelosysRuntimeException("copy : cannot open output file.", ex);
-//        }
         FileOutputStream fos = createOutputStream(outputFile);
         
         //--- Copy and close
@@ -156,7 +141,6 @@ public class FileUtil {
     public static void copy(File inputFile, File outputFile, boolean createFolder) //throws Exception
     {
         //--- Open input file
-//		FileInputStream fileInputStream = new FileInputStream(inputFile);
 		FileInputStream fileInputStream = createInputStream(inputFile);
         
     	copyInputStreamToFile(fileInputStream, outputFile, createFolder) ;
@@ -165,12 +149,6 @@ public class FileUtil {
     public static void copy(String inputContent, File outputFile, boolean createFolder) //throws Exception
     {
     	//--- The input content is the string
-//    	byte[] bytes;
-//		try {
-//			bytes = inputContent.getBytes(UTF_8);
-//		} catch (UnsupportedEncodingException e) {
-//			throw new TelosysRuntimeException("Cannot get bytes (UnsupportedEncodingException)", e);
-//		}
 		byte[] bytes = inputContent.getBytes(StandardCharsets.UTF_8);
     	InputStream inputStream = new ByteArrayInputStream(bytes);
     	
@@ -183,11 +161,8 @@ public class FileUtil {
         if ( createFolder ) {
         	createParentFolderIfNecessary(outputFile);
         }
-    	
         //--- Open output file
-//		FileOutputStream fos = new FileOutputStream(outputFile);
 		FileOutputStream fos = createOutputStream(outputFile);
-        
         //--- Copy and close
         copyAndClose( is, fos);
     }
@@ -203,15 +178,12 @@ public class FileUtil {
     public static void copyToDirectory(File inputFile, File directory, boolean createFolder) //throws Exception
     {
     	if ( directory.exists() && ! directory.isDirectory() ) {
-//    		if ( ! directory.isDirectory() ) {
    			throw new IllegalArgumentException(directory + " is not a directory");
-//    		}
     	}
     	String outputFileFullPath = FileUtil.buildFilePath(directory.getAbsolutePath(), inputFile.getName());
     	File outputFile = new File(outputFileFullPath);
     	
         //--- Open input file
-		//FileInputStream fis = new FileInputStream(inputFile);
 		InputStream  fis  = createInputStream(inputFile);
 		
         //--- Create output file folder is non existent 
@@ -220,7 +192,6 @@ public class FileUtil {
         }
     	
         //--- Open output file
-		//FileOutputStream fos = new FileOutputStream(outputFile);
 		FileOutputStream fos = createOutputStream(outputFile);
         
         //--- Copy and close
@@ -247,19 +218,10 @@ public class FileUtil {
         
         //--- Create output file folder is non existent 
         if ( createFolder ) {
-        	//createFolderIfNecessary(outputFileName);
         	createParentFolderIfNecessary(new File(outputFileName));        	
         }		
 
     	//--- Open output stream
-//		FileOutputStream fos = null;
-//        try
-//        {
-//            fos = new FileOutputStream(outputFileName);
-//        } catch (FileNotFoundException ex)
-//        {
-//            throw new Exception("copy : cannot open output file " + outputFileName, ex);
-//        }
         FileOutputStream fos = createOutputStream(new File(outputFileName));
         //--- Copy and close
         copyAndClose( is, fos);
@@ -319,13 +281,6 @@ public class FileUtil {
         }
     			
 		//--- Open output stream
-//		FileOutputStream fos = null;
-//        try {
-//            fos = new FileOutputStream(destFullPath);
-//        } catch (FileNotFoundException ex)
-//        {
-//            throw new Exception("Cannot create output file '" + destFullPath + "' \n");
-//        }
         FileOutputStream fos = createOutputStream(new File(destFullPath));
         //--- Copy 
 		copyAndClose(is, fos);
@@ -424,13 +379,6 @@ public class FileUtil {
     		}
     		else {
     			//--- Copy file to file
-//        		try {
-//    				InputStream  inputStream  = new FileInputStream(source);
-//    				OutputStream outputStream = new FileOutputStream(destination);
-//    				copyAndClose(inputStream, outputStream);
-//    			} catch (FileNotFoundException e) {
-//    				throw new Exception("File not found", e);
-//    			}
         		InputStream  inputStream  = createInputStream(source);
 				OutputStream outputStream = createOutputStream(destination);
 				copyAndClose(inputStream, outputStream);
@@ -444,18 +392,12 @@ public class FileUtil {
 	 * @return
 	 * @since 3.0.0
 	 */
-	public static byte[] read(File file) { // throws Exception {
+	public static byte[] read(File file) {
 		
 		if ( file == null ) {
 			throw new IllegalArgumentException("File argument is null");
 		}
 		
-//		FileInputStream fileInputStream ;
-//		try {
-//			fileInputStream = new FileInputStream(file);
-//		} catch (FileNotFoundException e) {
-//			throw new Exception("File '" + file.getName() + "' not found", e);
-//		}
 		FileInputStream fileInputStream = createInputStream(file);
 		
 		byte[] fileContent = new byte[(int) file.length()];
@@ -463,7 +405,6 @@ public class FileUtil {
 			fileInputStream.read(fileContent);
 			fileInputStream.close();
 		} catch (IOException e) {
-//			throw new Exception("IOException : cannot read or close file  '" + file.getName() + "' ", e);
 			throw new TelosysRuntimeException("Cannot read or close file '" + file.getName() + "'", e);
 		}
 		return fileContent;
