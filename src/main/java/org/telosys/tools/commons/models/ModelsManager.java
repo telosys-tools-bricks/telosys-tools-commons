@@ -27,7 +27,7 @@ import org.telosys.tools.commons.github.GitHubClientException;
 import org.telosys.tools.commons.github.GitHubDownloader;
 
 /**
- * Utility class for bundles management (including GitHub access)
+ * Utility class for models management (including GitHub access)
  * 
  * @author Laurent GUERIN
  * @since 4.2.0
@@ -38,10 +38,9 @@ public class ModelsManager {
 
 	private final TelosysToolsCfg telosysToolsCfg ;
 	
-	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Constructor 
-	 * @param bundlesFolder bundles folder in the file system (full path)
+	 * @param cfg
 	 */
 	public ModelsManager(TelosysToolsCfg cfg) {
 		super();
@@ -91,12 +90,22 @@ public class ModelsManager {
 		}		
 	}
 
-	public boolean downloadFromGitHubAndInstallModel(String userName, String modelRepoName) throws TelosysToolsException {
-		GitHubDownloader downloader = new GitHubDownloader(telosysToolsCfg); 
-		String downloadedFile = downloader.downloadRepo(userName, modelRepoName) ;
-		return installModel(downloadedFile, modelRepoName);
+	//--------------------------------------------------------------------------------------------------
+	public String downloadModel(String depotName, String modelName) throws TelosysToolsException {
+		return downloadModel(depotName, modelName, telosysToolsCfg.getDownloadsFolder() ) ;
 	}
 	
+	private String downloadModel(String depotName, String modelName, String downloadFolder) throws TelosysToolsException {
+		GitHubDownloader downloader = new GitHubDownloader(telosysToolsCfg); 
+		return downloader.downloadRepo(depotName, modelName, downloadFolder ) ;
+	}
+	
+	public boolean downloadAndInstallModel(String depotName, String modelName) throws TelosysToolsException {
+		String downloadedFile = downloadModel(depotName, modelName ) ;
+		return installModel(downloadedFile, modelName);
+	}
+
+
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Install (unzip) the given zip file in the model's destination folder 
@@ -105,7 +114,6 @@ public class ModelsManager {
 	 * @return
 	 */
 	private boolean installModel(String zipFileName, String modelName) throws TelosysToolsException {
-		
 		if ( modelFolderExists(modelName) ) {
 			return false ;
 		}
