@@ -27,18 +27,7 @@ import java.util.List;
  * 
  * @author Laurent GUERIN *  */
 
-public class SpecificClassLoader extends URLClassLoader
-{
-//    /**
-//     * Constructor
-//     * @param jarsURLs
-//     * @param parentLoader
-//     */
-//    public SpecificClassLoader (URL[] jarsURLs, java.lang.ClassLoader parentLoader )
-//    {
-//        //--- Call the URLClassLoader constructor
-//        super(jarsURLs, parentLoader);
-//    }
+public class SpecificClassLoader extends URLClassLoader {
 
     /**
      * Constructor without parent classloader <br>
@@ -67,7 +56,7 @@ public class SpecificClassLoader extends URLClassLoader
 	 * @param classpath
 	 * @return
 	 */
-	private final static URL[] pathToURL(SpecificClassPath classpath) {
+	private static final URL[] pathToURL(SpecificClassPath classpath) {
 		
 		List<String> classpathList = classpath.getClassPath() ;
         URL[] urls = new URL[classpathList.size()]; // Size for all jars (valid or not valid)
@@ -102,26 +91,4 @@ public class SpecificClassLoader extends URLClassLoader
 		return urls ;
 	}
 
-//	//-----------------------------------------------------------------------------
-//    // Tools
-//    //-----------------------------------------------------------------------------
-//    private static void logPaths(String[] paths)
-//    {
-//        log( "Paths length = " + paths.length );
-//        for ( String path : paths) {
-//            log( " . [" + path + "]");
-//        }
-//    }
-//    //-----------------------------------------------------------------------------
-//    private static void logURLs(URL[] urls)
-//    {
-//        log  ( "URLs length = " + urls.length );
-//        for ( URL url : urls ) {
-//            log  ( " . [" + url + "]");
-//        }
-//    }
-//    //-----------------------------------------------------------------------------    
-//	private static void log(String s) {
-//	}
-	
 }
