@@ -90,14 +90,12 @@ public class TargetsFile {
     
     private List<TargetDefinition> parse(BufferedReader br) throws IOException
     {
-    	LinkedList<TargetDefinition> list = new LinkedList<TargetDefinition>();
-        //int iRowNum = 0;
+    	LinkedList<TargetDefinition> list = new LinkedList<>();
         String sLine;
         String[] fields = null;
         while ((sLine = br.readLine()) != null)
         {
         	sLine = sLine.trim() ;
-            //iRowNum++;
             if (sLine.length() > 0)
             {
                 if ( ! isComment(sLine))
@@ -146,7 +144,7 @@ public class TargetsFile {
             try {
 				fr = new FileReader(templatesCfgAbsolutePath);
 			} catch (FileNotFoundException e) {
-				// Not an error // MsgBox.error("File '" + sFileName + "' not found");
+				// Not an error 
 				fr = null ;
 			}
     	}
@@ -160,7 +158,7 @@ public class TargetsFile {
         	try {
     			fr.close();
     		} catch (IOException e) {
-    			// Nothing todo
+    			// Nothing to do
     		}
     	}
     }
@@ -172,7 +170,7 @@ public class TargetsFile {
         	try {
     			br.close();
     		} catch (IOException e) {
-    			// Nothing todo
+    			// Nothing to do
     		}
     	}
     }

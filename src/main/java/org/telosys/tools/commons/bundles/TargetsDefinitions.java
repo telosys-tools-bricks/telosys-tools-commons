@@ -40,8 +40,8 @@ public class TargetsDefinitions {
 	 */
 	public TargetsDefinitions() {
 		super();
-		this.templatesTargets = new LinkedList<TargetDefinition>() ;
-		this.resourcesTargets = new LinkedList<TargetDefinition>() ;
+		this.templatesTargets = new LinkedList<>() ;
+		this.resourcesTargets = new LinkedList<>() ;
 	}
 
 	/**

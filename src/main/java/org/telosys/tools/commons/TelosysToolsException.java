@@ -21,8 +21,6 @@ package org.telosys.tools.commons;
  */
 public class TelosysToolsException extends Exception 
 {
-    //private static final TelosysClassLogger log = new TelosysClassLogger(TelosysException.class);
-
     /**
 	 * 
 	 */
@@ -34,8 +32,6 @@ public class TelosysToolsException extends Exception
     public TelosysToolsException(String message)
     {
         super(message);
-//        Telosys.error("TelosysException : " + message);
-//        Telosys.error(this);
     }
 
     /**
@@ -45,8 +41,5 @@ public class TelosysToolsException extends Exception
     public TelosysToolsException(String message, Throwable cause)
     {
         super(message, cause);
-//        Telosys.error("TelosysException : " + message + " ( cause : " + cause.toString() + ")");
-//        Telosys.error(this);
-
     }
 }

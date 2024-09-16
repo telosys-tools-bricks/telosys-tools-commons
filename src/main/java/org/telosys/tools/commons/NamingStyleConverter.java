@@ -132,16 +132,6 @@ public class NamingStyleConverter {
 		if ( s == null) {
 			return "";
 		}
-//		String s = "";
-//		if ( stringToConvert.indexOf(separator) < 0 ) {
-//			// No separator in string => just capitalize
-//			return capitalize(stringToConvert.trim());
-//		}
-//		else {
-//			// Separator in string will be used to capitalize => convert all chars to lower case
-//			s = stringToConvert.toLowerCase();
-//		}
-//		String s =stringToConvert ;
 
 		StringBuilder sb = new StringBuilder();
 		boolean started = false ;
