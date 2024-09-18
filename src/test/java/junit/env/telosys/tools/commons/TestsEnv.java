@@ -1,6 +1,8 @@
 package junit.env.telosys.tools.commons;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Properties;
 
 import org.telosys.tools.commons.FileUtil;
@@ -155,9 +157,16 @@ public class TestsEnv {
 		return file ;
 	}
 	
-	public static File getTmpFileOrFolder(String fileName ) {
+	public static File getTmpFileOrFolder(String fileName) {
+		return new File(TARGET_TESTS_TMP_DIR + fileName);
+	}
+	public static boolean deleteTmpFileOrFolder(String fileName) {
 		File file = new File(TARGET_TESTS_TMP_DIR + fileName);
-		return file ;
+		try {
+			return Files.deleteIfExists(file.toPath());
+		} catch (IOException e) {
+			throw new RuntimeException("Error on deleteIfExists("+ file.getAbsolutePath() + ")");
+		}
 	}
 
 	public static File createTmpProjectFolders(String projectName ) {

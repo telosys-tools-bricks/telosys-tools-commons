@@ -2,6 +2,8 @@ package org.telosys.tools.commons;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
@@ -13,22 +15,21 @@ public class FileUtilTest extends TestCase {
 	private void print(String s) {
 		System.out.println(s);
 	}
+	private void print(File file) {
+		print("File or folder : " + file);
+		print(" . getAbsolutePath() : " + file.getAbsolutePath() );
+		print(" . getPath()         : " + file.getPath() );
+		print(" . getParent()       : " + file.getParent() );
+		print(" . getName()         : " + file.getName() );
+		print(" . exists()          : " + file.exists() );
+	}
 	
 	public void testCopyWithFileName() {
 		
 		String fileName = "/testfilecopy/origin/file1.txt" ;
 		print("Searching file '" + fileName + "' by classpath..." );
 		File file = FileUtil.getFileByClassPath(fileName);
-		if ( file.exists() ) {
-			print("File found : " + file);
-			print(" . getAbsolutePath()  : " + file.getAbsolutePath() );
-			print(" . getName()          : " + file.getName() );
-			print(" . getPath()          : " + file.getPath() );
-			print(" . getParent()        : " + file.getParent() );
-		}
-		else {
-			print("File not found " );
-		}
+		print(file);
 		assertTrue ( file.exists()) ;
 		
 		// Original file
@@ -39,37 +40,30 @@ public class FileUtilTest extends TestCase {
 		String destFullFileName = FileUtil.buildFilePath(file.getParentFile().getParent()+"/newfolder", "newfile1.txt");
 		print("Destination file : " + destFullFileName );
 		
-		FileUtil.copy(originalFullFileName, destFullFileName, true);
+		FileUtil.copyFileToFile(originalFullFileName, destFullFileName, true);
 	}
 	
 	public void testCopyWithFileObject() {
-		
 		File sourceFile = TestsEnv.getTestFile("file1.txt");
 		File destinationFile = TestsEnv.getTmpFile("file1-bis.txt");
-		print("Copy from file '" + sourceFile.getAbsolutePath() + "' to '" + destinationFile.getAbsolutePath() + "'" );
 		assertTrue ( sourceFile.exists()) ;
-		
-		FileUtil.copy(sourceFile, destinationFile, true);
+		FileUtil.copyFileToFile(sourceFile, destinationFile, true);
 	}
 	
 	public void testCopyWithFileObject2() {
-		
 		File sourceFile = TestsEnv.getTestFile("file1.txt");
-		File destinationFile = TestsEnv.getTmpFile("foo/bar/file1-bis.txt");
-		print("Copy from file '" + sourceFile.getAbsolutePath() + "' to '" + destinationFile.getAbsolutePath() + "'" );
 		assertTrue ( sourceFile.exists()) ;
-		
-		TelosysRuntimeException exception = null ;
+		File destinationFile = TestsEnv.getTmpFile("foo/bar/file1-bis.txt");		
 		try {
 			// Copy to non existent destination, without 'create folder' flag
-			FileUtil.copy(sourceFile, destinationFile, false);
-		} catch (TelosysRuntimeException e) {
-			exception = e ;
+			FileUtil.copyFileToFile(sourceFile, destinationFile, false);
+			fail("Expected exception not thrown");
+		} catch (Exception e) {
+			assertTrue(e instanceof TelosysRuntimeException);
 		}
-		assertNotNull(exception);
 	}
 	
-	public void testCopyStringToFile() {
+	public void testCopyDataToFile() throws IOException  {
 		
 		File destinationFile = TestsEnv.getTmpFile("foo/bar2/file-copy-from-string.txt");
 		print("Copy string content to '" + destinationFile.getAbsolutePath() + "'" );
@@ -78,11 +72,13 @@ public class FileUtilTest extends TestCase {
 				"line 2 aaaaaaa\n" +
 				"line 3 bbbbbb " ;
 			
-		FileUtil.copy(content, destinationFile, true);
+		long n = FileUtil.copyDataToFile(content, destinationFile, true);
 		assertTrue(destinationFile.exists());
+		assertEquals(content.length(), n);
+		assertEquals(content.length(), Files.size(Paths.get(destinationFile.getAbsolutePath())));
 	}
 
-	public void testCopyFileToDirectory() {
+	public void testCopyFileInDirectory() throws IOException {
 		
 		String sourceFileName = TestsEnv.getTestFileAbsolutePath("file1.txt");
 		String destinationDirectoryName = TestsEnv.getTmpExistingFolderFullPath("mydir/dest");
@@ -93,44 +89,25 @@ public class FileUtilTest extends TestCase {
 		print("Copy from file '" + sourceFile.getAbsolutePath() + "' to '" + destinationDirectory.getAbsolutePath() + "'" );
 		assertTrue ( sourceFile.exists()) ;
 		
-		FileUtil.copyToDirectory(sourceFile, destinationDirectory, true);
+		File destFile = FileUtil.copyFileInDirectory(sourceFile, destinationDirectory, true);
+		assertTrue ( destFile.exists()) ;
+		assertEquals(sourceFile.getName(), destFile.getName());
+		assertEquals( Files.size(Paths.get(sourceFile.getAbsolutePath())),  Files.size(Paths.get(destFile.getAbsolutePath()))  );
 	}
 	
-	public void testFolderCopy() throws IOException, Exception {
-		
-		String folderName = "/testfilecopy" ;
-		print("Searching folder '" + folderName + "' by classpath..." );
-		File folder = FileUtil.getFileByClassPath(folderName);
-		if ( folder.exists() ) {
-			print("Folder found : " + folder);
-			print(" . getAbsolutePath()  : " + folder.getAbsolutePath() );
-			print(" . getCanonicalPath() : " + folder.getCanonicalPath() );
-			print(" . getName()          : " + folder.getName() );
-			print(" . getPath()          : " + folder.getPath() );
-			print(" . getParent()        : " + folder.getParent() );
-		}
-		else {
-			print("Folder not found " );
-		}
-		assertTrue ( folder.exists()) ;
-		
-		for ( String fileName : folder.list() ) {
+	public void testFolderCopy() {
+		File originFolder = TestsEnv.getTestFolder("resources-origin");
+		assertTrue (originFolder.exists()) ;
+		for ( String fileName : originFolder.list() ) {
 			print(" . " + fileName );
 		}
-	
-		for ( File file : folder.listFiles() ) {
-			print(" . " + file );
-			if ( "origin".equals( file.getName() ) ) {
-				print("'origin' folder found.");
-				File originFolder = file ;
-				
-				File destinationFolder = new File(folder.getAbsolutePath(), "dest");
-				FileUtil.copyFolder(originFolder, destinationFolder, false) ;
-			}
-		}
+		File destinationFolder = TestsEnv.getTmpExistingFolder("copy-dest");
+		assertTrue (destinationFolder.exists()) ;
+		int n = FileUtil.copyFolderToFolder(originFolder, destinationFolder, true) ;
+		assertEquals(8, n);
 	}
 	
-	public void testCopyFileFromMetaInf() throws Exception {
+	public void testCopyFileFromMetaInf() throws TelosysToolsException {
 		
 		Exception exception = null ;
 		try {
@@ -146,7 +123,7 @@ public class FileUtilTest extends TestCase {
 		testCopyFileFromMetaInf("dir2/resource-file2.txt"); 
 	}
 	
-	private void testCopyFileFromMetaInf(String srcFileName) throws Exception {
+	private void testCopyFileFromMetaInf(String srcFileName) throws TelosysToolsException {
 
 		print("-----");
 		print("Test with '" +srcFileName+"'");
@@ -159,40 +136,46 @@ public class FileUtilTest extends TestCase {
 		
 		//--- 1rst try to copy : folder doesn't exist => exception expected
 		print("Copying from META-INF : " + srcFileName + " to " + destFileFullPath);
-		Exception exception = null ;
+//		Exception exception = null ;
+//		try {
+//			FileUtil.copyFileFromMetaInf(srcFileName, destFileFullPath, false);
+//		} catch (Exception e) {
+//			exception = e ;
+//			print("Expected exception : " + e.getMessage() );
+//		}
+//		assertNotNull(exception);
 		try {
 			FileUtil.copyFileFromMetaInf(srcFileName, destFileFullPath, false);
+			fail("Expected exception not thrown");
 		} catch (Exception e) {
-			exception = e ;
-			print("Expected exception : " + e.getMessage() );
-		}
-		assertNotNull(exception);
+			assertNotNull(e);
+		}		
 		
 		//--- 2nd try to copy : folder doesn't exist but flag is 'create folder' => no exception expected
 		FileUtil.copyFileFromMetaInf(srcFileName, destFileFullPath, true);
-		checkFileExistence(destFileFullPath);
+		assertFileExists(destFileFullPath);
 		
 		//--- 3nd try to copy : copy same file again
 		FileUtil.copyFileFromMetaInf(srcFileName, destFileFullPath, false);
-		checkFileExistence(destFileFullPath);
+		assertFileExists(destFileFullPath);
+
+		//--- copyFileFromMetaInfIfNotExist
+		assertFalse( FileUtil.copyFileFromMetaInfIfNotExist(srcFileName, destFileFullPath, false) ); // exists => not copied
+		File destFile = new File(destFileFullPath);
+		assertTrue(destFile.exists());
+		destFile.delete();
+		assertFalse(destFile.exists());		
+		assertTrue( FileUtil.copyFileFromMetaInfIfNotExist(srcFileName, destFileFullPath, false) ); // not exists => copied
+		assertTrue(destFile.exists());		
 	}
 
 	//------------------------------------------------------------------------------------------
 	// Utilities
 	//------------------------------------------------------------------------------------------
-	private void checkFileExistence(String fileName)  {
+	private void assertFileExists(String fileName)  {
 		File file = new File(fileName);
-		if ( file.exists() ) {
-			print("File found : " + file);
-			print(" . getAbsolutePath()  : " + file.getAbsolutePath() );
-			print(" . getName()          : " + file.getName() );
-			print(" . getPath()          : " + file.getPath() );
-			print(" . getParent()        : " + file.getParent() );
-		}
-		else {
-			print("File not found " );
-		}
-		assertTrue ( file.exists()) ;
+		print(file);
+		assertTrue(file.exists()) ;
 	}
 	
 	public void testBuildFilePath1()  {
@@ -205,17 +188,17 @@ public class FileUtilTest extends TestCase {
 	
 	public void testBuildFilePath2a()  {
 		String dir = "D:\\aaa\\bbb/ccc/ddd/" ;
-		String file = "/xxx/yyy/zzz.txt" ;
+		String file = "/x/y/zzz.txt" ;
 		String s = FileUtil.buildFilePath(dir, file);
 		print("s = " + s );
-		assertEquals(dir+"xxx/yyy/zzz.txt", s);
+		assertEquals("D:\\aaa\\bbb/ccc/ddd/x/y/zzz.txt", s);
 	}
 	public void testBuildFilePath2b()  {
 		String dir = "D:\\aaa\\bbb/ccc" ;
-		String file = "/xxx/yyy/zzz.txt" ;
+		String file = "/x1/yyy/zzz.txt" ;
 		String s = FileUtil.buildFilePath(dir, file);
 		print("s = " + s );
-		assertEquals("D:\\aaa\\bbb/ccc/xxx/yyy/zzz.txt", s);
+		assertEquals("D:\\aaa\\bbb/ccc/x1/yyy/zzz.txt", s);
 	}
 
 	public void testBuildFilePath3()  {
@@ -240,63 +223,29 @@ public class FileUtilTest extends TestCase {
 		assertEquals("aaaa/foo.txt", s);
 	}
 
+	public void testCreateParentFolderIfNecessaryNullArg()  {
+		try {
+			FileUtil.createParentFolderIfNecessary(null);
+			fail("Expected exception not thrown");
+		} catch (Exception e) {
+			assertTrue(e instanceof IllegalArgumentException);
+		}
+	}
+	public void testCreateParentFolderIfNecessaryCreated()  {
+		TestsEnv.deleteTmpFileOrFolder("aa/bb/cc");
+		File file = TestsEnv.getTmpFileOrFolder("aa/bb/cc/foo.txt");
+		print("File : " + file );
+		assertFalse(file.getParentFile().exists());
+		assertTrue(FileUtil.createParentFolderIfNecessary(file)); 
+		assertTrue(file.getParentFile().exists());
+	}
+	public void testCreateParentFolderIfNecessaryNotCreated()  {
+		File file = TestsEnv.getTmpFileOrFolder("aa/bb/cc/foo.txt");
+		DirUtil.createDirectory(file.getParentFile());
+		print("File : " + file );
+		assertTrue(file.getParentFile().exists());
+		assertFalse(FileUtil.createParentFolderIfNecessary(file)); 
+		assertTrue(file.getParentFile().exists());
+	}
 
-	public void testReadNull()  {
-		Exception exception = null ;
-		try {
-			FileUtil.read(null);
-		} catch (Exception e) {
-			print("Exception : " + e.getMessage());
-			exception = e ;
-		}
-		assertNotNull(exception);
-	}
-	
-	public void testReadFileNotFound()  {
-		Exception exception = null ;
-		try {
-			FileUtil.read(new File("xxx/yyy/zzz/toto.txt"));
-		} catch (Exception e) {
-			print("Exception : " + e.getMessage());
-			exception = e ;
-		}
-		assertNotNull(exception);
-	}
-	
-	public void testRead1()  {
-		String fileName = "files/file1.txt" ;
-		print("read file " + fileName);
-		File file = TestsEnv.getTestFile(fileName);
-		print("file.getParent() : " + file.getParent() );
-		print("file.getName()   : " + file.getName() );
-		byte[] content = new byte[0];
-		try {
-			content = FileUtil.read(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		printFileContent(content);
-		assertEquals(file.length(), content.length);
-	}
-	
-	public void testRead2()  {
-		String fileName = "files/file2.txt" ;
-		print("read file " + fileName);
-		File file = TestsEnv.getTestFile(fileName);
-		byte[] content = new byte[0];
-		try {
-			content = FileUtil.read(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		printFileContent(content);
-		assertEquals(file.length(), content.length);
-	}
-	
-	private void printFileContent(byte[] content)  {
-		print("File content :");
-		for ( byte b : content ) {
-			System.out.print((char)b);
-		}
-	}
 }

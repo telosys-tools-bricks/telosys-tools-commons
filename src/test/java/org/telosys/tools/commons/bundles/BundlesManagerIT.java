@@ -44,7 +44,7 @@ public class BundlesManagerIT extends TestCase {
 		
 		File projectFolder = TestsEnv.createTmpProjectFolders("myproject");
 		
-		FileUtil.copy(TestsEnv.getTelosysToolsCfgFile(), TestsEnv.getTmpFile("myproject/telosys-tools.cfg"), false);
+		FileUtil.copyFileToFile(TestsEnv.getTelosysToolsCfgFile(), TestsEnv.getTmpFile("myproject/telosys-tools.cfg"), false);
 				
 		telosysToolsCfg = TestsEnv.loadTelosysToolsCfg(projectFolder);
 		Properties configProperties = telosysToolsCfg.getProperties();

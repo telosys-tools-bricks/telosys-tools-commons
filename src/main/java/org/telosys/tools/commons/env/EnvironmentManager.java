@@ -58,22 +58,12 @@ public class EnvironmentManager {
 	public boolean isEnvironmentInitialized() {
 		//--- Check "TelosysTools" folder existence
 		File telosysToolsFolder = new File( getTelosysToolsFolderFullPath() ) ; 
-		if ( ! telosysToolsFolder.exists() ) {
-			return false ;
-		}
-		if ( ! telosysToolsFolder.isDirectory() ) {
+		if ( ! telosysToolsFolder.isDirectory() ) { // isDirectory() : true if exists and is a directory
 			return false ;
 		}
 		//--- Check "telosys-tools.cfg" file existence
 		File telosysToolsCfgFile = new File( getTelosysToolsConfigFileFullPath() ) ; 
-		if ( ! telosysToolsCfgFile.exists() ) {
-			return false ;
-		}
-		if ( ! telosysToolsCfgFile.isFile() ) {
-			return false ;
-		}
-		//--- OK, both exist
-		return true ;
+		return telosysToolsCfgFile.isFile(); // isFile() : true if file exists and is a normal file
 	}
 	//-----------------------------------------------------------------------------------------------------
 	/**
@@ -100,11 +90,7 @@ public class EnvironmentManager {
 		//--- Init 'databases.yaml' file
 		initDatabasesConfigFile(sb);
 		//--- Init 'telosys-tools.cfg' file
-		try {
-			initTelosysToolsConfigFile(sb, variables);
-		} catch (TelosysToolsException e) {
-			throw new RuntimeException("Cannot init 'cfg' file ", e);
-		}
+		initTelosysToolsConfigFile(sb, variables);
 	}
 	
 	//-----------------------------------------------------------------------------------------------------	
@@ -178,7 +164,7 @@ public class EnvironmentManager {
 	 * @param sb
 	 * @param variables list of specific variables to set in the '.cfg' file (can be null if none)
 	 */
-	protected void initTelosysToolsConfigFile( StringBuilder sb, List<Variable> variables ) throws TelosysToolsException {
+	protected void initTelosysToolsConfigFile( StringBuilder sb, List<Variable> variables ) {
 		//--- Initialize the file (from META-INF) in the project environment
 		initFileFromMetaInf(telosysToolsEnv.getTelosysToolsConfigFileName(), getTelosysToolsConfigFileFullPath(), sb );
 		//--- Set specific variables if any
@@ -224,7 +210,7 @@ public class EnvironmentManager {
 			else {
 				sb.append(". file '" + shortFileName + "' already exists (not created) \n");
 			}
-		} catch (Exception e) {
+		} catch (TelosysToolsException e) {
 			sb.append("ERROR : cannot copy file '" + shortFileName + "' \n");
 			sb.append("EXCEPTION : " + e.getClass().getSimpleName() + " : " + e.getMessage() + " \n");
 		}

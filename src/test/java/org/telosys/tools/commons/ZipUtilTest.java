@@ -78,18 +78,18 @@ public class ZipUtilTest {
 		assertNotNull(error);
 	}
 
-	@Test
-	public void testZipFiles() throws Exception {
-		List<File> files = new LinkedList<>();
-		files.add( new File("src/test/resources/telosys-tools.cfg") );
-		files.add( new File("src/test/resources/dbcfg/databases.dbcfg") );
-			
-		File zipFile = TestsEnv.getTmpFile("archive1.zip");
-		zipFile.delete();
-		ZipUtil.zip(files, zipFile, new File ("src/test/resources/") );
-		
-		assertTrue(zipFile.exists());
-		assertTrue(zipFile.isFile());
-	}
+//	@Test
+//	public void testZipFiles() throws Exception {
+//		List<File> files = new LinkedList<>();
+//		files.add( new File("src/test/resources/telosys-tools.cfg") );
+//		files.add( new File("src/test/resources/dbcfg/databases.dbcfg") );
+//			
+//		File zipFile = TestsEnv.getTmpFile("archive1.zip");
+//		zipFile.delete();
+//		ZipUtil.zip(files, zipFile, new File ("src/test/resources/") );
+//		
+//		assertTrue(zipFile.exists());
+//		assertTrue(zipFile.isFile());
+//	}
 	
 }

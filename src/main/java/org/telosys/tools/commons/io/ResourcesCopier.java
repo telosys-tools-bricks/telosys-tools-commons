@@ -23,8 +23,8 @@ import org.telosys.tools.commons.exception.CancelException;
 
 public class ResourcesCopier {
 	
-	private final OverwriteChooser   _overwriteChooser;
-	private final CopyHandler        _copyHandler;
+	private final OverwriteChooser   overwriteChooser;
+	private final CopyHandler        copyHandler;
 
 	//----------------------------------------------------------------------------------------------------
 	/**
@@ -35,12 +35,12 @@ public class ResourcesCopier {
 	public ResourcesCopier(OverwriteChooser overwriteChooser, CopyHandler copyHandler) {
 		super();
 		if ( overwriteChooser != null ) {
-			this._overwriteChooser = overwriteChooser ;
+			this.overwriteChooser = overwriteChooser ;
 		}
 		else {
-			this._overwriteChooser = new DefaultOverwriteChooser(OverwriteChooser.YES) ;
+			this.overwriteChooser = new DefaultOverwriteChooser(OverwriteChooser.YES) ;
 		}
-		_copyHandler = copyHandler ;
+		this.copyHandler = copyHandler ;
 	}
 	
 	//----------------------------------------------------------------------------------------------------
@@ -89,7 +89,6 @@ public class ResourcesCopier {
 		if ( outputFile.exists() ) {
 			if ( getOverwriteChoice(outputFile) ) {
 				// overwrite the existing file
-	    		//FileUtil.copy(inputFile, outputFile, true);
 	    		copyFile(inputFile, outputFile);
         		return 1 ;
 			}
@@ -99,7 +98,6 @@ public class ResourcesCopier {
 			}
 		}
 		else {
-    		//FileUtil.copy(inputFile, outputFile, true);
     		copyFile(inputFile, outputFile);
     		return 1 ;
 		}
@@ -137,7 +135,6 @@ public class ResourcesCopier {
         			// Destination exists and is a file
     				if ( getOverwriteChoice(destination) ) {
     					// overwrite the existing file
-    		    		//FileUtil.copy(origin, destination, true);
     		    		copyFile(origin, destination);
     	        		return 1 ;
     				}
@@ -150,7 +147,6 @@ public class ResourcesCopier {
     		}
     		else {
     			// Destination doesn't exist => copy 
-        		//FileUtil.copy(origin, destination, true);
 	    		copyFile(origin, destination);
         		return 1 ;
     		}
@@ -166,14 +162,14 @@ public class ResourcesCopier {
 	 * @throws Exception
 	 */
 	private void copyFile(File origin, File destination) throws Exception {
-		if ( _copyHandler != null ) {
-			_copyHandler.beforeCopy(origin, destination);
+		if ( copyHandler != null ) {
+			copyHandler.beforeCopy(origin, destination);
 		}
 		
-		FileUtil.copy(origin, destination, true);
+		FileUtil.copyFileToFile(origin, destination, true);
 
-		if ( _copyHandler != null ) {
-			_copyHandler.afterCopy(origin, destination);
+		if ( copyHandler != null ) {
+			copyHandler.afterCopy(origin, destination);
 		}
 	}
 	
@@ -184,7 +180,7 @@ public class ResourcesCopier {
 	 * @throws Exception
 	 */
 	private boolean getOverwriteChoice(File file) throws Exception {
-		int choice = _overwriteChooser.choose(file.getName(), file.getParent() );
+		int choice = overwriteChooser.choose(file.getName(), file.getParent() );
 		switch (choice) {
 			case OverwriteChooser.YES :
 				return true ;

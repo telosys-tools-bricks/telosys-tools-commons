@@ -16,7 +16,6 @@
 package org.telosys.tools.commons ;
 
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,20 +44,6 @@ public class FileUtil {
      * Private constructor
      */
     private FileUtil() {
-    }
-    
-    /**
-     * Close the given stream without throwing exception
-     * @param stream
-     */
-    public static void close(Closeable stream) {
-    	if ( stream != null ) {
-        	try {
-    			stream.close();
-    		} catch (IOException e) {
-    			// No action 
-    		}
-    	}
     }
     
     private static FileInputStream createInputStream(File inputFile) {
@@ -104,30 +89,29 @@ public class FileUtil {
     
     //----------------------------------------------------------------------------------------------------
     /**
+     * Copy the given input data in a destination file
+     * @param inputData
+     * @param outputFile
+     * @param createFolder
+     */
+    public static long copyDataToFile(String inputData, File outputFile, boolean createFolder) {
+    	//--- The input content is the string
+		byte[] bytes = inputData.getBytes(StandardCharsets.UTF_8);
+    	InputStream inputStream = new ByteArrayInputStream(bytes);
+    	
+    	return copyInputStreamToFile(inputStream, outputFile, createFolder) ;
+    }
+
+    /**
      * Copy a file into another one 
      * @param inputFileName
      * @param outputFileName
-     * @param createFolder if true creates the destination folder if necessary
-     * @throws Exception
+     * @param createFolder
      */
-    public static void copy(String inputFileName, String outputFileName, boolean createFolder) //throws Exception
-    {
-        //--- Open input file
+    public static long copyFileToFile(String inputFileName, String outputFileName, boolean createFolder) {
     	File inputFile = new File(inputFileName);
     	File outputFile = new File(outputFileName);
-    	
-        FileInputStream fis = createInputStream(inputFile);
-        
-        //--- Create output file folder is non existent 
-        if ( createFolder ) {
-        	createParentFolderIfNecessary(outputFile);        	
-        }
-    	
-        //--- Open output file
-        FileOutputStream fos = createOutputStream(outputFile);
-        
-        //--- Copy and close
-        copyAndClose(fis, fos);
+    	return copyInputStreamToFile(createInputStream(inputFile), outputFile, createFolder) ;
     }
 
     //----------------------------------------------------------------------------------------------------
@@ -138,25 +122,29 @@ public class FileUtil {
      * @param createFolder if true creates the destination folder if necessary
      * @throws Exception
      */
-    public static void copy(File inputFile, File outputFile, boolean createFolder) //throws Exception
-    {
-        //--- Open input file
-		FileInputStream fileInputStream = createInputStream(inputFile);
-        
-    	copyInputStreamToFile(fileInputStream, outputFile, createFolder) ;
+    public static long copyFileToFile(File inputFile, File outputFile, boolean createFolder) {
+    	return copyInputStreamToFile(createInputStream(inputFile), outputFile, createFolder) ;
     }
 
-    public static void copy(String inputContent, File outputFile, boolean createFolder) //throws Exception
-    {
-    	//--- The input content is the string
-		byte[] bytes = inputContent.getBytes(StandardCharsets.UTF_8);
-    	InputStream inputStream = new ByteArrayInputStream(bytes);
-    	
-    	copyInputStreamToFile(inputStream, outputFile, createFolder) ;
+    /**
+     * Copy input URL to destination file 
+     * @param  inputFileURL
+     * @param  outputFileName
+     * @param  createFolder if true creates the destination folder if necessary
+     * @throws TelosysToolsException
+     */
+    public static long copyFileToFile(URL inputFileURL, String outputFileName, boolean createFolder) throws TelosysToolsException {
+    	InputStream is = null ;
+		try {
+			is = inputFileURL.openStream();
+		} catch (IOException e) {
+            throw new TelosysToolsException("copy : cannot open input URL " + inputFileURL.toString(), e);
+		}
+        return copyInputStreamToFile(is, new File(outputFileName), createFolder);
     }
     
-    private static void copyInputStreamToFile(InputStream is, File outputFile, boolean createFolder) //throws Exception
-    {
+    
+    private static long copyInputStreamToFile(InputStream is, File outputFile, boolean createFolder) {
         //--- Create output file folder is non existent 
         if ( createFolder ) {
         	createParentFolderIfNecessary(outputFile);
@@ -164,20 +152,19 @@ public class FileUtil {
         //--- Open output file
 		FileOutputStream fos = createOutputStream(outputFile);
         //--- Copy and close
-        copyAndClose( is, fos);
+        return copyAndClose( is, fos);
     }
     
     //----------------------------------------------------------------------------------------------------
     /**
-     * Copy a file into a directory 
-     * @param inputFile 
-     * @param directory 
-     * @param createFolder if true creates the destination folder if necessary
-     * @throws Exception
+     * Copy a file in the given directory 
+     * @param inputFile
+     * @param directory
+     * @param createFolder
+     * @return the output file in directory
      */
-    public static void copyToDirectory(File inputFile, File directory, boolean createFolder) //throws Exception
-    {
-    	if ( directory.exists() && ! directory.isDirectory() ) {
+    public static File copyFileInDirectory(File inputFile, File directory, boolean createFolder) {
+    	if ( ! directory.isDirectory() ) {
    			throw new IllegalArgumentException(directory + " is not a directory");
     	}
     	String outputFileFullPath = FileUtil.buildFilePath(directory.getAbsolutePath(), inputFile.getName());
@@ -186,46 +173,20 @@ public class FileUtil {
         //--- Open input file
 		InputStream  fis  = createInputStream(inputFile);
 		
-        //--- Create output file folder is non existent 
-        if ( createFolder ) {
-        	createParentFolderIfNecessary(outputFile);
-        }
-    	
-        //--- Open output file
-		FileOutputStream fos = createOutputStream(outputFile);
-        
-        //--- Copy and close
-        copyAndClose(fis,fos);
+//        //--- Create output file folder is non existent 
+//        if ( createFolder ) {
+//        	createParentFolderIfNecessary(outputFile);
+//        }
+//    	
+//        //--- Open output file
+//		FileOutputStream fos = createOutputStream(outputFile);
+//        
+//        //--- Copy and close
+//        copyAndClose(fis,fos);
+        copyInputStreamToFile(fis, outputFile, createFolder);
+        return outputFile;
     }
 
-    //----------------------------------------------------------------------------------------------------
-    /**
-     * Copy input URL to destination file 
-     * @param  inputFileURL
-     * @param  outputFileName
-     * @param  createFolder if true creates the destination folder if necessary
-     * @throws Exception
-     */
-    public static void copy(URL inputFileURL, String outputFileName, boolean createFolder) throws Exception
-    {
-        //--- Open input stream
-    	InputStream is = null ;
-		try {
-			is = inputFileURL.openStream();
-		} catch (IOException e) {
-            throw new Exception("copy : cannot open input URL " + inputFileURL.toString(), e);
-		}
-        
-        //--- Create output file folder is non existent 
-        if ( createFolder ) {
-        	createParentFolderIfNecessary(new File(outputFileName));        	
-        }		
-
-    	//--- Open output stream
-        FileOutputStream fos = createOutputStream(new File(outputFileName));
-        //--- Copy and close
-        copyAndClose( is, fos);
-    }
     
     /**
      * Same as 'copyFileFromMetaInf' but only if the destination file doesn't exist
@@ -233,9 +194,9 @@ public class FileUtil {
      * @param destFullPath  destination full path
      * @param createFolder  if true creates the destination folder if necessary
      * @return
-     * @throws Exception
+     * @throws TelosysToolsException
      */
-    public static boolean copyFileFromMetaInfIfNotExist(String filePathInMetaInf, String destFullPath, boolean createFolder) throws Exception {
+    public static boolean copyFileFromMetaInfIfNotExist(String filePathInMetaInf, String destFullPath, boolean createFolder) throws TelosysToolsException {
 		File destFile = new File (destFullPath) ;
 		if ( destFile.exists() ) {
 			return false ; // Not copied
@@ -252,7 +213,7 @@ public class FileUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	private static String buildMetaInfPath(String filePathInMetaInf) throws Exception {
+	private static String buildMetaInfPath(String filePathInMetaInf) {
 		return FileUtil.buildFilePath("/META-INF/", filePathInMetaInf) ;
 	}
 	
@@ -265,14 +226,14 @@ public class FileUtil {
      * @param createFolder if true creates the destination folder if necessary
 	 * @throws Exception
 	 */
-	public static void copyFileFromMetaInf(String filePathInMetaInf, String destFullPath, boolean createFolder) throws Exception {
+	public static void copyFileFromMetaInf(String filePathInMetaInf, String destFullPath, boolean createFolder) throws TelosysToolsException {
 		//--- Build the full file name ( e.g. "META-INF/mydir/myfile" )
 		String fullFileNameInMetaInf = buildMetaInfPath(filePathInMetaInf) ;
 
 		//--- Get input stream (file in JAR)
 		InputStream is = FileUtil.class.getResourceAsStream(fullFileNameInMetaInf);
 		if ( is == null ) {
-			throw new Exception("File '" + filePathInMetaInf + "' not found in 'META-INF' \n");
+			throw new TelosysToolsException("File '" + filePathInMetaInf + "' not found in 'META-INF' \n");
 		}
 		
         //--- Create output file folder is non existent 
@@ -291,13 +252,18 @@ public class FileUtil {
      * Creates the parent folder for the given file if it doesn't exist
      * @param file 
      */
-    public static void createParentFolderIfNecessary( File file) {
+    public static boolean createParentFolderIfNecessary(File file) {
+	    if ( file == null ) {
+	    	throw new IllegalArgumentException("File argument is null");
+	    }
     	File parent = file.getParentFile() ;
-    	if ( parent != null ) {
-    		if ( parent.exists() == false ) {
-    			// Creates the directory, including any necessary but nonexistent parent directories.
-    			DirUtil.createDirectory( parent ); // v 3.0.0
-    		}
+    	if ( parent != null  &&  ! parent.exists() ) {
+			// Creates the directory, including any necessary but nonexistent parent directories.
+			DirUtil.createDirectory( parent ); 
+			return true;
+    	}
+    	else {
+        	return false;
     	}
     }
     //----------------------------------------------------------------------------------------------------
@@ -306,24 +272,29 @@ public class FileUtil {
      * @param is
      * @param os
      */
-    private static void copyAndClose(InputStream is, OutputStream os)
-    {
+    private static long copyAndClose(InputStream is, OutputStream os) {
         //--- Copy and close
         if ( is != null && os != null ) {
+        	long size = 0;
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int len = 0;
 			try {
                 while ((len = is.read(buffer)) > 0)
                 {
                     os.write(buffer, 0, len);
+                    size = size + len;
                 }
                 is.close();
                 os.close();
+                return size;
             } 
 			catch (IOException e) {
                 throw new TelosysRuntimeException("Cannot copy : IO error", e);
             }
 		}
+        else {
+            throw new TelosysRuntimeException("Cannot copy : InputStream or OutputStream is null");
+        }
     }
     
     //----------------------------------------------------------------------------------------------------
@@ -354,59 +325,48 @@ public class FileUtil {
 	 * @param source
 	 * @param destination
 	 * @param overwrite
-	 * @throws Exception
 	 * @since 2.0.7
 	 */
-	public static void copyFolder( File source, File destination, boolean overwrite ) throws Exception {
-	 	if ( source.isDirectory() ) {
+	public static int copyFolderToFolder(File sourceFolder, File destinationFolder, boolean overwriteFiles ) {
+    	if ( ! sourceFolder.isDirectory() ) {
+   			throw new IllegalArgumentException(sourceFolder + " is not a directory");
+    	}
+    	if ( ! destinationFolder.exists() ) {
+    		destinationFolder.mkdir();
+    	}
+       	if ( ! destinationFolder.isDirectory() ) {
+   			throw new IllegalArgumentException(destinationFolder + " is not a directory");
+    	}
+       	return recursiveCopy( sourceFolder, destinationFolder, overwriteFiles) - 1 ;  // do not count first level => "-1" 
+	}
+	private static int recursiveCopy( File source, File destination, boolean overwrite ) {
+	 	if ( source.isDirectory() ) { // Source is a directory
     		//--- If the destination directory doesn't exist create it
     		if ( ! destination.exists() ) {
     			destination.mkdir();
     		}
+    		if ( ! destination.isDirectory() ) {
+    			throw new TelosysRuntimeException("copyFolder: destination '" + destination.getName() + "' is not a directory");
+    		}
     		//--- Get all the directory content
+    		int count = 1 ; // 1 directory
     		for (String file : source.list() ) {
     		   File srcFile = new File(source, file);
     		   File destFile = new File(destination, file);
-    		   //--- recursive copy
-    		   copyFolder(srcFile,destFile, overwrite);
+    		   //--- recursive copy => add count for each sub level
+    		   count = count + recursiveCopy(srcFile, destFile, overwrite);
     		}
- 
-    	} else {
-    		//--- Source is a file
-    		if ( destination.exists() && ( overwrite == false ) ) {
-    			//--- Do not overwrite !
-    			return ;
-    		}
-    		else {
+    		return count;
+    	} else { 
+    		// Source is just a file => just copy it 
+    		if ( !destination.exists() || ( destination.exists() && overwrite ) ) {
     			//--- Copy file to file
         		InputStream  inputStream  = createInputStream(source);
 				OutputStream outputStream = createOutputStream(destination);
 				copyAndClose(inputStream, outputStream);
     		}
+    		return 1; // 1 file 
     	}
 	}
-    //----------------------------------------------------------------------------------------------------
-	/**
-	 * Reads the file content and loads it in a byte array 
-	 * @param file
-	 * @return
-	 * @since 3.0.0
-	 */
-	public static byte[] read(File file) {
-		
-		if ( file == null ) {
-			throw new IllegalArgumentException("File argument is null");
-		}
-		
-		FileInputStream fileInputStream = createInputStream(file);
-		
-		byte[] fileContent = new byte[(int) file.length()];
-		try {
-			fileInputStream.read(fileContent);
-			fileInputStream.close();
-		} catch (IOException e) {
-			throw new TelosysRuntimeException("Cannot read or close file '" + file.getName() + "'", e);
-		}
-		return fileContent;
-	}
+
 }
