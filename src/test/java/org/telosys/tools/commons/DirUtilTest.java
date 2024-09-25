@@ -17,7 +17,7 @@ public class DirUtilTest {
 
 	//---------------------------------------------------------------------------------------------
 	@Test
-	public void testCreateDirectory() throws IOException {
+	public void testCreateDirectory() throws IOException, TelosysToolsException {
 		System.out.println("===== testCreateDirectory() ");
 		//TestsEnv.getTmpRootFolder() ;
 		File file = TestsEnv.getTmpFileOrFolder("tests-dir/mydir");
@@ -52,8 +52,7 @@ public class DirUtilTest {
 
 	//---------------------------------------------------------------------------------------------
 	@Test
-	public void testDeleteDirectory() throws IOException  {
-		System.out.println("===== testDeleteDirectory() ");
+	public void testDeleteDirectory() throws TelosysToolsException, IOException  {
 		
 		createDir( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo999/bar1/bar2") ) ;
 		deleteDir( TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo999/bar1/bar2") );
@@ -72,10 +71,7 @@ public class DirUtilTest {
 	
 	//---------------------------------------------------------------------------------------------
 	@Test
-	public void testGetDirectoryFiles() throws IOException  {
-		System.out.println("===== testGetDirectoryFiles() ");
-		
-		//createDir( TestsEnv.getTmpFileOrFolder(     "tests-dir/mydir/foo888/aaa/bbb") ) ;
+	public void testGetDirectoryFiles() throws TelosysToolsException, IOException  {
 		
 		File directory = TestsEnv.getTmpFileOrFolder("tests-dir/mydir/foo888");
 		DirUtil.deleteDirectory(directory);
@@ -106,7 +102,6 @@ public class DirUtilTest {
 	//---------------------------------------------------------------------------------------------
 	//---------------------------------------------------------------------------------------------
 	private void createDir(File newDir) {
-		System.out.println("creating dir " + newDir.getAbsolutePath() );
 		DirUtil.createDirectory( newDir );
 		assertTrue ( newDir.exists() ) ;
 		assertTrue ( newDir.isDirectory() ) ;
@@ -124,7 +119,7 @@ public class DirUtilTest {
 		assertNotNull(rte);
 	}
 	
-	private void deleteDir(File dir) {
+	private void deleteDir(File dir) throws TelosysToolsException {
 		System.out.println("deleting dir " + dir.getAbsolutePath() );
 		DirUtil.deleteDirectory( dir );
 		assertFalse ( dir.exists() ) ;

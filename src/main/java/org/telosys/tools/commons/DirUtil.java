@@ -16,6 +16,8 @@
 package org.telosys.tools.commons ;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,37 +66,52 @@ public class DirUtil {
 	/**
 	 * Deletes the given directory and all its content (recursive deletion) 
 	 * @param directory
-	 * @throws IllegalArgumentException if the given argument is null or not a directory
+	 * @throws TelosysToolsException
 	 */
-	public static void deleteDirectory(File directory) {
+	public static void deleteDirectory(File directory) throws TelosysToolsException {
 	    if ( directory == null ) {
-	    	throw new IllegalArgumentException("directory argument is null");
+	    	throw new TelosysToolsException("directory argument is null");
 	    }
 	    if ( directory.exists() ) {
 		    if ( ! directory.isDirectory() ) {
-		    	throw new IllegalArgumentException("argument is not a directory");
+		    	throw new TelosysToolsException("argument is not a directory");
 		    }
 		    deleteDirectoryRecursively(directory);
 	    }
 	}
 	
-	private static void deleteDirectoryRecursively(final File directory) {
+	private static void deleteDirectoryRecursively(File directory) throws TelosysToolsException {
 	    
-	    if ( directory.exists() ) {
-	    	//--- Delete the directory content
-	        for ( File entry : directory.listFiles() ) {
-	            if ( entry.isDirectory() ) {
-	            	//--- Delete the directory content
-	            	deleteDirectoryRecursively(entry);
-	            }
-	            else {
-	            	//--- Delete the file
-	                entry.delete();
-	            }
-	        }
+	    if ( directory.isDirectory() ) { // exists and is a directory
+	    	// Get all entries in the directory (NB: can be null)
+	    	File[] files = directory.listFiles();
+	    	if ( files != null ) {
+		    	//--- Delete the directory content
+		        for ( File entry : directory.listFiles() ) {
+		            if ( entry.isDirectory() ) {
+		            	//--- Delete the directory content
+		            	deleteDirectoryRecursively(entry);
+		            }
+		            else {
+		            	//--- Delete the file
+		            	deleteOrThrowException(entry);
+		            }
+		        }
+	    	}
         	//--- Delete the directory itself (now is void)
-	        directory.delete();
+	        deleteOrThrowException(directory);
 	    }
+	}
+	
+	private static final String CANNOT_DELETE = "Cannot delete " ;
+	private static void deleteOrThrowException(File file) throws TelosysToolsException {
+		try {
+			if ( ! Files.deleteIfExists(file.toPath()) ) {
+				throw new TelosysToolsException(CANNOT_DELETE + file.getAbsolutePath());
+			}
+		} catch (IOException e) {
+			throw new TelosysToolsException(CANNOT_DELETE + file.getAbsolutePath(), e);
+		}
 	}
 
 	/**

@@ -4,14 +4,15 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.env.telosys.tools.commons.TestsEnv;
-import junit.framework.TestCase;
-
 import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
 import org.telosys.tools.commons.variables.Variable;
+
+import junit.env.telosys.tools.commons.TestsEnv;
+import junit.framework.TestCase;
 
 public class EnvironmentManagerTest extends TestCase {
 
@@ -221,7 +222,11 @@ public class EnvironmentManagerTest extends TestCase {
 	public void cleanTelosysToolsDirectory(EnvironmentManager em) {
 		File telosysToolsDirectory = new File(em.getTelosysToolsFolderFullPath() );
 		if ( telosysToolsDirectory.exists() ) {
-			DirUtil.deleteDirectory( telosysToolsDirectory ) ;
+			try {
+				DirUtil.deleteDirectory( telosysToolsDirectory ) ;
+			} catch (TelosysToolsException e) {
+				throw new TelosysRuntimeException("Cannot delete directory " + telosysToolsDirectory.getName(), e);
+			}
 			println("'TelosysTools' directory deleted." );
 		}
 	}

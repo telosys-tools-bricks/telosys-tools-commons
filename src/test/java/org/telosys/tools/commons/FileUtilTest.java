@@ -104,10 +104,14 @@ public class FileUtilTest extends TestCase {
 		File destinationFolder = TestsEnv.getTmpExistingFolder("copy-dest");
 		assertTrue (destinationFolder.exists()) ;
 		int n = FileUtil.copyFolderToFolder(originFolder, destinationFolder, true) ;
-		assertEquals(8, n);
+		assertEquals(6, n); // nb files copied expected
+		assertTrue(destinationFolder.isDirectory());
+		assertTrue((new File(destinationFolder, "foo/bar")).isDirectory());
+		assertTrue((new File(destinationFolder, "foo/bar-void")).isDirectory());
+		assertTrue((new File(destinationFolder, "foo/bar/file2.txt")).exists());
 	}
 	
-	public void testCopyFileFromMetaInf() throws TelosysToolsException {
+	public void testCopyFileFromMetaInf() throws TelosysToolsException, IOException {
 		
 		Exception exception = null ;
 		try {
@@ -123,7 +127,7 @@ public class FileUtilTest extends TestCase {
 		testCopyFileFromMetaInf("dir2/resource-file2.txt"); 
 	}
 	
-	private void testCopyFileFromMetaInf(String srcFileName) throws TelosysToolsException {
+	private void testCopyFileFromMetaInf(String srcFileName) throws TelosysToolsException, IOException {
 
 		print("-----");
 		print("Test with '" +srcFileName+"'");
@@ -163,7 +167,7 @@ public class FileUtilTest extends TestCase {
 		assertFalse( FileUtil.copyFileFromMetaInfIfNotExist(srcFileName, destFileFullPath, false) ); // exists => not copied
 		File destFile = new File(destFileFullPath);
 		assertTrue(destFile.exists());
-		destFile.delete();
+		Files.delete(destFile.toPath());
 		assertFalse(destFile.exists());		
 		assertTrue( FileUtil.copyFileFromMetaInfIfNotExist(srcFileName, destFileFullPath, false) ); // not exists => copied
 		assertTrue(destFile.exists());		

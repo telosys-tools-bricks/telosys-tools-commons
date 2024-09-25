@@ -172,17 +172,6 @@ public class FileUtil {
     	
         //--- Open input file
 		InputStream  fis  = createInputStream(inputFile);
-		
-//        //--- Create output file folder is non existent 
-//        if ( createFolder ) {
-//        	createParentFolderIfNecessary(outputFile);
-//        }
-//    	
-//        //--- Open output file
-//		FileOutputStream fos = createOutputStream(outputFile);
-//        
-//        //--- Copy and close
-//        copyAndClose(fis,fos);
         copyInputStreamToFile(fis, outputFile, createFolder);
         return outputFile;
     }
@@ -337,7 +326,7 @@ public class FileUtil {
        	if ( ! destinationFolder.isDirectory() ) {
    			throw new IllegalArgumentException(destinationFolder + " is not a directory");
     	}
-       	return recursiveCopy( sourceFolder, destinationFolder, overwriteFiles) - 1 ;  // do not count first level => "-1" 
+       	return recursiveCopy(sourceFolder, destinationFolder, overwriteFiles);
 	}
 	private static int recursiveCopy( File source, File destination, boolean overwrite ) {
 	 	if ( source.isDirectory() ) { // Source is a directory
@@ -349,7 +338,7 @@ public class FileUtil {
     			throw new TelosysRuntimeException("copyFolder: destination '" + destination.getName() + "' is not a directory");
     		}
     		//--- Get all the directory content
-    		int count = 1 ; // 1 directory
+    		int count = 0 ;
     		for (String file : source.list() ) {
     		   File srcFile = new File(source, file);
     		   File destFile = new File(destination, file);
@@ -360,12 +349,13 @@ public class FileUtil {
     	} else { 
     		// Source is just a file => just copy it 
     		if ( !destination.exists() || ( destination.exists() && overwrite ) ) {
-    			//--- Copy file to file
-        		InputStream  inputStream  = createInputStream(source);
-				OutputStream outputStream = createOutputStream(destination);
-				copyAndClose(inputStream, outputStream);
+    			//--- Copy file to file with folder creation if necessary
+    			copyFileToFile(source, destination, true); 
+        		return 1; // 1 file copied
     		}
-    		return 1; // 1 file 
+    		else {
+    			return 0; // no file copied
+    		}
     	}
 	}
 

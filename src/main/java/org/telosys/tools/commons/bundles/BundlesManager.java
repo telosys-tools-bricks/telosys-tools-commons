@@ -190,7 +190,7 @@ public class BundlesManager {
 	 * @return true if found and deleted, false if not found
 	 * @throws TelosysToolsException
 	 */
-	public boolean deleteBundle( String bundleName ) {
+	public boolean deleteBundle( String bundleName ) throws TelosysToolsException {
 		// Build the folder full path for the given folder name
 		String bundleFolder = telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName);
 		File file = new File(bundleFolder);
