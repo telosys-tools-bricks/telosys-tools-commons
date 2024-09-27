@@ -158,22 +158,10 @@ public class TelosysToolsCfg
      * Returns true if the current configuration has been initialized from an existing properties file
      * @return
      */
-    public boolean hasBeenInitializedFromFile() {
+    protected boolean hasBeenInitializedFromFile() {
     	return initializedFromFile ;
     }
-	
-//   Removed in 4.2.0
-//    protected Variable[] getDefaultSpecificVariables()
-//	{
-//    	Variable[] v = new Variable[4] ;
-//    	int i = 0 ;
-//    	//-- In alphabetic order
-//    	v[i++] = new Variable("MAVEN_ARTIFACT_ID", "artifact-to-be-defined"); // for pom.xml artifactId
-//    	v[i++] = new Variable("MAVEN_GROUP_ID",    "group.to.be.defined" ); // for pom.xml artifactId
-//    	v[i++] = new Variable("PROJECT_NAME",      "myproject");
-//    	v[i++] = new Variable("PROJECT_VERSION",   "0.1");
-//    	return v ;
-//	}
+
 	//------------------------------------------------------------------------------------------------------
     /**
      * Returns a set of properties containing the current configuration
@@ -234,12 +222,12 @@ public class TelosysToolsCfg
      * @return
      */
     public String getDestinationFolderAbsolutePath() {
-    	if ( StrUtil.nullOrVoid( specificDestinationFolder ) ) {
-    		//--- No specific destination folder => use the project folder
-    		return projectAbsolutePath;
+    	if ( hasSpecificDestinationFolder() ) {
+    		return specificDestinationFolder ;
     	}
     	else {
-    		return specificDestinationFolder ;
+    		//--- No specific destination folder => use the project folder
+    		return projectAbsolutePath;
     	}
 	}
     
@@ -490,7 +478,7 @@ public class TelosysToolsCfg
 	 * @return
 	 * @since 4.2.0
 	 */
-	public boolean hasSpecificDepotNameForBundles() { 
+	protected boolean hasSpecificDepotNameForBundles() { 
 		return ! StrUtil.nullOrVoid( specificDepotNameForBundles ) ;
 	}
 	
@@ -515,7 +503,7 @@ public class TelosysToolsCfg
 	 * @return
 	 * @since 4.2.0
 	 */
-	public boolean hasSpecificDepotNameForModels() { 
+	protected boolean hasSpecificDepotNameForModels() { 
 		return ! StrUtil.nullOrVoid( specificDepotNameForModels ) ;
 	}
 	
@@ -687,7 +675,7 @@ public class TelosysToolsCfg
 	 * @return
      * @since v 3.0.0
 	 */
-	public boolean hasSpecificTemplatesFolders() {
+	protected boolean hasSpecificTemplatesFolders() {
 		return ! StrUtil.nullOrVoid( specificTemplatesFolder ) ;
 	}
 	
@@ -696,7 +684,7 @@ public class TelosysToolsCfg
 	 * @return
      * @since v 3.4.0
 	 */
-	public boolean hasSpecificModelsFolders() {
+	protected boolean hasSpecificModelsFolders() {
 		return ! StrUtil.nullOrVoid( specificModelsFolder ) ;
 	}
 	
@@ -705,7 +693,7 @@ public class TelosysToolsCfg
 	 * @return
      * @since v 3.0.0
 	 */
-	public boolean hasSpecificDestinationFolder()  {
+	protected boolean hasSpecificDestinationFolder()  {
 		return ! StrUtil.nullOrVoid( specificDestinationFolder ) ;
 	}
     //=======================================================================================================
@@ -737,7 +725,7 @@ public class TelosysToolsCfg
 	 * Returns true if the current configuration has at least one specific variable
 	 * @return
 	 */
-	public boolean hasSpecificVariables() {
+	protected boolean hasSpecificVariables() {
 		return ! specificVariables.isEmpty();
 	}
 	
