@@ -16,7 +16,6 @@
 package org.telosys.tools.commons.github;
 
 import java.io.File;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.depot.DepotElement;
 import org.telosys.tools.commons.depot.DepotRateLimit;
 import org.telosys.tools.commons.depot.DepotResponse;
@@ -40,7 +40,7 @@ import org.telosys.tools.commons.http.HttpResponse;
  */
 public class GitHubClient {
 
-	public static final String VERSION = "3.4 (2024-07-11)" ; // GitHub Client Version (for checking in CLI and Download)
+	public static final String VERSION = "3.5 (2024-09-30)" ; // GitHub Client Version (for checking in CLI and Download)
 	
 	public static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
 	
@@ -69,14 +69,14 @@ public class GitHubClient {
 		}
 	}
 	
-	private Map<String, String> buildRequestHeaders() {
-		if ( GitHubUser.isSet() ) {
+	private Map<String, String> buildRequestHeaders() throws TelosysToolsException {
+		if ( GitHubToken.isSet() ) {
 			Map<String, String> headers = new HashMap<>();
-			// Build User-Password string - Base64 encoded
-			String userPassword = GitHubUser.getUser() + ":" + GitHubUser.getPassword() ;
-			String userPasswordBase64 = Base64.getEncoder().encodeToString(userPassword.getBytes()); 
-			// Set "Authorization" header in the map
-			headers.put("Authorization", "Basic " + userPasswordBase64);
+			// since ver 4.2.0 : use GitHub Personal Access Token (PAT) instead of user+password 
+			// GitHub API doc : 
+			//  In most cases, you can use "Authorization: Bearer" or "Authorization: token" to pass a token. 
+			//  However, if you are passing a JSON web token (JWT), you must use Authorization: Bearer
+			headers.put("Authorization", "Bearer " + GitHubToken.get());
 			return headers ;
 		}
 		else {
@@ -98,39 +98,6 @@ public class GitHubClient {
 			throw new GitHubClientException ("HTTP 'GET' error", e);
 		}
 	}
-	
-	/**
-	 * @param responseBody
-	 * @return
-	 * @throws GitHubClientException
-	 */
-//	private List<GitHubRepository> getRepositoriesFromJSON(String responseBody) throws GitHubClientException {
-//
-//		// JSON parsing
-//		List<GitHubRepository> repositories = new LinkedList<>();
-//		JSONParser parser = new JSONParser();
-//		try {
-//			Object oList = parser.parse(responseBody);
-//			if ( oList instanceof JSONArray ) {
-//				JSONArray repositoriesArray = (JSONArray) oList ;
-//				for ( Object repositoryObject: repositoriesArray ) {
-//					JSONObject repo = (JSONObject) repositoryObject ; 
-//					long   id   = getLongAttribute(repo, "id");
-//					String name = getStringAttribute(repo, "name", "(#"+id+"-no-name)");
-//					String description = getStringAttribute(repo, "description", "(no-description)");
-//					long   size = getLongAttribute(repo, "size");
-//					// Add the repository in the list
-//					repositories.add( new GitHubRepository(id, name, description, size ) );
-//				}
-//			}
-//			else {
-//				throw new GitHubClientException ( "JSON error : array expected as root");
-//			}
-//		} catch (ParseException e) {
-//			throw new GitHubClientException ( "JSON error : cannot parse the JSON response.");
-//		}
-//		return repositories;
-//	}
 	
 	private List<DepotElement> getDepotElementsFromJSON(String responseBody) throws GitHubClientException {
 
@@ -274,16 +241,14 @@ public class GitHubClient {
 			throw new GitHubClientException ("Cannot get GitHub rate limit. HTTP status code = " + response.getStatusCode() );
 		}
 		// Example of response body :
-		//   {
-		//      "resources":
-		//         {
-		//            "core"   : { "limit":60, "remaining":0,  "reset":1545125728 },
-		//            "search" : { "limit":10, "remaining":10, "reset":1545124912 },
-		//            "graphql": { "limit":0,  "remaining":0,  "reset":1545128452 }
-		//         },
+		//    "resources": 
+		//       (opening curly bracket)
+		//            "core"   : (opening curly bracket) "limit":60, "remaining":0,  "reset":1545125728 (closing curly bracket),
+		//            "search" : (opening curly bracket) "limit":10, "remaining":10, "reset":1545124912 (closing curly bracket),
+		//            "graphql": (opening curly bracket) "limit":0,  "remaining":0,  "reset":1545128452 (closing curly bracket)
+		//       (closing curly bracket)
 		//
-		//      "rate": { "limit":60, "remaining":0, "reset":1545125728 }
-		//   }
+		//      "rate": (opening curly bracket) "limit":60, "remaining":0, "reset":1545125728 (closing curly bracket)
 	}
 	
 }

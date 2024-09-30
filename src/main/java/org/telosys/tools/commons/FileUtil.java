@@ -27,6 +27,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
@@ -321,10 +323,10 @@ public class FileUtil {
    			throw new IllegalArgumentException(sourceFolder + " is not a directory");
     	}
     	if ( ! destinationFolder.exists() ) {
-    		destinationFolder.mkdir();
+    		DirUtil.createDirectory(destinationFolder);
     	}
        	if ( ! destinationFolder.isDirectory() ) {
-   			throw new IllegalArgumentException(destinationFolder + " is not a directory");
+   			throw new IllegalArgumentException("Copy dir: " + destinationFolder + " is not a directory");
     	}
        	return recursiveCopy(sourceFolder, destinationFolder, overwriteFiles);
 	}
@@ -332,10 +334,10 @@ public class FileUtil {
 	 	if ( source.isDirectory() ) { // Source is a directory
     		//--- If the destination directory doesn't exist create it
     		if ( ! destination.exists() ) {
-    			destination.mkdir();
+        		DirUtil.createDirectory(destination);
     		}
     		if ( ! destination.isDirectory() ) {
-    			throw new TelosysRuntimeException("copyFolder: destination '" + destination.getName() + "' is not a directory");
+    			throw new TelosysRuntimeException("'" + destination.getName() + "' is not a directory");
     		}
     		//--- Get all the directory content
     		int count = 0 ;
@@ -357,6 +359,35 @@ public class FileUtil {
     			return 0; // no file copied
     		}
     	}
+	}
+
+	public static void writeString(File file, String content) {
+		try {
+			createParentFolderIfNecessary(file);
+			Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
+		} catch (IOException e) {
+			throw new TelosysRuntimeException("Cannot write file '" + file.getName() + "'", e);
+		}
+	}
+
+	public static String readString(File file) {
+		try {
+			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new TelosysRuntimeException("Cannot read file '" + file.getName() + "'", e);
+		}
+	}
+
+	public static boolean delete(File file) {
+		try {
+			Files.delete(file.toPath());
+			return true;
+		} catch (NoSuchFileException e) {
+			// Not an error 
+			return false;
+		} catch (IOException e) {
+			throw new TelosysRuntimeException("Cannot delete file '" + file.getName() + "'", e);
+		}
 	}
 
 }

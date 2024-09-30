@@ -98,16 +98,13 @@ public class FileUtilTest extends TestCase {
 	public void testFolderCopy() {
 		File originFolder = TestsEnv.getTestFolder("resources-origin");
 		assertTrue (originFolder.exists()) ;
-		for ( String fileName : originFolder.list() ) {
-			print(" . " + fileName );
-		}
 		File destinationFolder = TestsEnv.getTmpExistingFolder("copy-dest");
 		assertTrue (destinationFolder.exists()) ;
 		int n = FileUtil.copyFolderToFolder(originFolder, destinationFolder, true) ;
 		assertEquals(6, n); // nb files copied expected
 		assertTrue(destinationFolder.isDirectory());
 		assertTrue((new File(destinationFolder, "foo/bar")).isDirectory());
-		assertTrue((new File(destinationFolder, "foo/bar-void")).isDirectory());
+		// do not test void directory (ex: "foo/bar-void" ) as not pushed in Git and not exist in CI
 		assertTrue((new File(destinationFolder, "foo/bar/file2.txt")).exists());
 	}
 	
@@ -251,5 +248,32 @@ public class FileUtilTest extends TestCase {
 		assertFalse(FileUtil.createParentFolderIfNecessary(file)); 
 		assertTrue(file.getParentFile().exists());
 	}
-
+	
+	public void testReadWriteDelete() {
+		File destinationFolder = TestsEnv.getTmpExistingFolder("write-test-dest");
+		assertTrue (destinationFolder.exists()) ;
+		File file = new File(destinationFolder, "foo.txt");
+		
+		// write #1
+		String content = "Abcdefgh" ;
+		FileUtil.writeString(file, content);
+		assertTrue(file.isFile());
+		assertEquals(content, FileUtil.readString(file)); 
+		
+		// write #2
+		content = "Xyz123456Azer" ;
+		FileUtil.writeString(file, content);
+		assertTrue(file.isFile());
+		assertEquals(content, FileUtil.readString(file)); 
+		
+		FileUtil.delete(file);
+		assertFalse(file.exists());
+		
+		try {
+			FileUtil.readString(file); // No file => exception
+			fail();
+		} catch (TelosysRuntimeException e) {
+			// Exception expected 
+		}
+	}
 }

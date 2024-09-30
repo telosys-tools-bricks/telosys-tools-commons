@@ -1,11 +1,15 @@
 package org.telosys.tools.commons.github;
 
 import java.util.List;
-import java.util.Properties;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.depot.DepotElement;
 import org.telosys.tools.commons.depot.DepotResponse;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 
@@ -20,10 +24,13 @@ import junit.env.telosys.tools.commons.TestsEnv;
  */
 public class GitHubClientIT {
 
-	private static final String GITHUB_USER = "telosys-templates" ;
+	private static final String TELOSYS_TEMPLATES = "telosys-templates" ;
 
+	private void log(String msg) {
+		System.out.println(msg);
+	}
 	private void printJavaVersion() {
-		System.out.println("Setting system property 'https.protocols'... ");
+		log("Setting system property 'https.protocols'... ");
 
 //		// OK    on testGetRepositories(), testGetRepositoriesWithoutProperties()
 //		// Error on testDownloadRepository() : SSLException: Received fatal alert: protocol_version
@@ -37,48 +44,48 @@ public class GitHubClientIT {
 ////		System.setProperty("deployment.security.SSLv2Hello", "false");
 ////		System.setProperty("deployment.security.TLSv1.2", "true"); // 
 		
-		System.out.println("Java version    : " + System.getProperty("java.runtime.version")); // eg : 1.6.0_45-b06
-		System.out.println("Https protocols : " + System.getProperty("https.protocols"));
+		log("Java version    : " + System.getProperty("java.runtime.version")); // eg : 1.6.0_45-b06
+		log("Https protocols : " + System.getProperty("https.protocols"));
 	}
 
 	@Test
-	public void testGetRepositories() throws Exception  {
-		System.out.println("Getting repositories with properties ... ");
+	public void testGetRepositories() throws GitHubClientException  {
+		log("Getting repositories with properties ... ");
 		printJavaVersion() ;
-		getRepositories( TestsEnv.loadSpecificProxyProperties() );
+		getRepositories();
 	}
 	
 	@Test
-	public void testGetRepositoriesWithoutProperties() throws Exception  {		
-		System.out.println("Getting repositories without properties (null argument) ... ");
+	public void testGetRepositoriesWithoutProperties() throws GitHubClientException  {		
+		log("Getting repositories without properties (null argument) ... ");
 		printJavaVersion() ;
-		getRepositories( null );
+		getRepositories();
 	}
 	
 	private GitHubClient buildGitHubClient() {
 		return new GitHubClient( TestsEnv.getTestFile("cfg/telosys-tools.cfg").getAbsolutePath() ); // v 4.1.1
 	}
 	
-	private void getRepositories( Properties properties ) throws Exception  {
-		System.out.println("Getting repositories... ");
+	private void getRepositories() throws GitHubClientException  {
+		log("Getting repositories... ");
 		printJavaVersion() ;
 
 		GitHubClient gitHubClient = buildGitHubClient();
 		
-		DepotResponse githubResponse = gitHubClient.getRepositories(GITHUB_USER);
+		DepotResponse githubResponse = gitHubClient.getRepositories(TELOSYS_TEMPLATES);
 		
-		System.out.println( githubResponse.getResponseBody() );
+		log( githubResponse.getResponseBody() );
 		
 		List<DepotElement> repositories = githubResponse.getElements();
-		System.out.println("Repositories (" + repositories.size() + ") : ");
+		log("Repositories (" + repositories.size() + ") : ");
 		for ( DepotElement repo : repositories ) {
-			System.out.println(" .  '" + repo.getName() + "' / " 
+			log(" .  '" + repo.getName() + "' / " 
 					+ repo.getId() + " / '" + repo.getDescription() + "' / " + repo.getSize() );
 		}
 	}
 	
 	@Test
-	public void testDownloadRepository() throws Exception {
+	public void testDownloadRepository() throws GitHubClientException {
 
 		printJavaVersion() ;
 		
@@ -86,37 +93,41 @@ public class GitHubClientIT {
 		
 		String repoName = "plantuml" ;
 		String destinationFile = TestsEnv.getTmpDownloadFolderFullPath() + "/" + repoName + ".zip" ;
-		System.out.println("Download repository " + repoName );
-		System.out.println("                 to " + destinationFile );
-		gitHubClient.downloadRepository(GITHUB_USER, repoName, destinationFile);
-		System.out.println("Done.");		
+		log("Download repository " + repoName );
+		log("                 to " + destinationFile );
+		gitHubClient.downloadRepository(TELOSYS_TEMPLATES, repoName, destinationFile);
+		log("Done.");		
 	}
 
 	@Test
-	public void testGetRateLimit() throws Exception {
-
-		GitHubUser.clear();
-
+	public void testGetRateLimitWithoutAuthentication() throws TelosysToolsException, GitHubClientException {
+		GitHubToken.clear(); // No token => no authentication
 		GitHubClient gitHubClient = buildGitHubClient();
 		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
-		
-		System.out.println(rateLimit);
-		System.out.println("Response body : \n" + rateLimit.getResponseBody());
-		System.out.println("Reset date : " + rateLimit.getResetDate()); 
+		log("Response body : \n" + rateLimit.getResponseBody());
+		log("Reset date : " + rateLimit.getResetDate()); 
+		assertEquals("60", rateLimit.getLimit()); // no authentication => default rate-limit 
 	}
 
-	@Test // NO ERROR for unknown user // (expected=Exception.class)
-	public void testGetRateLimitWithBadUser() throws Exception {
-
-		// User + password
-		GitHubUser.set("fake-user-azer7766-OuPMK", "xxxxx");
-		
+	@Test 
+	public void testGetRateLimitWithBadAuthentication() throws TelosysToolsException {
+		GitHubToken.set("invalid-token-for-test"  );
 		GitHubClient gitHubClient = buildGitHubClient(); 
-		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(); 
-		
-		System.out.println(rateLimit); // limit='60', remaining='60'
-		System.out.println("Response body : \n" + rateLimit.getResponseBody());
-		System.out.println("Reset date : " + rateLimit.getResetDate()); 
+		try {
+			gitHubClient.getRateLimit();
+			fail();
+		} catch (GitHubClientException e) {
+			// HTTP status code = 401 (UNAUTHORIZED)
+			e.printStackTrace();
+		} 
+	}
+
+	@Test @Ignore // ignore until valid token is set 
+	public void testGetRateLimitWithValidAuthentication() throws TelosysToolsException, GitHubClientException {
+		GitHubToken.set("replace-by-a-valid-token-for-test" ); // Don't forget to remove it after test
+		GitHubClient gitHubClient = buildGitHubClient(); 
+		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
+		assertEquals("5000", rateLimit.getLimit()); // authentication ok => rate-limit is  
 	}
 
 }
