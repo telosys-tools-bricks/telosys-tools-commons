@@ -30,11 +30,22 @@ public class GitHubRateLimitResponse {
 	private final GitHubRateLimit rateLimit ;
 	
 	/**
+	 * HTTP Status Code returned by GitHub
+	 */
+	private final int httpStatusCode ;
+	
+	/**
 	 * Http response body in JSON
 	 */
 	private final String   responseBody ; 
 
-	public GitHubRateLimitResponse(GitHubRateLimit rateLimit, String responseBody ) {
+	/**
+	 * Constructor
+	 * @param rateLimit
+	 * @param httpStatusCode
+	 * @param responseBody
+	 */
+	protected GitHubRateLimitResponse(GitHubRateLimit rateLimit, int httpStatusCode, String responseBody ) {
 		super();
 		if ( rateLimit == null ) {
 			throw new IllegalStateException("GitHubRateLimit is null");
@@ -43,7 +54,12 @@ public class GitHubRateLimitResponse {
 			throw new IllegalStateException("Response body is null");
 		}
 		this.rateLimit = rateLimit;
+		this.httpStatusCode = httpStatusCode;
 		this.responseBody = responseBody;
+	}
+
+	public int getHttpStatusCode() {
+		return httpStatusCode;
 	}
 
 	public String getLimit() {

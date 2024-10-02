@@ -27,6 +27,7 @@ import org.telosys.tools.commons.TokenUtil;
 public class GitHubToken {
 
 	private static final String GITHUB_TOKEN_NAME = "gh" ;
+	private static final boolean ENCRYPTION = true ;
 	
 	/**
 	 * Private constructor
@@ -41,7 +42,7 @@ public class GitHubToken {
 	 */
 	public static void set(String token) throws TelosysToolsException {
 		if ( token != null ) {
-			TokenUtil.saveToken(GITHUB_TOKEN_NAME, token) ;
+			TokenUtil.saveToken(GITHUB_TOKEN_NAME, token, ENCRYPTION) ;
 		}
 		else {
 			throw new TelosysToolsException("Token argument is null");
@@ -53,7 +54,7 @@ public class GitHubToken {
 	 * @throws TelosysToolsException
 	 */
 	public static void clear() throws TelosysToolsException {
-		TokenUtil.deleteToken(GITHUB_TOKEN_NAME);
+		TokenUtil.deleteToken(GITHUB_TOKEN_NAME, ENCRYPTION);
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class GitHubToken {
 	 * @throws TelosysToolsException
 	 */
 	public static String get() throws TelosysToolsException {
-		return TokenUtil.loadToken(GITHUB_TOKEN_NAME) ;
+		return TokenUtil.loadToken(GITHUB_TOKEN_NAME, ENCRYPTION) ;
 	}
 	
 }

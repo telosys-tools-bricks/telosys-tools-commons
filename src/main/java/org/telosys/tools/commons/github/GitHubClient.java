@@ -156,6 +156,8 @@ public class GitHubClient {
 		// Return the result
 		return new DepotResponse(depotName, url, response.getStatusCode(), depotElements, rateLimit, responseBody);
 	}
+	
+	private static final String JSON_ERR_ATTRIBUTE = "JSON error : attribute ";
 	/**
 	 * Returns the String value for the given attribute name
 	 * @param jsonObject
@@ -171,7 +173,7 @@ public class GitHubClient {
 				return (String)oAttributeValue ;
 			}
 			else {
-				throw new GitHubClientException ( "JSON error : attribute '" + attributeName + "' is not a String");
+				throw new GitHubClientException ( JSON_ERR_ATTRIBUTE + "'" + attributeName + "' is not a String");
 			}
 		}
 		else {
@@ -179,7 +181,7 @@ public class GitHubClient {
 				return defaultValue ;
 			}
 			else {
-				throw new GitHubClientException ( "JSON error : attribute '" + attributeName + "' not found");
+				throw new GitHubClientException ( JSON_ERR_ATTRIBUTE + "'" + attributeName + "' not found");
 			}
 		}
 	}
@@ -233,22 +235,8 @@ public class GitHubClient {
 	public GitHubRateLimitResponse getRateLimit() throws GitHubClientException {
 		String url = GitHubClient.GIT_HUB_HOST_URL + "/rate_limit" ;
 		HttpResponse response = httpGet(url);
-		
-		if ( response.getStatusCode() == 200 ) {
-			return new GitHubRateLimitResponse(new GitHubRateLimit(response), new String(response.getBodyContent() ));
-		}
-		else {
-			throw new GitHubClientException ("Cannot get GitHub rate limit. HTTP status code = " + response.getStatusCode() );
-		}
-		// Example of response body :
-		//    "resources": 
-		//       (opening curly bracket)
-		//            "core"   : (opening curly bracket) "limit":60, "remaining":0,  "reset":1545125728 (closing curly bracket),
-		//            "search" : (opening curly bracket) "limit":10, "remaining":10, "reset":1545124912 (closing curly bracket),
-		//            "graphql": (opening curly bracket) "limit":0,  "remaining":0,  "reset":1545128452 (closing curly bracket)
-		//       (closing curly bracket)
-		//
-		//      "rate": (opening curly bracket) "limit":60, "remaining":0, "reset":1545125728 (closing curly bracket)
+		// v 4.2.0 : http status code in GitHubRateLimitResponse
+		return new GitHubRateLimitResponse(new GitHubRateLimit(response), response.getStatusCode(), new String(response.getBodyContent() ));
 	}
 	
 }

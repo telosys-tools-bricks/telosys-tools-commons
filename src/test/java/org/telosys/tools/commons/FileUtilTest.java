@@ -50,10 +50,12 @@ public class FileUtilTest extends TestCase {
 		FileUtil.copyFileToFile(sourceFile, destinationFile, true);
 	}
 	
-	public void testCopyWithFileObject2() {
+	public void testCopyWithFileObject2() throws TelosysToolsException {
 		File sourceFile = TestsEnv.getTestFile("file1.txt");
-		assertTrue ( sourceFile.exists()) ;
-		File destinationFile = TestsEnv.getTmpFile("foo/bar/file1-bis.txt");		
+		assertTrue(sourceFile.exists()) ;
+		File destinationFile = TestsEnv.getTmpFile("foo/bar/x/y/file1-bis.txt");
+		DirUtil.deleteDirectory(destinationFile.getParentFile());
+		assertFalse(destinationFile.getParentFile().exists()) ;
 		try {
 			// Copy to non existent destination, without 'create folder' flag
 			FileUtil.copyFileToFile(sourceFile, destinationFile, false);

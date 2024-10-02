@@ -361,21 +361,27 @@ public class FileUtil {
     	}
 	}
 
-	public static void writeString(File file, String content) {
+	public static void write(File file, byte[] content) {
 		try {
 			createParentFolderIfNecessary(file);
-			Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
+			Files.write(file.toPath(), content);
 		} catch (IOException e) {
 			throw new TelosysRuntimeException("Cannot write file '" + file.getName() + "'", e);
 		}
 	}
+	public static void writeString(File file, String content) {
+		write(file, content.getBytes(StandardCharsets.UTF_8));
+	}
 
-	public static String readString(File file) {
+	public static byte[] read(File file) {
 		try {
-			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			return Files.readAllBytes(file.toPath());
 		} catch (IOException e) {
 			throw new TelosysRuntimeException("Cannot read file '" + file.getName() + "'", e);
 		}
+	}
+	public static String readString(File file) {
+		return new String(read(file), StandardCharsets.UTF_8) ;
 	}
 
 	public static boolean delete(File file) {

@@ -9,7 +9,7 @@ import org.telosys.tools.commons.depot.DepotElement;
 import org.telosys.tools.commons.depot.DepotResponse;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 
@@ -110,16 +110,14 @@ public class GitHubClientIT {
 	}
 
 	@Test 
-	public void testGetRateLimitWithBadAuthentication() throws TelosysToolsException {
+	public void testGetRateLimitWithBadAuthentication() throws GitHubClientException, TelosysToolsException {
 		GitHubToken.set("invalid-token-for-test"  );
 		GitHubClient gitHubClient = buildGitHubClient(); 
-		try {
-			gitHubClient.getRateLimit();
-			fail();
-		} catch (GitHubClientException e) {
-			// HTTP status code = 401 (UNAUTHORIZED)
-			e.printStackTrace();
-		} 
+		GitHubRateLimitResponse r = gitHubClient.getRateLimit();		
+		// System.out.println("Limit:" + r.getRemaining() + "/" + r.getLimit() );
+		assertEquals(401, r.getHttpStatusCode());  // HTTP status code = 401 (UNAUTHORIZED)
+		assertTrue(Integer.parseInt(r.getLimit()) <= 60 );     // "0" to "60"
+		assertTrue(Integer.parseInt(r.getRemaining()) <= 60 ); // "0" to "60"
 	}
 
 	@Test @Ignore // ignore until valid token is set 
