@@ -61,23 +61,13 @@ public class GitHubDownloader {
 	 * @return
 	 */
 	public String downloadRepo( String userName, String repoName, String downloadFolderInProject ) throws TelosysToolsException {
-//		GitHubDownloadStatus status = new GitHubDownloadStatus();
 		GitHubClient gitHubClient = new GitHubClient( telosysToolsCfg.getCfgFileAbsolutePath() ) ;
 		String downloadedFile = buildDestinationFileName(repoName, downloadFolderInProject) ;
-//		status.log("-> Download repository '" + repoName + "' ");
-//		status.log("   in '" + destinationFile + "' ");
 		try {
 			gitHubClient.downloadRepository(userName, repoName, downloadedFile);
-//			status.setDone(true);
-//			status.setMessage("OK, repository '" + repoName + "' downloaded.");
-//			status.setZipFile(destinationFile);
 		} catch (Exception e) {
-//			status.setDone(false);
-//			status.setMessage("ERROR: cannot download repository '" + repoName + "'.");
-//			status.setException(e);
 			throw new TelosysToolsException("Cannot download repository '" + repoName + "'.", e);
 		}
-//		return status ;
 		return downloadedFile;
 	}
 	

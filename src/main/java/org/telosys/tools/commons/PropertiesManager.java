@@ -114,36 +114,18 @@ public class PropertiesManager {
 	 */
 	private Properties load( File file ) {
 		//--- If the file doesn't exist ... return null (it's not an error)
-		if ( file.exists() != true ) {
+		if ( ! file.exists() ) {
 			return null ;
 		}
 
 		//--- The file exists => load it !  
 		Properties props = new Properties();
-//		FileInputStream fis = null ;
-//		try {
-//			fis = new FileInputStream(file);
-//			props.load(fis);
-//		} catch (IOException ioe) {
-//			String msg = ERR_CANNOT_LOAD + " " + ioe.getMessage();
-//			throw new RuntimeException(msg, ioe);
-//		} finally {
-//			try {
-//				if ( fis != null ) {
-//					fis.close();
-//				}
-//			} catch (IOException e) {
-//				// NOTHING TO DO
-//			}
-//		}
-		
 		try ( FileInputStream fis = new FileInputStream(file) ){
 			props.load(fis);
 		} catch (IOException ioe) {
 			String msg = ERR_CANNOT_LOAD + " : " + ioe.getMessage();
 			throw new RuntimeException(msg, ioe);
 		}
-
 		return props;
 	}
 
@@ -157,22 +139,6 @@ public class PropertiesManager {
 		if ( properties == null ) {
 			throw new IllegalArgumentException("Properties parameter is null" );
 		}
-		
-//		FileOutputStream fos = null ;
-//		try {
-//			fos = new FileOutputStream(file);
-//			properties.store(fos, comments);
-//		} catch (IOException ioe) {
-//			throw new RuntimeException(ERR_CANNOT_SAVE, ioe );
-//		} finally {
-//			try {
-//				if ( fos != null ) {
-//					fos.close();
-//				}
-//			} catch (IOException e) {
-//				// NOTHING TO DO 
-//			}
-//		}
 		
 		try ( FileOutputStream fos = new FileOutputStream(file) ) {
 			properties.store(fos, comments);

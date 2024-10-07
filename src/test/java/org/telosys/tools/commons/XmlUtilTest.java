@@ -8,35 +8,19 @@ public class XmlUtilTest extends TestCase {
 
 	public void testEscapeXml() {
 		
-		String s = null ;
+		assertEquals("", XmlUtil.escapeXml(null) ) ;
 		
-		s = XmlUtil.escapeXml(null);
-		assertTrue( "".equals(s) ) ;
-		System.out.println(s);
-		
-		s = XmlUtil.escapeXml("");
-		assertTrue( "".equals(s) ) ;
-		System.out.println(s);
+		assertEquals("", XmlUtil.escapeXml("") ) ;
 
-		s = XmlUtil.escapeXml("abcd");
-		assertTrue( "abcd".equals(s) ) ;
-		System.out.println(s);
+		assertEquals("abcd", XmlUtil.escapeXml("abcd") ) ;
 
-		s = XmlUtil.escapeXml("ab <cd>");
-		assertTrue( "ab &lt;cd&gt;".equals(s) ) ;
-		System.out.println(s);
+		assertEquals("ab &lt;cd&gt;", XmlUtil.escapeXml("ab <cd>") ) ;
 
-		s = XmlUtil.escapeXml("ab&cd");
-		assertTrue( "ab&amp;cd".equals(s) ) ;
-		System.out.println(s);
+		assertEquals("ab&amp;cd", XmlUtil.escapeXml("ab&cd") ) ;
 
-		s = XmlUtil.escapeXml("ab\"cd\"");
-		assertTrue( "ab&#034;cd&#034;".equals(s) ) ;
-		System.out.println(s);
+		assertEquals("ab&#034;cd&#034;", XmlUtil.escapeXml("ab\"cd\"") ) ;
 
-		s = XmlUtil.escapeXml("ab'cd'");
-		assertTrue( "ab&#039;cd&#039;".equals(s) ) ;
-		System.out.println(s);
+		assertEquals("ab&#039;cd&#039;", XmlUtil.escapeXml("ab'cd'") ) ;
 	}
 
 

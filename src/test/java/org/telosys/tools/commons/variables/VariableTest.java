@@ -14,20 +14,9 @@ public class VariableTest extends TestCase {
 		assertEquals("12", var.getValue());
 		assertEquals("${ID}", var.getSymbolicName());
 	}
-	
-	public void testCompare() {
-		Variable v1 = new Variable("V1", "1");
-		Variable v2 = new Variable("V2", "2");
-		assertTrue( v1.compareTo(v2) < 0 ) ;
-		assertTrue( v2.compareTo(v1) > 0 ) ;
-
-		Variable v3 = new Variable("V2", "2");
-		assertTrue( v3.compareTo(v2) == 0 ) ;
-		assertTrue( v2.compareTo(v3) == 0 ) ;
-	}
 
 	public void testCompareList() {
-		LinkedList<Variable> variables = new LinkedList<Variable>();
+		LinkedList<Variable> variables = new LinkedList<>();
 		variables.add(new Variable("V1", "1"));
 		variables.add(new Variable("A", "Value A"));
 		variables.add(new Variable("V3", "3"));
@@ -36,7 +25,7 @@ public class VariableTest extends TestCase {
 		
 		print(variables);
 		print(variables.toArray(new Variable[0]));
-		Collections.sort(variables);
+		Collections.sort(variables, new VariableNameComparator());
 		print(variables);
 		print(variables.toArray(new Variable[0]));
 	}

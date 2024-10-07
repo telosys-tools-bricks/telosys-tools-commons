@@ -26,15 +26,15 @@ package org.telosys.tools.commons.bundles;
 public class TargetDefinition 
 {
 
-	private final String  _sName  ;
+	private final String  name  ;
 
-	private final String  _sFile  ;
+	private final String  file  ;
 	
-	private final String  _sFolder ;
+	private final String  folder ;
 
-	private final String  _sTemplate ; // or resource ( since v 2.0.7 )
+	private final String  template ; // or resource ( since v 2.0.7 )
 
-	private final String  _sType ; // "1", "R", "*" or ""
+	private final String  type ; // "1", "R", "*" or ""
 
 	//-----------------------------------------------------------------------
 	/**
@@ -48,11 +48,11 @@ public class TargetDefinition
 	public TargetDefinition(String name, String file, String folder, String template, String type ) 
 	{
 		super();
-		_sName = name;
-		_sFile = file;
-		_sFolder = folder;
-		_sTemplate = template;
-		_sType = ( type != null ? type.trim() : "" ) ;
+		this.name = name;
+		this.file = file;
+		this.folder = folder;
+		this.template = template;
+		this.type = ( type != null ? type.trim() : "" ) ;
 	}
 	
 	//-----------------------------------------------------------------------
@@ -62,7 +62,7 @@ public class TargetDefinition
 	 */
 	public String getId()
 	{
-		return _sTemplate + ":" + _sType + ":" + _sFolder + ":" + _sFile ;
+		return template + ":" + type + ":" + folder + ":" + file ;
 	}
 	
 	//-----------------------------------------------------------------------
@@ -72,7 +72,7 @@ public class TargetDefinition
 	 */
 	public String getName()
 	{
-		return _sName ;
+		return name ;
 	}
 	
 	//-----------------------------------------------------------------------
@@ -84,7 +84,7 @@ public class TargetDefinition
 	 */
 	public String getFile()
 	{
-		return _sFile ;
+		return file ;
 	}
 	
 	//-----------------------------------------------------------------------
@@ -96,17 +96,17 @@ public class TargetDefinition
 	 */
 	public String getFolder()
 	{
-		return _sFolder ;
+		return folder ;
 	}
 	
 	//-----------------------------------------------------------------------
 	public String getFullFileName()
 	{
-		if ( _sFolder.endsWith("/") || _sFolder.endsWith("\\") )
+		if ( folder.endsWith("/") || folder.endsWith("\\") )
 		{
-			return _sFolder + _sFile ;
+			return folder + file ;
 		}
-		return _sFolder + "/" + _sFile ;
+		return folder + "/" + file ;
 	}
 	
 	//-----------------------------------------------------------------------
@@ -116,7 +116,7 @@ public class TargetDefinition
 	 */
 	public String getTemplate()
 	{
-		return _sTemplate ;
+		return template ;
 	}	
 	
 	//-----------------------------------------------------------------------
@@ -126,7 +126,7 @@ public class TargetDefinition
 	 */
 	public boolean isOnce()
 	{
-		return "1".equals(_sType) ;
+		return "1".equals(type) ;
 	}
 
 	//-----------------------------------------------------------------------
@@ -136,7 +136,7 @@ public class TargetDefinition
 	 */
 	public boolean isResource()
 	{
-		return "R".equals(_sType) ;
+		return "R".equals(type) ;
 	}
 
 	//-----------------------------------------------------------------------
@@ -145,6 +145,6 @@ public class TargetDefinition
 	 */
 	public String toString()
 	{
-		return _sName + " : '" + _sFile  + "' in '" + _sFolder + "' ( " + _sTemplate + " " + _sType + " )" ;
+		return name + " : '" + file  + "' in '" + folder + "' ( " + template + " " + type + " )" ;
 	}
 }

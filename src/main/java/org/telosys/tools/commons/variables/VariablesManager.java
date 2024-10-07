@@ -18,6 +18,9 @@ package org.telosys.tools.commons.variables;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
 /**
  * Variable manager designed to store a set of variables and replace them by their values  
@@ -39,14 +42,12 @@ public class VariablesManager {
 	 * Constructor
 	 * @param hmVariables set of variables, each variable name is supposed to contains "${" and "}" 
 	 */
-	public VariablesManager(HashMap<String,String> hmInitialVariables) 
-	{
+	public VariablesManager(Map<String,String> variables) {
 		super();
-		//this.hmVariables = hmVariables;
-		// v 2.0.6 : init by copy in order to be able to change some values after
-		this.hmVariables = new HashMap<String,String>() ;
-		for (String varName : hmInitialVariables.keySet()) {
-			hmVariables.put(varName, hmInitialVariables.get(varName));
+		// init by copy in order to be able to change some values after
+		this.hmVariables = new HashMap<>() ;
+		for (Map.Entry<String,String> entry : variables.entrySet()) {
+			hmVariables.put(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -54,24 +55,14 @@ public class VariablesManager {
 	 * Constructor
 	 * @param variables set of variables, each variable name is NOT supposed to contains "${" and "}" 
 	 */
-	public VariablesManager(Variable[] variables) 
-	{
+	public VariablesManager(Variable[] variables) {
 		super();
-		this.hmVariables = new HashMap<String,String>() ;
-		if ( variables != null )
-		{
-			if ( variables.length > 0 )
-			{
-				for ( int i = 0 ; i < variables.length ; i++ )
-				{
-					Variable v = variables[i];
-					if ( v != null )
-					{
-						if ( v.getName() != null && v.getValue() != null )
-						{
-							this.hmVariables.put( "${"+v.getName()+"}", v.getValue() );
-						}
-					}
+		this.hmVariables = new HashMap<>() ;
+		if ( variables != null ) {
+			for ( int i = 0 ; i < variables.length ; i++ ) {
+				Variable v = variables[i];
+				if ( v != null  &&  v.getName() != null  &&  v.getValue() != null ) {
+					this.hmVariables.put( "${"+v.getName()+"}", v.getValue() );
 				}
 			}
 		}
@@ -83,7 +74,7 @@ public class VariablesManager {
 	 */
 	public List<String> getVariablesNames()
 	{
-		LinkedList<String> list = new LinkedList<String>() ;
+		LinkedList<String> list = new LinkedList<>() ;
 		if ( hmVariables != null )
 		{
 			for (String varName : hmVariables.keySet()) {
@@ -97,7 +88,7 @@ public class VariablesManager {
 	{
 		if ( hmVariables != null )
 		{
-			return (String) hmVariables.get(var);
+			return hmVariables.get(var);
 		}
 		return null ;
 	}
@@ -107,43 +98,37 @@ public class VariablesManager {
 		if ( null == s ) return null ;
 		if ( s.length() < 3 ) return s ; // cannot contain "${x}"
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		replaceVariables( s, sb ) ;
 		return sb.toString() ;
 	}
 	
-	private void replaceVariables(String s, StringBuffer sb )
-	{
-		if ( null == s ) return ;
-		
-		//if ( s.length() < 3 ) return ; // cannot contain "${x}"
+	private void replaceVariables(String s, StringBuilder sb ) {
+		if ( null == s ) {
+			return ;
+		}
 		
         int i = s.indexOf("${");
-        if ( i >= 0 ) 
-        {
+        if ( i >= 0 ) {
             int j = s.indexOf("}");
-            if ( j > i )
-            {
+            if ( j > i ) {
                 String var = s.substring(i,j+1); // "${MYVAR}"                
                 String value = getVariableValue(var);
 
                 String sBeforeVar = s.substring(0,i);
                 String sAfterVar  = s.substring(j+1);
                 sb.append( sBeforeVar ) ;
-                if ( value != null )
-                {
+                if ( value != null ) {
                     sb.append( value ) ;
                 }
-                else
-                {
+                else {
                     sb.append( var ) ;
                 }
-                                
+                // recursive call 
                 replaceVariables( sAfterVar, sb );
             }
         }
-        else
-        {
+        else {
             sb.append( s ) ;
         }
 	}
@@ -162,7 +147,7 @@ public class VariablesManager {
 			hmVariables.put(variableName, variableValue);
 		}
 		else {
-			throw new RuntimeException("Unknown variable '" + variableName +"'");
+			throw new TelosysRuntimeException("Unknown variable '" + variableName +"'");
 		}
 	}
 	

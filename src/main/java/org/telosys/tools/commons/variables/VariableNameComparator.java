@@ -15,44 +15,12 @@
  */
 package org.telosys.tools.commons.variables;
 
-public class Variable
+import java.util.Comparator;
+
+class VariableNameComparator implements Comparator<Variable> 
 {
-	private final String variableName;
-	private final String variableValue;
-	
-	/**
-	 * Constructor
-	 * @param name
-	 * @param value
-	 */
-	public Variable( String name, String value ) {
-		super();
-		this.variableName  = ( name  != null ? name.trim() : "" ) ;
-		this.variableValue = ( value != null ? value : "" );
+	@Override
+	public int compare(Variable v1, Variable v2) {
+		return v1.getName().compareTo( v2.getName() );
 	}
-
-	/**
-	 * Returns the variable name ( without "${ and "}" )
-	 * @return
-	 */
-	public String getName() {
-		return variableName;
-	}
-
-	/**
-	 * Returns the variable name between "${ and "}"
-	 * @return
-	 */
-	public String getSymbolicName() {
-		return "${"+variableName+"}" ;
-	}
-
-	/**
-	 * Returns the variable value
-	 * @return
-	 */
-	public String getValue() {
-		return variableValue;
-	}
-
 }

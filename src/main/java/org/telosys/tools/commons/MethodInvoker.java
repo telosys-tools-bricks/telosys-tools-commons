@@ -18,6 +18,8 @@ package org.telosys.tools.commons;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
+
 
 /**
  * @author Laurent GUERIN
@@ -25,8 +27,8 @@ import java.lang.reflect.Method;
  */
 public class MethodInvoker
 {
-	private final static String ERROR_GET_GETTER_METHOD    = "Cannot get method " ;
-	private final static String ERROR_INVOKE_GETTER_METHOD = "Cannot invoke method " ;
+	private static final String ERROR_GET_GETTER_METHOD    = "Cannot get method " ;
+	private static final String ERROR_INVOKE_GETTER_METHOD = "Cannot invoke method " ;
 
 	/**
 	 * Full static class : no public constructor
@@ -51,19 +53,19 @@ public class MethodInvoker
 		try {
 			method = cl.getMethod(methodName, (Class<?>[])null); 
 		} catch (SecurityException e) {
-			throw new RuntimeException(ERROR_GET_GETTER_METHOD + methodName + " (SecurityException)", e);
+			throw new TelosysRuntimeException(ERROR_GET_GETTER_METHOD + methodName + " (SecurityException)", e);
 		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(ERROR_GET_GETTER_METHOD + methodName + " (NoSuchMethodException)", e);
+			throw new TelosysRuntimeException(ERROR_GET_GETTER_METHOD + methodName + " (NoSuchMethodException)", e);
 		}
 
 		try {
 			result = method.invoke(instance, (Object[])null);
 		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(ERROR_INVOKE_GETTER_METHOD + methodName + " (IllegalArgumentException)", e);
+			throw new TelosysRuntimeException(ERROR_INVOKE_GETTER_METHOD + methodName + " (IllegalArgumentException)", e);
 		} catch (IllegalAccessException e) {
-			throw new RuntimeException(ERROR_INVOKE_GETTER_METHOD + methodName + " (IllegalAccessException)", e);
+			throw new TelosysRuntimeException(ERROR_INVOKE_GETTER_METHOD + methodName + " (IllegalAccessException)", e);
 		} catch (InvocationTargetException e) {
-			throw new RuntimeException(ERROR_INVOKE_GETTER_METHOD + methodName + " (InvocationTargetException)", e);
+			throw new TelosysRuntimeException(ERROR_INVOKE_GETTER_METHOD + methodName + " (InvocationTargetException)", e);
 		}
 		return result ;
 	}
@@ -74,7 +76,7 @@ public class MethodInvoker
 			return (Boolean) result ;
 		}
 		else {
-			throw new RuntimeException("Invalid type returned by method " + methodName + " (boolean expected)" );
+			throw new TelosysRuntimeException("Invalid type returned by method " + methodName + " (boolean expected)" );
 		}
 	}
 	

@@ -23,17 +23,20 @@ package org.telosys.tools.commons.variables;
  */
 public class VariablesNames {
 	
+	private VariablesNames() {
+	}
+
 	//--- PACKAGES predefined variables names ( v 2.0.6 )		
-	public final static String  ROOT_PKG    = "ROOT_PKG" ;
-	public final static String  ENTITY_PKG  = "ENTITY_PKG" ;
+	public static final String  ROOT_PKG    = "ROOT_PKG" ;
+	public static final String  ENTITY_PKG  = "ENTITY_PKG" ;
 	
 	//--- FOLDERS predefined variables names ( v 2.0.3 )		
-	public final static String  SRC      = "SRC" ;
-	public final static String  RES      = "RES" ;
-	public final static String  WEB      = "WEB" ;
-	public final static String  TEST_SRC = "TEST_SRC" ;
-	public final static String  TEST_RES = "TEST_RES" ;
-	public final static String  DOC      = "DOC" ;
-	public final static String  TMP      = "TMP" ;
+	public static final String  SRC      = "SRC" ;
+	public static final String  RES      = "RES" ;
+	public static final String  WEB      = "WEB" ;
+	public static final String  TEST_SRC = "TEST_SRC" ;
+	public static final String  TEST_RES = "TEST_RES" ;
+	public static final String  DOC      = "DOC" ;
+	public static final String  TMP      = "TMP" ;
 	
 }

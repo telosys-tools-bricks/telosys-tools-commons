@@ -89,7 +89,7 @@ public class TelosysToolsCfg
 	private String varTmp     =  "tmp" ;
 	
 	//--- Specific variables defined by the user for the current project
-	private LinkedList<Variable> specificVariables = new LinkedList<>() ; // v 3.0.0
+	private List<Variable> specificVariables = new LinkedList<>() ; // v 3.0.0
 
 	//----------------------------------------------------------------------------------------
     /**

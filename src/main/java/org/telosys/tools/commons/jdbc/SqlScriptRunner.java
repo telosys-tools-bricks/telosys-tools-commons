@@ -28,6 +28,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
+
 /**
  * SQL tool to run database SQL scripts ( SQL files ) <br>
  * The default configuration is : <br> 
@@ -46,8 +48,8 @@ public class SqlScriptRunner {
     private String      delimiter   = ";";
     private boolean     stopOnError = true ;
     private boolean     autoCommit  = true ;
-    private PrintWriter logWriter      = null; // new PrintWriter(System.out);
-    private PrintWriter errorLogWriter = null; // new PrintWriter(System.err);
+    private PrintWriter logWriter      = null; 
+    private PrintWriter errorLogWriter = null; 
 
     /**
      * Constructor
@@ -145,7 +147,7 @@ public class SqlScriptRunner {
         } catch (IOException|SQLException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Error running script.  Cause: " + e, e);
+            throw new TelosysRuntimeException("Error running script.  Cause: " + e, e);
         }
     }
 

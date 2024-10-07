@@ -1,14 +1,14 @@
 package org.telosys.tools.commons;
 
+import java.math.BigDecimal;
+
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-
-import org.junit.Test;
 
 public class StrUtilTest {
 
@@ -81,21 +81,20 @@ public class StrUtilTest {
 		assertNull( StrUtil.getIntegerObject(null) ) ;
 		assertNull( StrUtil.getIntegerObject("") ) ;
 		assertNull( StrUtil.getIntegerObject("  ") ) ;
-		assertEquals( new Integer(123), StrUtil.getIntegerObject("123") ) ;
-		assertEquals( new Integer(123), StrUtil.getIntegerObject(" 123") ) ;
-		assertEquals( new Integer(123), StrUtil.getIntegerObject("123  ") ) ;
-		assertEquals( new Integer(123), StrUtil.getIntegerObject("  123  ") ) ;
-		assertEquals( new Integer(-123), StrUtil.getIntegerObject("-123  ") ) ;
-		assertEquals( new Integer(-123), StrUtil.getIntegerObject("  -123  ") ) ;
+		assertEquals( Integer.valueOf( 123), StrUtil.getIntegerObject("123") ) ;
+		assertEquals( Integer.valueOf( 123), StrUtil.getIntegerObject(" 123") ) ;
+		assertEquals( Integer.valueOf( 123), StrUtil.getIntegerObject("123  ") ) ;
+		assertEquals( Integer.valueOf( 123), StrUtil.getIntegerObject("  123  ") ) ;
+		assertEquals( Integer.valueOf(-123), StrUtil.getIntegerObject("-123  ") ) ;
+		assertEquals( Integer.valueOf(-123), StrUtil.getIntegerObject("  -123  ") ) ;
+		assertEquals( Integer.valueOf( 123), StrUtil.getIntegerObject("+123") ) ;
+		assertEquals( Integer.valueOf( 123), StrUtil.getIntegerObject("  +123") ) ;
 		assertNull( StrUtil.getIntegerObject("12.34") ) ;
 		assertNull( StrUtil.getIntegerObject("- 2") ) ;
-// Different behavior between different JDK :-(
-//		assertNull( StrUtil.getIntegerObject("+123") ) ;
-//		assertNull( StrUtil.getIntegerObject("  +123") ) ;
 
 		//--- Check reverse conversion
-		assertEquals( "123", (new Integer(123)).toString() ) ;
-		assertEquals( "-123", (new Integer(-123)).toString() ) ;
+		assertEquals( "123", (Integer.valueOf(123)).toString() ) ;
+		assertEquals( "-123", (Integer.valueOf(-123)).toString() ) ;
 	}
 
 	@Test

@@ -39,7 +39,7 @@ public abstract class TextFileReader {
      * Constructor 
 	 * @param filePath 
 	 */
-	public TextFileReader(String filePath) {
+	protected TextFileReader(String filePath) {
 		super();
 		if ( filePath == null ) {
 			throw new IllegalArgumentException("File path is null");

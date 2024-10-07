@@ -17,10 +17,12 @@ package org.telosys.tools.commons.io;
 
 import javax.swing.JOptionPane;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
+
 public class DialogBoxOverwriteChooser implements OverwriteChooser {
 
 	private Integer globalChoice = null ;
-	private final static Object[] options = {"Yes",  "Yes To All",  "No",  "No To All",  "Cancel" };
+	private static final Object[] options = {"Yes",  "Yes To All",  "No",  "No To All",  "Cancel" };
 	
 	public DialogBoxOverwriteChooser() {
 		super();
@@ -66,7 +68,7 @@ public class DialogBoxOverwriteChooser implements OverwriteChooser {
 		case 4 : // CANCEL
 			return OverwriteChooser.CANCEL ;
 		default :
-			throw new RuntimeException("Unexpected choice " + r);
+			throw new TelosysRuntimeException("Unexpected choice " + r);
 		}
 	}
 }

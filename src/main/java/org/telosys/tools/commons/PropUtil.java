@@ -26,6 +26,8 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
+
 public class PropUtil {
 	
 	/**
@@ -87,7 +89,7 @@ public class PropUtil {
                 writeFileContent(sFileName, content );
             }
             else {
-                throw new RuntimeException("new content to write is void");
+                throw new TelosysRuntimeException("new content to write is void");
             }
         }
         return iChanges ;
@@ -113,7 +115,7 @@ public class PropUtil {
             fos = new FileOutputStream(sFileName);
         } 
         catch (FileNotFoundException ex) {
-            throw new RuntimeException("writeFile : cannot open file.", ex);
+            throw new TelosysRuntimeException("writeFile : cannot open file.", ex);
         }
         if ( fos != null ) {
             try {
@@ -122,7 +124,7 @@ public class PropUtil {
                 fos.close();
             } 
             catch (IOException ioex) {
-                throw new RuntimeException("writeFile : write error.", ioex);
+                throw new TelosysRuntimeException("writeFile : write error.", ioex);
             }
         }	
 	}
@@ -148,7 +150,7 @@ public class PropUtil {
         } catch (IOException e)
         {
 	        close(br);
-            throw new RuntimeException("IOException", e);
+            throw new TelosysRuntimeException("IOException", e);
 	    }
         return iRet ;
     }

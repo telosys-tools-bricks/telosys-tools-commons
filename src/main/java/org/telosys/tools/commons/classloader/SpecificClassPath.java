@@ -27,7 +27,7 @@ import java.util.List;
 
 public class SpecificClassPath 
 {
-	List<String> classpath = new LinkedList<String>();
+	List<String> classpath = new LinkedList<>();
 	
 	public List<String> getClassPath() {
 		return classpath;

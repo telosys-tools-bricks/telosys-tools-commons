@@ -22,6 +22,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
+
 /**
  * Specific class loader with a specific classpath
  * 
@@ -64,13 +66,13 @@ public class SpecificClassLoader extends URLClassLoader {
         for ( String jarPath : classpathList ) {
             if ( jarPath == null ) {
             	// Invalid jar path 
-            	throw new RuntimeException("Cannot convert null path to URL ");
+            	throw new TelosysRuntimeException("Cannot convert null path to URL ");
             }
             
             String sPath = jarPath.trim();
             if ( sPath.length() == 0 ) {
             	// Invalid void jar path 
-            	throw new RuntimeException("Cannot convert void path to URL ");
+            	throw new TelosysRuntimeException("Cannot convert void path to URL ");
             }
             
             // urls[n] = new File(sPath).toURL(); // toURL deprecated since Java 5.0
@@ -82,10 +84,10 @@ public class SpecificClassLoader extends URLClassLoader {
                 n++;
             } 
             catch (IllegalArgumentException e) {
-            	throw new RuntimeException("Cannot convert '" + sPath + "' to URL (IllegalArgumentException)", e);
+            	throw new TelosysRuntimeException("Cannot convert '" + sPath + "' to URL (IllegalArgumentException)", e);
             }
             catch (MalformedURLException e) {
-            	throw new RuntimeException("Cannot convert '" + sPath + "' to URL (MalformedURLException)", e);
+            	throw new TelosysRuntimeException("Cannot convert '" + sPath + "' to URL (MalformedURLException)", e);
             }
         }
 		return urls ;

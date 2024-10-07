@@ -2,15 +2,14 @@ package org.telosys.tools.commons.variables;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
-
-import org.telosys.tools.commons.variables.VariablesManager;
 
 public class VariablesManagerTest extends TestCase {
 
 	private VariablesManager getVariablesManagerInstance() {
-		HashMap<String,String> hm = new HashMap<String,String>();
+		HashMap<String,String> hm = new HashMap<>();
 		hm.put("${ROOT_PKG}",   "org.demo.foo.bar");
 		hm.put("${ENTITY_PKG}", "org.demo.foo.bar.bean");
 		hm.put("${VAR1}", "VALUE1");
@@ -24,6 +23,25 @@ public class VariablesManagerTest extends TestCase {
 		String result = variablesManager.replaceVariables(s);
 		System.out.println("'" + s + "' --> '" + result + "'");
 		assertEquals(expectedResult, result);
+	}
+	
+	public void testConstructorWithMap() {
+		Map<String,String> hm = new HashMap<>();
+		hm.put("${ROOT_PKG}",   "org.demo");
+		hm.put("${ENTITY_PKG}", "org.demo.foo.bean");
+		hm.put("${VAR1}", "VALUE1");
+		VariablesManager vm = new VariablesManager(hm);
+		assertEquals(3, vm.getVariablesNames().size() );
+		assertEquals("VALUE1", vm.getVariableValue("${VAR1}"));
+		assertEquals("org.demo", vm.getVariableValue("${ROOT_PKG}"));
+	}
+	
+	public void testConstructorWithArray() {
+		Variable[] variables = { new Variable("V1", "1"), new Variable("V22", "2"), new Variable("ROOT_PKG", "org.demo")};
+		VariablesManager vm = new VariablesManager(variables);
+		assertEquals(3, vm.getVariablesNames().size() );
+		assertEquals("1", vm.getVariableValue("${V1}"));
+		assertEquals("org.demo", vm.getVariableValue("${ROOT_PKG}"));
 	}
 	
 	public void testReplaceVar() {
@@ -64,7 +82,7 @@ public class VariablesManagerTest extends TestCase {
 //		Entity form.component.ts	; ${BEANNAME_LC}-form.component.ts		; ${SRC}/app/entities/${BEANNAME_LC}/${BEANNAME_LC}-form 	; src/app/entities/Entity_form/ENTITY-form_component_ts.vm		; *
 //		Entity form.component.html	; ${BEANNAME_LC}-form.component.html	; ${SRC}/app/entities/${BEANNAME_LC}/${BEANNAME_LC}-form 	; src/app/entities/Entity_form/ENTITY-form_component_html.vm	; *
 //		Entity form.component.css	; ${BEANNAME_LC}-form.component.css		; ${SRC}/app/entities/${BEANNAME_LC}/${BEANNAME_LC}-form 	; src/app/entities/Entity_form/ENTITY-form_component_css.vm     ; *
-		HashMap<String,String> hm = new HashMap<String,String>();
+		HashMap<String,String> hm = new HashMap<>();
 		hm.put("${SRC}", "/foo/bar");
 		hm.put("${BEANNAME}", "Car");		
 		hm.put("${BEANNAME_LC}", "car");

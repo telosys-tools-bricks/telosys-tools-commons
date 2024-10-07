@@ -31,7 +31,7 @@ public class JavaLibraries {
 	 * @param telosysToolsCfg
 	 * @throws TelosysToolsException
 	 */
-	public JavaLibraries(TelosysToolsCfg telosysToolsCfg) { // throws TelosysToolsException {
+	public JavaLibraries(TelosysToolsCfg telosysToolsCfg) {
 		this.libraries = getLibrariesFromLibFolder(telosysToolsCfg) ;
 	}
 
@@ -70,7 +70,7 @@ public class JavaLibraries {
      * Returns the libraries located in the Telosys Tools "lib" folder
      * @return
      */
-    protected List<File> getLibrariesFromLibFolder(TelosysToolsCfg telosysToolsCfg) { // throws TelosysToolsException {
+    protected List<File> getLibrariesFromLibFolder(TelosysToolsCfg telosysToolsCfg) {
 
     	List<File> list = new LinkedList<>();
 
@@ -78,16 +78,13 @@ public class JavaLibraries {
         
     	File libFolder = new File(libFolderPath);
     	if ( ! libFolder.exists() ) {
-    		//throw new TelosysToolsException("Libraries folder : '"+libFolderPath+"' not found") ;
-    		return list; // void list - v 3.4.0
+    		return list;
     	}
     	if ( ! libFolder.isDirectory() ) {
-    		//throw new TelosysToolsException("Libraries folder : '"+libFolderPath+"' is not a folder") ;
-    		return list; // void list - v 3.4.0
+    		return list;
     	}
         
     	// Select ".jar" and ".zip" files 
-    	//List<File> list = new LinkedList<>();
         for ( File entry : libFolder.listFiles() ) {
             if ( entry.isFile() ) {
             	String fileName = entry.getName();            	

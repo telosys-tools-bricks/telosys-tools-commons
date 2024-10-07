@@ -18,6 +18,7 @@ package org.telosys.tools.commons.io ;
 import java.io.File;
 
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.exception.CancelException;
 
 
@@ -49,9 +50,10 @@ public class ResourcesCopier {
 	 * @param origin original file or folder
 	 * @param destination  destination file or folder
 	 * @return the number of files copied (or -1 if the copy has been canceled)
-	 * @throws Exception
+	 * @throws TelosysToolsException
+	 * @throws CancelException
 	 */
-	public int copy(File origin , File destination) throws Exception {
+	public int copy(File origin , File destination) throws TelosysToolsException, CancelException{
 		if ( origin == null ) {
 			throw new IllegalArgumentException("origin is null");
 		}
@@ -81,9 +83,10 @@ public class ResourcesCopier {
 	 * @param inputFile
 	 * @param directory
 	 * @return
-	 * @throws Exception
+	 * @throws TelosysToolsException
+	 * @throws CancelException
 	 */
-	private int copyFileToFolder(File inputFile , File directory) throws Exception {
+	private int copyFileToFolder(File inputFile , File directory) throws TelosysToolsException, CancelException {
     	String outputFileFullPath = FileUtil.buildFilePath(directory.getAbsolutePath(), inputFile.getName());
     	File outputFile = new File(outputFileFullPath);
 		if ( outputFile.exists() ) {
@@ -108,15 +111,16 @@ public class ResourcesCopier {
 	 * @param origin original file or folder
 	 * @param destination  destination file or folder
 	 * @return
-	 * @throws Exception
+	 * @throws TelosysToolsException
+	 * @throws CancelException
 	 */
-	private int recursiveCopy(File origin , File destination) throws Exception {
+	private int recursiveCopy(File origin , File destination) throws TelosysToolsException, CancelException {
 		int count = 0 ;
 	    if (origin.isDirectory()) {
 	    	// Source is a directory => destination is supposed to be a directory 
 	        if ( destination.exists() ) {
 	        	if ( ! destination.isDirectory() ) {
-	        		throw new Exception("'" + destination + "' is not a directory");
+	        		throw new TelosysToolsException("'" + destination + "' is not a directory");
 	        	}
 	        }
 	        else {
@@ -142,7 +146,7 @@ public class ResourcesCopier {
     			}
     			else {
         			// Destination exists and is NOT a file => error
-	        		throw new Exception("'" + destination + "' already exists and is not a file");
+	        		throw new TelosysToolsException("'" + destination + "' already exists and is not a file");
     			}
     		}
     		else {
@@ -159,9 +163,8 @@ public class ResourcesCopier {
 	 * and notify the handler before and after the copy
 	 * @param origin
 	 * @param destination
-	 * @throws Exception
 	 */
-	private void copyFile(File origin, File destination) throws Exception {
+	private void copyFile(File origin, File destination) {
 		if ( copyHandler != null ) {
 			copyHandler.beforeCopy(origin, destination);
 		}
@@ -177,9 +180,10 @@ public class ResourcesCopier {
 	 * Uses the given OverwriteChooser instance to determine if the file must be overwritten
 	 * @param file
 	 * @return
-	 * @throws Exception
+	 * @throws TelosysToolsException
+	 * @throws CancelException
 	 */
-	private boolean getOverwriteChoice(File file) throws Exception {
+	private boolean getOverwriteChoice(File file) throws TelosysToolsException, CancelException {
 		int choice = overwriteChooser.choose(file.getName(), file.getParent() );
 		switch (choice) {
 			case OverwriteChooser.YES :
@@ -189,7 +193,7 @@ public class ResourcesCopier {
 			case OverwriteChooser.CANCEL :
 				throw new CancelException("Copy canceled");
 			default: 
-				throw new Exception("Invalid choice");
+				throw new TelosysToolsException("Invalid choice");
 		}
 	}
 }

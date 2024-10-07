@@ -15,10 +15,12 @@
  */
 package org.telosys.tools.commons;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -60,7 +62,7 @@ public class XmlUtil {
         int start = 0;
         int length = originalString.length();
         char[] arrayBuffer = originalString.toCharArray();
-        StringBuffer escapedStringBuffer = null;
+        StringBuilder escapedStringBuffer = null;
 
         for (int i = 0; i < length; i++) {
             char c = arrayBuffer[i];
@@ -69,7 +71,7 @@ public class XmlUtil {
                 if (escaped != null) {
                     // new StringBuffer to build the xml string
                     if (start == 0) {
-                        escapedStringBuffer = new StringBuffer(length + 5);
+                        escapedStringBuffer = new StringBuilder(length + 5);
                     }
                     // add unescaped portion
                     if (start < i) {
@@ -101,10 +103,12 @@ public class XmlUtil {
         Document document = null;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
+        	factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");    // Security: XML parsers should not be vulnerable to XXE attacks 
+        	factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // Security: XML parsers should not be vulnerable to XXE attacks 
         	DocumentBuilder documentBuilder = factory.newDocumentBuilder();
             document = documentBuilder.newDocument();
         } catch (ParserConfigurationException e) {
-            throw new RuntimeException("Cannot create DOM document", e);
+            throw new TelosysRuntimeException("Cannot create DOM document", e);
         }
         return document;
     }
@@ -115,7 +119,7 @@ public class XmlUtil {
     	try {
 			i = Integer.parseInt(s);
 		} catch (NumberFormatException e) {
-    		throw new RuntimeException("XML error : attribute '" + sAttributeName + "' is not an integer", e);
+    		throw new TelosysRuntimeException("XML error : attribute '" + sAttributeName + "' is not an integer", e);
 		}
 		return i ;
     }
@@ -152,7 +156,7 @@ public class XmlUtil {
     {
     	String s = getNodeAttribute( node, attributeName );
     	if ( null == s ) {
-    		throw new RuntimeException("XML error : int attribute '" + attributeName + "' not found" );
+    		throw new TelosysRuntimeException("XML error : int attribute '" + attributeName + "' not found" );
     	}
     	else {
     		return convertToInt(attributeName, s);
