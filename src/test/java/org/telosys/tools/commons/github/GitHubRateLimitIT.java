@@ -64,7 +64,7 @@ public class GitHubRateLimitIT {
 	
 	@Test
 	public void testGetRateLimitFromUserInfo() throws Exception  {
-		getRateLimit( GitHubClient.GIT_HUB_HOST_URL + "/users/" + GitHubTestsConst.GITHUB_USER );
+		getRateLimit( GitHubClient.GIT_HUB_HOST_URL + "/users/telosys-templates" );
 	}
 	
 	@Test

@@ -13,17 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.telosys.tools.commons.github;
+package org.telosys.tools.commons.depot;
 
-public class GitHubClientException extends Exception {
+import org.telosys.tools.commons.TelosysToolsException;
 
-	private static final long serialVersionUID = 1L;
+public interface DepotClient {
 
-	public GitHubClientException(String message) {
-		super(message);
-	}
+	DepotResponse getRepositories(Depot depot) throws TelosysToolsException ;
+	
+	long downloadRepository(Depot depot, String bundleName, String downloadedFile) throws TelosysToolsException;
 
-	public GitHubClientException(String message, Exception exception) {
-		super(message, exception);
-	}
 }

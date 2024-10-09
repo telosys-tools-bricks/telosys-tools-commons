@@ -25,10 +25,10 @@ import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+import org.telosys.tools.commons.depot.Depot;
+import org.telosys.tools.commons.depot.DepotClient;
+import org.telosys.tools.commons.depot.DepotClientProvider;
 import org.telosys.tools.commons.depot.DepotResponse;
-import org.telosys.tools.commons.github.GitHubClient;
-import org.telosys.tools.commons.github.GitHubClientException;
-import org.telosys.tools.commons.github.GitHubDownloader;
 
 /**
  * Utility class for bundles management (including GitHub access)
@@ -53,10 +53,6 @@ public class BundlesManager {
 		this.telosysToolsCfg = cfg;
 	}
 
-	private GitHubClient getGitHubClient() {
-		return new GitHubClient( telosysToolsCfg.getCfgFileAbsolutePath() ) ; 
-	}
-	
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Returns the DOWNLOADS folder's full path in the file system <br>
@@ -128,38 +124,42 @@ public class BundlesManager {
 		File file = getBundleConfigFile(bundleName);
 		return ( file != null && file.exists() );
 	}
-	
-	//--------------------------------------------------------------------------------------------------
-	public String downloadBundle(String userName, String bundleName) throws TelosysToolsException {
-		return downloadBundle(userName, bundleName, telosysToolsCfg.getDownloadsFolder() ) ;
-	}
-	
-	public String downloadBundle(String userName, String bundleName, String downloadFolder) throws TelosysToolsException {
-		GitHubDownloader downloader = new GitHubDownloader(telosysToolsCfg); 
-		return downloader.downloadRepo(userName, bundleName, downloadFolder ) ;
-	}
-	
-	public boolean downloadAndInstallBundle(String userName, String bundleName) throws TelosysToolsException {
-		GitHubDownloader downloader = new GitHubDownloader(telosysToolsCfg); 
-		String downloadedFile = downloader.downloadRepo(userName, bundleName, telosysToolsCfg.getDownloadsFolder() ) ;
-		return installBundle(downloadedFile, bundleName);
-	}
 
-	//--------------------------------------------------------------------------------------------------
 	/**
-	 * Return a list of bundles available in a depot (GitHub,..)
-	 * @param depotName the depot name, ie GitHub user name or org name
+	 * Dowloads the given bundle from the given depot 
+	 * @param depot
+	 * @param bundleName
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public DepotResponse getBundlesFromDepot( String depotName ) throws TelosysToolsException {	
-		// in the future switch : if depotType is GitHub, if depotType is GitLab, etc...
-		GitHubClient gitHubClient = getGitHubClient(); // v 4.1.1
-		try {
-			return gitHubClient.getRepositories(depotName);
-		} catch (GitHubClientException e) {
-			throw new TelosysToolsException("GitHub client error", e);
-		}	
+	public String downloadBundle(Depot depot, String bundleName) throws TelosysToolsException {
+		String downloadedFile = FileUtil.buildFilePath(telosysToolsCfg.getDownloadsFolderAbsolutePath(), bundleName + ".zip");		
+		DepotClient depotClient = DepotClientProvider.getDepotClient(depot, telosysToolsCfg);
+		depotClient.downloadRepository(depot, bundleName, downloadedFile);
+		return downloadedFile;
+	}
+	
+	/**
+	 * Dowloads the given bundle from the given depot and install it 
+	 * @param depot
+	 * @param modelName
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public boolean downloadAndInstallBundle(Depot depot, String bundleName) throws TelosysToolsException {
+		String downloadedFile = downloadBundle(depot, bundleName ) ;
+		return installBundle(downloadedFile, bundleName);
+	}
+	//--------------------------------------------------------------------------------------------------
+	/**
+	 * Return a list of bundles available in a depot (GitHub,..)
+	 * @param depot
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public DepotResponse getBundlesFromDepot( Depot depot ) throws TelosysToolsException {
+		DepotClient depotClient = DepotClientProvider.getDepotClient(depot, telosysToolsCfg);
+		return depotClient.getRepositories(depot);
 	}
 
 	//--------------------------------------------------------------------------------------------------

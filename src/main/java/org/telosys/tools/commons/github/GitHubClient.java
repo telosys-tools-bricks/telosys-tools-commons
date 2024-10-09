@@ -26,11 +26,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.telosys.tools.commons.TelosysToolsException;
+import org.telosys.tools.commons.depot.Depot;
+import org.telosys.tools.commons.depot.DepotClient;
 import org.telosys.tools.commons.depot.DepotElement;
 import org.telosys.tools.commons.depot.DepotRateLimit;
 import org.telosys.tools.commons.depot.DepotResponse;
 import org.telosys.tools.commons.http.HttpClient;
 import org.telosys.tools.commons.http.HttpResponse;
+import org.telosys.tools.commons.variables.VariablesManager;
 
 /**
  * Client side for GitHub API 
@@ -38,13 +41,13 @@ import org.telosys.tools.commons.http.HttpResponse;
  * @author L. Guerin
  *
  */
-public class GitHubClient {
+public class GitHubClient implements DepotClient {
 
-	public static final String VERSION = "3.5 (2024-09-30)" ; // GitHub Client Version (for checking in CLI and Download)
+	public static final String VERSION = "3.6 (2024-10-08)" ; // GitHub Client Version (for checking in CLI and Download)
 	
-	public static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
+	protected static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
 	
-	public static final String GIT_HUB_REPO_URL_PATTERN =  "https://github.com/${USER}/${REPO}/archive/master.zip" ;
+	public static final String GIT_HUB_DOWNLOAD_URL_PATTERN = "https://github.com/${USER}/${REPO}/archive/master.zip" ;
 
 	private final String propertiesFileAbsolutePath ;
 	
@@ -87,19 +90,19 @@ public class GitHubClient {
 	/**
 	 * @param url
 	 * @return
-	 * @throws GitHubClientException
+	 * @throws TelosysToolsException
 	 */
-	private HttpResponse httpGet( String url ) throws GitHubClientException {
+	private HttpResponse httpGet( String url ) throws TelosysToolsException {
 		HttpClient httpClient = buildHttpClient();
 		try {
 			// Sometimes GitHub return a 403 status code 
 			return httpClient.get(url, buildRequestHeaders() );
 		} catch (Exception e) {
-			throw new GitHubClientException ("HTTP 'GET' error", e);
+			throw new TelosysToolsException("HTTP 'GET' error " + e.getMessage(), e);
 		}
 	}
 	
-	private List<DepotElement> getDepotElementsFromJSON(String responseBody) throws GitHubClientException {
+	private List<DepotElement> getDepotElementsFromJSON(String responseBody) throws TelosysToolsException {
 
 		// JSON parsing
 		List<DepotElement> repositories = new LinkedList<>();
@@ -119,24 +122,36 @@ public class GitHubClient {
 				}
 			}
 			else {
-				throw new GitHubClientException ( "JSON error : array expected as root");
+				throw new TelosysToolsException("JSON error : array expected as root");
 			}
 		} catch (ParseException e) {
-			throw new GitHubClientException ( "JSON error : cannot parse the JSON response.");
+			throw new TelosysToolsException("JSON error : cannot parse the JSON response.");
 		}
 		return repositories;
 	}
 	
-	/**
-	 * Returns a DepotResponse containing the repositories list for a given depotName 
-	 * @param depotName
-	 * @return
-	 * @throws GitHubClientException
-	 */
-	public DepotResponse getRepositories(String depotName) throws GitHubClientException {
+	protected String buildGitHubApiUrl(Depot depot) throws TelosysToolsException {
+		if ( depot.isGitHubOrganization() ) {
+			// example: https://api.github.com/orgs/telosys-models/repos  
+			return GIT_HUB_HOST_URL + "/orgs/" + depot.getName() + "/repos" ; 
+		}
+		else if ( depot.isGitHubUser()) {
+			// example: https://api.github.com/users/telosys-models/repos  
+			return GIT_HUB_HOST_URL + "/users/" + depot.getName() + "/repos" ; 
+		}
+		else if ( depot.isGitHubCurrentUser() ) {
+			// fixed URL
+			return "https://api.github.com/user/repos";
+		}
+		else {
+			throw new TelosysToolsException("Depot error: invalid GitHub type ");
+		}
+	}
 
+	public DepotResponse getRepositories(Depot depot) throws TelosysToolsException {	
 		// Call GitHub API via HTTP
-		String url = GIT_HUB_HOST_URL + "/users/" + depotName + "/repos" ; // for GitHub 'depotName' = 'GitHub user name'
+		// String url = GIT_HUB_HOST_URL + "/users/" + depotName + "/repos" ; // for GitHub 'depotName' = 'GitHub user name'
+		String url = buildGitHubApiUrl(depot);
 		HttpResponse response = httpGet(url);
 
 		// Rate Limit from http headers 
@@ -154,26 +169,27 @@ public class GitHubClient {
 		// If status is 403 : noting to do (the ratelimit is provided in the result)
 
 		// Return the result
-		return new DepotResponse(depotName, url, response.getStatusCode(), depotElements, rateLimit, responseBody);
+		return new DepotResponse(depot.getDefinition(), url, response.getStatusCode(), depotElements, rateLimit, responseBody);
 	}
 	
 	private static final String JSON_ERR_ATTRIBUTE = "JSON error : attribute ";
+
 	/**
 	 * Returns the String value for the given attribute name
 	 * @param jsonObject
 	 * @param attributeName
 	 * @param defaultValue
 	 * @return
-	 * @throws GitHubClientException
+	 * @throws TelosysToolsException
 	 */
-	private String getStringAttribute( JSONObject jsonObject, String attributeName, String defaultValue ) throws GitHubClientException {
+	private String getStringAttribute( JSONObject jsonObject, String attributeName, String defaultValue ) throws TelosysToolsException {
 		Object oAttributeValue = jsonObject.get( attributeName );
 		if ( oAttributeValue != null ) {
 			if ( oAttributeValue instanceof String) {
 				return (String)oAttributeValue ;
 			}
 			else {
-				throw new GitHubClientException ( JSON_ERR_ATTRIBUTE + "'" + attributeName + "' is not a String");
+				throw new TelosysToolsException( JSON_ERR_ATTRIBUTE + "'" + attributeName + "' is not a String");
 			}
 		}
 		else {
@@ -181,7 +197,7 @@ public class GitHubClient {
 				return defaultValue ;
 			}
 			else {
-				throw new GitHubClientException ( JSON_ERR_ATTRIBUTE + "'" + attributeName + "' not found");
+				throw new TelosysToolsException( JSON_ERR_ATTRIBUTE + "'" + attributeName + "' not found");
 			}
 		}
 	}
@@ -191,49 +207,57 @@ public class GitHubClient {
 	 * @param jsonObject
 	 * @param attributeName
 	 * @return
-	 * @throws GitHubClientException
+	 * @throws TelosysToolsException
 	 */
-	private long getLongAttribute( JSONObject jsonObject, String attributeName ) throws GitHubClientException{
+	private long getLongAttribute( JSONObject jsonObject, String attributeName ) throws TelosysToolsException {
 		Object oAttributeValue = jsonObject.get( attributeName );
 		if ( oAttributeValue != null ) {
 			if ( oAttributeValue instanceof Long) {
 				return ((Long)oAttributeValue).longValue();
 			}
 			else {
-				throw new GitHubClientException ( "JSON error : attribute '" + attributeName 
+				throw new TelosysToolsException( "JSON error : attribute '" + attributeName 
 						+ "' is not a Integer ("+oAttributeValue.getClass().getCanonicalName()+")");
 			}
 		}
 		else {
-			throw new GitHubClientException ( "JSON error : attribute '" + attributeName + "' not found");
+			throw new TelosysToolsException( "JSON error : attribute '" + attributeName + "' not found");
 		}
+	}
+
+	protected String buildGitHubDownloadURL(String userName, String repoName) {
+		HashMap<String,String> hmVariables = new HashMap<>();
+		hmVariables.put("${USER}", userName);
+		hmVariables.put("${REPO}", repoName);
+		VariablesManager variablesManager = new VariablesManager(hmVariables);
+		return variablesManager.replaceVariables(GIT_HUB_DOWNLOAD_URL_PATTERN);
 	}
 	
 	/**
 	 * Downloads a GitHub repository (e.g. "https://github.com/telosys-templates/{REPOSITORY}-master.zip" )<br>
 	 * Simple HTTP download, doesn't use the GitHub API <br>
-	 * 
-	 * @param userName GitHub user name or organization name ( e.g. "telosys-templates" )
+	 * @param depot
 	 * @param repoName GitHub repository name ( e.g. "php7-web-mvc" or "python-web-rest-bottle" )
 	 * @param destinationFile the full file name on the filesystem 
 	 * @return file size (bytes count)
+	 * @throws TelosysToolsException
 	 */
-	public final long downloadRepository(String userName, String repoName, String destinationFile) throws GitHubClientException {
-		String url = GitHubUtil.buildGitHubURL(userName, repoName, GIT_HUB_REPO_URL_PATTERN);
-		HttpClient httpClient = buildHttpClient();		
+	public final long downloadRepository(Depot depot, String repoName, String destinationFile) throws TelosysToolsException {
+		String url = buildGitHubDownloadURL(depot.getName(), repoName);
+		HttpClient httpClient = buildHttpClient();
 		try {
 			return httpClient.downloadFile(url, destinationFile);
 		} catch (Exception e) {
-			throw new GitHubClientException("HTTP download error", e);
+			throw new TelosysToolsException("Download error (URL="+url+") "+e.getMessage() , e);
 		}
 	}
 	
 	/**
 	 * @return
-	 * @throws GitHubClientException
+	 * @throws TelosysToolsException
 	 */
-	public GitHubRateLimitResponse getRateLimit() throws GitHubClientException {
-		String url = GitHubClient.GIT_HUB_HOST_URL + "/rate_limit" ;
+	public GitHubRateLimitResponse getRateLimit() throws TelosysToolsException {
+		String url = GIT_HUB_HOST_URL + "/rate_limit" ;
 		HttpResponse response = httpGet(url);
 		// v 4.2.0 : http status code in GitHubRateLimitResponse
 		return new GitHubRateLimitResponse(new GitHubRateLimit(response), response.getStatusCode(), new String(response.getBodyContent() ));

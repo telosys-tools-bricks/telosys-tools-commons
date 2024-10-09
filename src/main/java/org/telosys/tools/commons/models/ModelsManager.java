@@ -21,10 +21,10 @@ import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+import org.telosys.tools.commons.depot.Depot;
+import org.telosys.tools.commons.depot.DepotClient;
+import org.telosys.tools.commons.depot.DepotClientProvider;
 import org.telosys.tools.commons.depot.DepotResponse;
-import org.telosys.tools.commons.github.GitHubClient;
-import org.telosys.tools.commons.github.GitHubClientException;
-import org.telosys.tools.commons.github.GitHubDownloader;
 
 /**
  * Utility class for models management (including GitHub access)
@@ -40,16 +40,12 @@ public class ModelsManager {
 	
 	/**
 	 * Constructor 
-	 * @param cfg
+	 * @param telosysToolsCfg
 	 */
-	public ModelsManager(TelosysToolsCfg cfg) {
+	public ModelsManager(TelosysToolsCfg telosysToolsCfg) {
 		super();
-		if ( cfg == null ) throw new IllegalArgumentException("TelosysToolsCfg is null");
-		this.telosysToolsCfg = cfg;
-	}
-
-	private GitHubClient getGitHubClient() {
-		return new GitHubClient( telosysToolsCfg.getCfgFileAbsolutePath() ) ; 
+		if ( telosysToolsCfg == null ) throw new IllegalArgumentException("TelosysToolsCfg is null");
+		this.telosysToolsCfg = telosysToolsCfg;
 	}
 
 	/**
@@ -76,32 +72,30 @@ public class ModelsManager {
 	//--------------------------------------------------------------------------------------------------
 	/**
 	 * Return a list of models available in a depot 
-	 * @param depotName the depot name, ie GitHub user name or org name
+	 * @param depot
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public DepotResponse getModelsFromDepot( String depotName ) throws TelosysToolsException {
-		// in the future switch : if depotType is GitHub, if depotType is GitLab, etc...
-		GitHubClient gitHubClient = getGitHubClient(); 
-		try {
-			return gitHubClient.getRepositories(depotName);
-		} catch (GitHubClientException e) {
-			throw new TelosysToolsException("GitHub client error", e);
-		}		
+	public DepotResponse getModelsFromDepot( Depot depot ) throws TelosysToolsException {
+		DepotClient depotClient = DepotClientProvider.getDepotClient(depot, telosysToolsCfg);
+		return depotClient.getRepositories(depot);
 	}
 
-	//--------------------------------------------------------------------------------------------------
-	public String downloadModel(String depotName, String modelName) throws TelosysToolsException {
-		return downloadModel(depotName, modelName, telosysToolsCfg.getDownloadsFolder() ) ;
+	public String downloadModel(Depot depot, String modelName) throws TelosysToolsException {
+		String downloadedFile = FileUtil.buildFilePath(telosysToolsCfg.getDownloadsFolderAbsolutePath(), modelName + ".zip");
+		DepotClient depotClient = DepotClientProvider.getDepotClient(depot, telosysToolsCfg);
+		depotClient.downloadRepository(depot, modelName, downloadedFile);
+		return downloadedFile;
 	}
 	
-	private String downloadModel(String depotName, String modelName, String downloadFolder) throws TelosysToolsException {
-		GitHubDownloader downloader = new GitHubDownloader(telosysToolsCfg); 
-		return downloader.downloadRepo(depotName, modelName, downloadFolder ) ;
-	}
-	
-	public boolean downloadAndInstallModel(String depotName, String modelName) throws TelosysToolsException {
-		String downloadedFile = downloadModel(depotName, modelName ) ;
+	/**
+	 * @param depot
+	 * @param modelName
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public boolean downloadAndInstallModel(Depot depot, String modelName) throws TelosysToolsException {
+		String downloadedFile = downloadModel(depot, modelName ) ;
 		return installModel(downloadedFile, modelName);
 	}
 

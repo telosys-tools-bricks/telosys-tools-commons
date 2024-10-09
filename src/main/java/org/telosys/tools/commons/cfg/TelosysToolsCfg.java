@@ -53,8 +53,8 @@ public class TelosysToolsCfg
 	private final String templatesFolder ; 
 	private final String downloadsFolder ; 
 	private final String librariesFolder ; 
-	private static final String STANDARD_DEPOT_NAME_FOR_MODELS  = "telosys-models";    // v 4.2.0
-	private static final String STANDARD_DEPOT_NAME_FOR_BUNDLES = "telosys-templates"; // v 4.2.0
+	private static final String STANDARD_DEPOT_NAME_FOR_MODELS  = "github_org:telosys-models";    // v 4.2.0
+	private static final String STANDARD_DEPOT_NAME_FOR_BUNDLES = "github_org:telosys-templates"; // v 4.2.0
 	
 	//--- Project specific values
 	private static final String PROPERTY_SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
