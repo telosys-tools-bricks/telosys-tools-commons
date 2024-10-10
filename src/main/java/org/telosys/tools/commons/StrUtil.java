@@ -353,12 +353,10 @@ public final class StrUtil
      * @return
      */
     public static final boolean isFirstCharAlpha(String s) {
-        if ( s != null ) {
-            if ( s.length() > 0 ) {
-                char c = s.charAt(0);
-                if ( c >= 'A' && c <= 'Z' ) return true ;
-                if ( c >= 'a' && c <= 'z' ) return true ;
-            }
+        if ( s != null && s.length() > 0 ) {
+            char c = s.charAt(0);
+            if ( c >= 'A' && c <= 'Z' ) return true ;
+            if ( c >= 'a' && c <= 'z' ) return true ;
         }
         return false ;
     }
@@ -470,6 +468,25 @@ public final class StrUtil
 			return originalString.substring(0, originalString.length() - stringToBeRemoved.length());
 		}
 		return originalString;
+	}
+
+	/**
+	 * Remove the end of a string from the given delimiter 
+	 * @param originalString
+	 * @param delimiter
+	 * @return
+	 */
+	public static final String removeFrom(String originalString, char delimiter) {
+		if ( originalString == null ) {
+			return null;
+		}
+		int index = originalString.indexOf(delimiter);
+		if ( index >= 0 ) {
+			return originalString.substring(0, index);
+		}
+		else {
+			return originalString;
+		}
 	}
 
 	/**

@@ -43,9 +43,7 @@ public class StrUtilTest {
 	}
 
 	private void replaceVar(String s, String varName, String varValue, String expectedResult ) {
-		System.out.println("Replace var " + varName + " in '" + s + "'");
 		String result = StrUtil.replaceVar(s, varName, varValue) ;
-		System.out.println("  result : '" + result + "'");
 		assertEquals(expectedResult, result);
 	}
 	
@@ -131,7 +129,31 @@ public class StrUtilTest {
 		assertNull( StrUtil.removeEnd(null, "a") ) ;
 		assertNull( StrUtil.removeEnd(null, null) ) ;
 	}
+	
+	@Test
+	public void testRemodeFrom() {
+		assertEquals( "ab",  StrUtil.removeFrom("ab:cd", ':') ) ;
+		assertEquals( "abcd",  StrUtil.removeFrom("abcd", ':') ) ;
+		assertEquals( "ab",  StrUtil.removeFrom("ab:cd:ddd:ddd", ':') ) ;
+		assertEquals( "",  StrUtil.removeFrom("", ':') ) ;
+		assertNull(StrUtil.removeFrom(null, ':') ) ;
+	}
 
+	@Test
+	public void testIsFirstCharAlpha() {
+		assertTrue (StrUtil.isFirstCharAlpha("abcd") ) ;
+		assertTrue (StrUtil.isFirstCharAlpha("Zer") ) ;
+		assertTrue (StrUtil.isFirstCharAlpha("Azee") ) ;
+		assertTrue (StrUtil.isFirstCharAlpha("z") ) ;
+		
+		assertFalse (StrUtil.isFirstCharAlpha(null) ) ;
+		assertFalse (StrUtil.isFirstCharAlpha("") ) ;
+		assertFalse (StrUtil.isFirstCharAlpha(" ") ) ;
+		assertFalse (StrUtil.isFirstCharAlpha(" ahhjq") ) ;
+		assertFalse (StrUtil.isFirstCharAlpha("2ahhjq") ) ;
+		assertFalse (StrUtil.isFirstCharAlpha("+ahhjq") ) ;
+	}
+	
 	@Test
 	public void testSplit1() {
 		String[] tokens = StrUtil.split("aa;b;ccc;", ';');
@@ -189,7 +211,7 @@ public class StrUtilTest {
 		assertEquals( "\"abcd", StrUtil.removeQuotes("\"abcd", '"') ) ;
 		assertEquals( "abcd\"", StrUtil.removeQuotes("abcd\"", '"') ) ;
 		assertEquals( "abcd", StrUtil.removeQuotes("\"abcd\"", '"') ) ;
-		assertEquals( "'abcd'", StrUtil.removeQuotes("'abcd'", '"') ) ;
+		assertEquals( "'abcde'", StrUtil.removeQuotes("'abcde'", '"') ) ;
 		assertEquals( "", StrUtil.removeQuotes("", '"') ) ;
 		assertEquals( "", StrUtil.removeQuotes("\"\"", '"') ) ;
 		assertNull( StrUtil.removeQuotes(null, '"') ) ;
@@ -203,7 +225,7 @@ public class StrUtilTest {
 		assertEquals( "", StrUtil.getProtectedString("") ) ;
 		assertEquals( " ", StrUtil.getProtectedString(" ") ) ;
 		assertEquals( "abcd", StrUtil.getProtectedString("abcd") ) ;
-		assertEquals( "&quot;abc&quot;", StrUtil.getProtectedString("\"abc\"") ) ;
+		assertEquals( "&quot;abcde&quot;", StrUtil.getProtectedString("\"abcde\"") ) ;
 		assertEquals( "ab&quot;cd", StrUtil.getProtectedString("ab\"cd") ) ;
 		assertEquals( "&quot;", StrUtil.getProtectedString("\"") ) ;
 		assertEquals( "&quot;&quot;", StrUtil.getProtectedString("\"\"") ) ;
@@ -259,7 +281,7 @@ public class StrUtilTest {
 		assertFalse(StrUtil.isQuoted("abc"));
 		
 		assertTrue(StrUtil.isQuoted("\"\""));
-		assertTrue(StrUtil.isQuoted("\"abc\""));
+		assertTrue(StrUtil.isQuoted("\"abczz\""));
 		assertTrue(StrUtil.isQuoted("\"abc\"def\""));
 	}
 	@Test
@@ -311,9 +333,7 @@ public class StrUtilTest {
 	public void quoteUnquote(String s1) {
 		String s2 = StrUtil.quote(s1) ;
 		String s3 = StrUtil.unquote( s2);
-		System.out.println("[" + s1 + "] ==> [" + s2 + "] ==> [" + s3 + "]" );
 		assertEquals(s1, s3);
 	}
-	
 	
 }

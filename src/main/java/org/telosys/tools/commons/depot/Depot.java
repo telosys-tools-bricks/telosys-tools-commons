@@ -18,9 +18,20 @@ package org.telosys.tools.commons.depot;
 import java.util.Arrays;
 import java.util.List;
 
+import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 
-/**
+/** 
+ * Depot 
+ * Syntax:
+ *  depot-type : [ depot-name ] [ ( root-url ) ]
+ *  Examples : 
+ *   - github_org : org-name
+ *   - github_org : org-name ( http://myhost:9090 )
+ *   - github_user : user-name
+ *   - github_current_user
+ *   
+ *  
  * @author L. Guerin
  *
  */
@@ -32,6 +43,8 @@ public class Depot {
 	private static final String GITHUB_ORG          = "github_org"; 
 	private static final String GITHUB_USER         = "github_user"; 
 	private static final String GITHUB_CURRENT_USER = "github_current_user"; 
+	private static final String GITHUB_DEFAULT_ROOT_URL = "https://api.github.com" ;
+
 
 	// GitLab 
 	private static final String GITLAB_GROUP  = "gitlab_group"; // GitLab "group" or "subgroup" 
@@ -43,50 +56,149 @@ public class Depot {
 	private final String definition;
 	private final String type;
 	private final String name;
+	private final String rootUrl;
 
-	public Depot(String depot) throws TelosysToolsException {
+	public Depot(String depotString) throws TelosysToolsException {
 		super();
-		if (depot == null) {
-			throw new TelosysToolsException(INVALID_DEPOT + " depot is null");
+		if (depotString == null) {
+			throw new TelosysToolsException("Depot argument is null");
 		}
-		this.definition = depot;
+		this.definition = depotString;
 		// parse depot definition 
-		String[] parts = depot.split(":");
-		if (parts.length == 1 ) {
-			this.type = parts[0].trim() ;
-			this.name = "";
-		}
-		else if ( parts.length == 2 ) {
-			this.type = parts[0].trim() ;
-			this.name = parts[1].trim() ;
-		}
-		else {
-			throw new TelosysToolsException(INVALID_DEPOT + " '" + depot + "' (bad syntax)");
-		}
+		this.type = parseDepotType(depotString);
+		this.name = parseDepotName(depotString);
+		this.rootUrl = parseRootUrl(depotString);
 		checkParts();
+	}
+	
+	private TelosysToolsException invalidDepotError(String depotString, String error) {
+		return new TelosysToolsException(INVALID_DEPOT + " '" + depotString + "' - " + error);
+	}
+	private String parseDepotType(String depotString) throws TelosysToolsException {
+		String depotWithoutRootUrl = StrUtil.removeFrom(depotString, '(');
+		String[] parts = depotWithoutRootUrl.split(":");
+		if (parts.length > 0  ) {
+			return parts[0].trim() ;
+		} 
+		else {
+			throw invalidDepotError(depotString, "bad syntax");
+		}
+	}
+	private String parseDepotName(String depotString) {
+		String depotWithoutRootUrl = StrUtil.removeFrom(depotString, '(');
+		String[] parts = depotWithoutRootUrl.split(":");
+		if (parts.length > 1  ) {
+			return parts[1].trim() ;
+		} 
+		else {
+			return "";
+		}
+	}
+	private String parseRootUrl(String depotString) throws TelosysToolsException {
+        int start = depotString.indexOf('(');
+        if ( start >= 0 ) {
+            int end = depotString.indexOf(')', start);
+            if ( end > start ) {
+            	return depotString.substring(start + 1, end).trim();
+            }
+            else {
+            	throw invalidDepotError(depotString, "closing ')' expected");
+            }
+        }
+        return "";
 	}
 	
 	private void checkParts() throws TelosysToolsException {
 		if ( ! VALID_TYPES.contains(type) ) {
-			throw new TelosysToolsException(INVALID_DEPOT + " '" + definition + "', invalid type");
+			throw invalidDepotError(definition, "invalid type");
 		}
 		if ( ! GITHUB_CURRENT_USER.equals(type) && name.isEmpty() ) {
-			throw new TelosysToolsException(INVALID_DEPOT + " '" + definition + "', name required");
+			throw invalidDepotError(definition, "name required");
 		}
 	}
 
+	/**
+	 * Returns the original depot deifinition 
+	 * @return
+	 */
 	public String getDefinition() {
 		return definition;
 	}
 
+	/**
+	 * Returns the depot type (github_org, github_user, etc)
+	 * @return
+	 */
 	public String getType() {
 		return type;
 	}
 
+	/**
+	 * Returns the depot name
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
+
+	/**
+	 * Returns the depot root URL (https://myhost:9090, etc ) 
+	 * @return
+	 */
+	public String getRootURL() {
+		return rootUrl;
+	}
 	
+	/**
+	 * Returns the URL to be used for API requests 
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public String getApiUrl() throws TelosysToolsException {
+		if ( isGitHubDepot() ) {
+			return buildGitHubURL( this.rootUrl.isEmpty() ? GITHUB_DEFAULT_ROOT_URL : this.rootUrl );
+		}
+		else if ( isGitLabDepot() ) {
+			return buildGitLabURL();
+		}
+		else {
+			throw new TelosysToolsException("Cannot build depot URL (unexpected depot type)");
+		}
+	}
+	private String buildGitHubURL(String root) throws TelosysToolsException {
+		if ( this.isGitHubOrganization() ) {
+			// example: https://api.github.com/orgs/telosys-models/repos  
+			return root + "/orgs/" + getName() + "/repos" ; 
+		}
+		else if ( this.isGitHubUser()) {
+			// example: https://api.github.com/users/telosys-models/repos  
+			return root + "/users/" + getName() + "/repos" ; 
+		}
+		else if ( this.isGitHubCurrentUser() ) {
+			// fixed URL
+			return root + "/user/repos";
+		}
+		else {
+			throw new TelosysToolsException("Cannot build GitHub depot URL (invalid depot type)");
+		}		
+	}
+	private String buildGitLabURL() throws TelosysToolsException {
+		throw new TelosysToolsException("Cannot build depot URL - GitLab not yet supported");
+	}
+
+	public String getApiRateLimitUrl() throws TelosysToolsException {
+		if ( isGitHubDepot() ) {
+			String root = this.rootUrl.isEmpty() ? GITHUB_DEFAULT_ROOT_URL : this.rootUrl ;
+			return root + "/rate_limit" ;
+		}
+		else if ( isGitLabDepot() ) {
+			throw new TelosysToolsException("Cannot build rate limit URL - GitLab not yet supported");
+		}
+		else {
+			throw new TelosysToolsException("Cannot build rate limit URL (unexpected depot type)");
+		}
+	}
+
 	public boolean isGitHubDepot() {
 		return type.startsWith("github_");
 	}

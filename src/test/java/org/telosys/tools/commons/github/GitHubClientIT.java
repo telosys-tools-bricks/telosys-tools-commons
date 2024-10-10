@@ -102,7 +102,7 @@ public class GitHubClientIT {
 	public void testGetRateLimitWithoutAuthentication() throws TelosysToolsException {
 		GitHubToken.clear(); // No token => no authentication
 		GitHubClient gitHubClient = buildGitHubClient();
-		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
+		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(new Depot("github_org:myorg"));
 		log("Response body : \n" + rateLimit.getResponseBody());
 		log("Reset date : " + rateLimit.getResetDate()); 
 		assertEquals("60", rateLimit.getLimit()); // no authentication => default rate-limit 
@@ -110,19 +110,20 @@ public class GitHubClientIT {
 
 	@Test 
 	public void testGetRateLimitWithBadAuthentication() throws TelosysToolsException {
-		GitHubToken.set("invalid-token-for-test"  );
+		GitHubToken.set("invalid-token-for-test"  ); // Define an invalid token on the current workstation
 		GitHubClient gitHubClient = buildGitHubClient(); 
-		GitHubRateLimitResponse r = gitHubClient.getRateLimit();		
+		GitHubRateLimitResponse r = gitHubClient.getRateLimit(new Depot("github_org:myorg"));		
 		assertEquals(401, r.getHttpStatusCode());  // HTTP status code = 401 (UNAUTHORIZED)
 		assertTrue(Integer.parseInt(r.getLimit()) <= 60 );     // "0" to "60"
 		assertTrue(Integer.parseInt(r.getRemaining()) <= 60 ); // "0" to "60"
+		GitHubToken.clear(); // Remove invalid token to keep current workstation in a stable state
 	}
 
 	@Test @Ignore // ignore until valid token is set 
 	public void testGetRateLimitWithValidAuthentication() throws TelosysToolsException {
 		GitHubToken.set("replace-by-a-valid-token-for-test" ); // Don't forget to remove it after test
 		GitHubClient gitHubClient = buildGitHubClient(); 
-		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit();
+		GitHubRateLimitResponse rateLimit = gitHubClient.getRateLimit(new Depot("github_org:myorg"));
 		assertEquals("5000", rateLimit.getLimit()); // authentication ok => rate-limit is  
 	}
 

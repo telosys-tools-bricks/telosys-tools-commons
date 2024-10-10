@@ -1,6 +1,7 @@
 package org.telosys.tools.commons.github;
 
 import org.junit.Test;
+import org.telosys.tools.commons.depot.Depot;
 import org.telosys.tools.commons.http.HttpClient;
 import org.telosys.tools.commons.http.HttpResponse;
 
@@ -40,7 +41,7 @@ public class GitHubRateLimitIT {
 		print(new String(response.getBodyContent())) ;
 	}
 
-	private void getRateLimit( String urlString ) throws Exception {
+	private void getRateLimit( String urlString) throws Exception {
 
 		HttpClient httpClient = new HttpClient();
 		HttpResponse response;
@@ -64,12 +65,15 @@ public class GitHubRateLimitIT {
 	
 	@Test
 	public void testGetRateLimitFromUserInfo() throws Exception  {
-		getRateLimit( GitHubClient.GIT_HUB_HOST_URL + "/users/telosys-templates" );
+		// with specific URL 
+		getRateLimit( "https://api.github.com/users/telosys-templates"); // 200 OK
 	}
 	
 	@Test
 	public void testGetRateLimit() throws Exception  {
-		getRateLimit( GitHubClient.GIT_HUB_HOST_URL + "/rate_limit"); // 200 OK
+		// with standard URL "/rate_limit" in the host defined in the depot
+		Depot depot = new Depot("github_org:myorg"); // any "github_xxx" depot type
+		getRateLimit(depot.getApiRateLimitUrl()); // 200 OK
 	}
 	
 }

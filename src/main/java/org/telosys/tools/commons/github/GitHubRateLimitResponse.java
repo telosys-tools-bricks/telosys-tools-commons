@@ -27,12 +27,20 @@ import java.util.Date;
  */
 public class GitHubRateLimitResponse {
 
-	private final GitHubRateLimit rateLimit ;
-	
+	/**
+	 * URL used to get the rate limit  
+	 */
+	private final String url; 
+
 	/**
 	 * HTTP Status Code returned by GitHub
 	 */
 	private final int httpStatusCode ;
+	
+	/**
+	 * Rate limite returned by the server  
+	 */
+	private final GitHubRateLimit rateLimit ;
 	
 	/**
 	 * Http response body in JSON
@@ -41,21 +49,30 @@ public class GitHubRateLimitResponse {
 
 	/**
 	 * Constructor
-	 * @param rateLimit
+	 * @param url
 	 * @param httpStatusCode
+	 * @param rateLimit
 	 * @param responseBody
 	 */
-	protected GitHubRateLimitResponse(GitHubRateLimit rateLimit, int httpStatusCode, String responseBody ) {
+	protected GitHubRateLimitResponse( String url, int httpStatusCode, GitHubRateLimit rateLimit, String responseBody ) {
 		super();
+		if ( url == null ) {
+			throw new IllegalArgumentException("URL is null");
+		}
 		if ( rateLimit == null ) {
-			throw new IllegalStateException("GitHubRateLimit is null");
+			throw new IllegalArgumentException("GitHubRateLimit is null");
 		}
 		if ( responseBody == null ) {
-			throw new IllegalStateException("Response body is null");
+			throw new IllegalArgumentException("Response body is null");
 		}
+		this.url = url;
 		this.rateLimit = rateLimit;
 		this.httpStatusCode = httpStatusCode;
 		this.responseBody = responseBody;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 	public int getHttpStatusCode() {
@@ -76,9 +93,13 @@ public class GitHubRateLimitResponse {
 
 	public Date getResetDate() {
 		// RESET : The time at which the current rate limit window resets in UTC epoch seconds.
-		long seconds = Long.parseLong(this.getReset());
-		long milliseconds = seconds * 1000 ;
-		return new Date(milliseconds);
+		try {
+			long seconds = Long.parseLong(this.getReset()); // Reset can be null if http error => catch NFE 
+			long milliseconds = seconds * 1000 ;
+			return new Date(milliseconds);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	public String getResponseBody() {

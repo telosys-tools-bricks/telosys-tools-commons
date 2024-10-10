@@ -43,9 +43,7 @@ import org.telosys.tools.commons.variables.VariablesManager;
  */
 public class GitHubClient implements DepotClient {
 
-	public static final String VERSION = "3.6 (2024-10-08)" ; // GitHub Client Version (for checking in CLI and Download)
-	
-	protected static final String GIT_HUB_HOST_URL = "https://api.github.com" ;
+	public static final String VERSION = "3.6 (2024-10-10)" ; // GitHub Client Version (for checking in CLI and Download)
 	
 	public static final String GIT_HUB_DOWNLOAD_URL_PATTERN = "https://github.com/${USER}/${REPO}/archive/master.zip" ;
 
@@ -130,28 +128,11 @@ public class GitHubClient implements DepotClient {
 		return repositories;
 	}
 	
-	protected String buildGitHubApiUrl(Depot depot) throws TelosysToolsException {
-		if ( depot.isGitHubOrganization() ) {
-			// example: https://api.github.com/orgs/telosys-models/repos  
-			return GIT_HUB_HOST_URL + "/orgs/" + depot.getName() + "/repos" ; 
-		}
-		else if ( depot.isGitHubUser()) {
-			// example: https://api.github.com/users/telosys-models/repos  
-			return GIT_HUB_HOST_URL + "/users/" + depot.getName() + "/repos" ; 
-		}
-		else if ( depot.isGitHubCurrentUser() ) {
-			// fixed URL
-			return "https://api.github.com/user/repos";
-		}
-		else {
-			throw new TelosysToolsException("Depot error: invalid GitHub type ");
-		}
-	}
+	public DepotResponse getRepositories(Depot depot) throws TelosysToolsException {
+		checkDepotIsGitHub(depot);
 
-	public DepotResponse getRepositories(Depot depot) throws TelosysToolsException {	
 		// Call GitHub API via HTTP
-		// String url = GIT_HUB_HOST_URL + "/users/" + depotName + "/repos" ; // for GitHub 'depotName' = 'GitHub user name'
-		String url = buildGitHubApiUrl(depot);
+		String url = depot.getApiUrl();
 		HttpResponse response = httpGet(url);
 
 		// Rate Limit from http headers 
@@ -243,6 +224,7 @@ public class GitHubClient implements DepotClient {
 	 * @throws TelosysToolsException
 	 */
 	public final long downloadRepository(Depot depot, String repoName, String destinationFile) throws TelosysToolsException {
+		checkDepotIsGitHub(depot);
 		String url = buildGitHubDownloadURL(depot.getName(), repoName);
 		HttpClient httpClient = buildHttpClient();
 		try {
@@ -256,11 +238,17 @@ public class GitHubClient implements DepotClient {
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public GitHubRateLimitResponse getRateLimit() throws TelosysToolsException {
-		String url = GIT_HUB_HOST_URL + "/rate_limit" ;
+	public GitHubRateLimitResponse getRateLimit(Depot depot) throws TelosysToolsException {
+		checkDepotIsGitHub(depot);
+		String url = depot.getApiRateLimitUrl() ;
 		HttpResponse response = httpGet(url);
 		// v 4.2.0 : http status code in GitHubRateLimitResponse
-		return new GitHubRateLimitResponse(new GitHubRateLimit(response), response.getStatusCode(), new String(response.getBodyContent() ));
+		return new GitHubRateLimitResponse(url, response.getStatusCode(), new GitHubRateLimit(response), new String(response.getBodyContent() ));
 	}
 	
+	private void checkDepotIsGitHub(Depot depot) throws TelosysToolsException {
+		if ( ! depot.isGitHubDepot() ) {
+			throw new TelosysToolsException("Invalid Depot argument (" + depot.getDefinition() + ") not a GitHub depot");
+		}
+	}
 }
