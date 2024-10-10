@@ -53,8 +53,8 @@ public class TelosysToolsCfg
 	private final String templatesFolder ; 
 	private final String downloadsFolder ; 
 	private final String librariesFolder ; 
-	private static final String STANDARD_DEPOT_NAME_FOR_MODELS  = "github_org:telosys-models";    // v 4.2.0
-	private static final String STANDARD_DEPOT_NAME_FOR_BUNDLES = "github_org:telosys-templates"; // v 4.2.0
+	private static final String STANDARD_DEPOT_FOR_MODELS  = "github_org:telosys-models";    // v 4.2.0
+	private static final String STANDARD_DEPOT_FOR_BUNDLES = "github_org:telosys-templates"; // v 4.2.0
 	
 	//--- Project specific values
 	private static final String PROPERTY_SPECIFIC_DESTINATION_FOLDER  = "SpecificDestinationFolder";
@@ -66,11 +66,11 @@ public class TelosysToolsCfg
 	private static final String PROPERTY_SPECIFIC_MODELS_FOLDER       = "SpecificModelsFolder"; // V 3.4.0
 	private String specificModelsFolder = "" ;  // v 3.4.0
 	
-	private static final String PROPERTY_SPECIFIC_DEPOT_NAME_FOR_MODELS = "SpecificDepotNameForModels"; // 4.2.0
-	private String specificDepotNameForModels = ""; // v 4.2.0
+	private static final String PROPERTY_SPECIFIC_DEPOT_FOR_MODELS = "SpecificDepotForModels"; // 4.2.0
+	private String specificDepotForModels = ""; // v 4.2.0
 
-	private static final String PROPERTY_SPECIFIC_DEPOT_NAME_FOR_BUNDLES = "SpecificDepotNameForBundles"; // 4.2.0
-	private String specificDepotNameForBundles = ""; // v 4.2.0
+	private static final String PROPERTY_SPECIFIC_DEPOT_FOR_BUNDLES = "SpecificDepotForBundles"; // 4.2.0
+	private String specificDepotForBundles = ""; // v 4.2.0
 
 	//----------------------------------------------------------------------------------------
 	// Variables
@@ -126,8 +126,8 @@ public class TelosysToolsCfg
 	    	specificTemplatesFolder   = prop.getProperty(PROPERTY_SPECIFIC_TEMPLATES_FOLDER, specificTemplatesFolder);
 	    	specificModelsFolder      = prop.getProperty(PROPERTY_SPECIFIC_MODELS_FOLDER, specificModelsFolder); // v 3.4.0
 
-	    	specificDepotNameForModels  = prop.getProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_MODELS,  specificDepotNameForModels ); // v 4.2.0
-	    	specificDepotNameForBundles = prop.getProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_BUNDLES, specificDepotNameForBundles); // v 4.2.0
+	    	specificDepotForModels  = prop.getProperty(PROPERTY_SPECIFIC_DEPOT_FOR_MODELS,  specificDepotForModels ); // v 4.2.0
+	    	specificDepotForBundles = prop.getProperty(PROPERTY_SPECIFIC_DEPOT_FOR_BUNDLES, specificDepotForBundles); // v 4.2.0
 	    	
 	    	//--- Packages 
 	    	varRootPkg   = prop.getProperty(VariablesNames.ROOT_PKG,   varRootPkg);
@@ -174,8 +174,8 @@ public class TelosysToolsCfg
     	properties.setProperty(PROPERTY_SPECIFIC_TEMPLATES_FOLDER,   specificTemplatesFolder );
     	properties.setProperty(PROPERTY_SPECIFIC_MODELS_FOLDER,      specificModelsFolder ); // v 3.4.0
 
-    	properties.setProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_MODELS,  specificDepotNameForModels );  // v 4.2.0
-    	properties.setProperty(PROPERTY_SPECIFIC_DEPOT_NAME_FOR_BUNDLES, specificDepotNameForBundles ); // v 4.2.0
+    	properties.setProperty(PROPERTY_SPECIFIC_DEPOT_FOR_MODELS,  specificDepotForModels );  // v 4.2.0
+    	properties.setProperty(PROPERTY_SPECIFIC_DEPOT_FOR_BUNDLES, specificDepotForBundles ); // v 4.2.0
     	
     	//--- Packages 
     	properties.setProperty(VariablesNames.ROOT_PKG,   varRootPkg);
@@ -478,8 +478,8 @@ public class TelosysToolsCfg
 	 * @return
 	 * @since 4.2.0
 	 */
-	protected boolean hasSpecificDepotNameForBundles() { 
-		return ! StrUtil.nullOrVoid( specificDepotNameForBundles ) ;
+	protected boolean hasSpecificDepotForBundles() { 
+		return ! StrUtil.nullOrVoid( specificDepotForBundles ) ;
 	}
 	
     /**
@@ -487,12 +487,12 @@ public class TelosysToolsCfg
      * @return
 	 * @since 4.2.0
      */
-    public String getDepotNameForBundles() {
-    	if ( this.hasSpecificDepotNameForBundles() ) {
-    		return specificDepotNameForBundles;
+    public String getDepotForBundles() {
+    	if ( this.hasSpecificDepotForBundles() ) {
+    		return specificDepotForBundles;
     	}
     	else {
-    		return STANDARD_DEPOT_NAME_FOR_BUNDLES ;
+    		return STANDARD_DEPOT_FOR_BUNDLES ;
     	}    	
     }
     
@@ -503,8 +503,8 @@ public class TelosysToolsCfg
 	 * @return
 	 * @since 4.2.0
 	 */
-	protected boolean hasSpecificDepotNameForModels() { 
-		return ! StrUtil.nullOrVoid( specificDepotNameForModels ) ;
+	protected boolean hasSpecificDepotForModels() { 
+		return ! StrUtil.nullOrVoid( specificDepotForModels ) ;
 	}
 	
     /**
@@ -512,12 +512,12 @@ public class TelosysToolsCfg
      * @return
 	 * @since 4.2.0
      */
-    public String getDepotNameForModels() {
-    	if ( this.hasSpecificDepotNameForModels() ) {
-    		return specificDepotNameForModels;
+    public String getDepotForModels() {
+    	if ( this.hasSpecificDepotForModels() ) {
+    		return specificDepotForModels;
     	}
     	else {
-    		return STANDARD_DEPOT_NAME_FOR_MODELS ;
+    		return STANDARD_DEPOT_FOR_MODELS ;
     	}    	
     }
     
