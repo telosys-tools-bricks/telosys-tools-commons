@@ -43,9 +43,10 @@ import org.telosys.tools.commons.variables.VariablesManager;
  */
 public class GitHubClient implements DepotClient {
 
-	public static final String VERSION = "3.6 (2024-10-10)" ; // GitHub Client Version (for checking in CLI and Download)
+	public static final String VERSION = "3.6 (2024-10-14)" ; // GitHub Client Version (for checking in CLI and Download)
 	
-	public static final String GIT_HUB_DOWNLOAD_URL_PATTERN = "https://github.com/${USER}/${REPO}/archive/master.zip" ;
+	// v 4.2.0 (with branch parameter)
+	private static final String DOWNLOAD_BRANCH_URL_PATTERN = "https://github.com/${DEPOT}/${REPO}/archive/refs/heads/${BRANCH}.zip" ;
 
 	private final String propertiesFileAbsolutePath ;
 	
@@ -100,23 +101,28 @@ public class GitHubClient implements DepotClient {
 		}
 	}
 	
+	private DepotElement buildDepotElementFromJSON(JSONObject jsonObject) throws TelosysToolsException {		
+		long   id   = getLongAttribute(jsonObject, "id");
+		String name = getStringAttribute(jsonObject, "name", "(#"+id+"-no-name)");
+		String description = getStringAttribute(jsonObject, "description", "");
+		long   size = getLongAttribute(jsonObject, "size");
+		String defaultBranch = getStringAttribute(jsonObject, "default_branch", ""); // v 4.2.0
+		String visibility = getStringAttribute(jsonObject, "visibility", ""); // v 4.2.0
+		return new DepotElement(id, name, description, size, defaultBranch, visibility );
+	}
+	
 	private List<DepotElement> getDepotElementsFromJSON(String responseBody) throws TelosysToolsException {
 
 		// JSON parsing
 		List<DepotElement> repositories = new LinkedList<>();
 		JSONParser parser = new JSONParser();
 		try {
-			Object oList = parser.parse(responseBody);
-			if ( oList instanceof JSONArray ) {
-				JSONArray repositoriesArray = (JSONArray) oList ;
-				for ( Object repositoryObject: repositoriesArray ) {
-					JSONObject repo = (JSONObject) repositoryObject ; 
-					long   id   = getLongAttribute(repo, "id");
-					String name = getStringAttribute(repo, "name", "(#"+id+"-no-name)");
-					String description = getStringAttribute(repo, "description", "(no-description)");
-					long   size = getLongAttribute(repo, "size");
-					// Add the repository in the list
-					repositories.add( new DepotElement(id, name, description, size ) );
+			Object object = parser.parse(responseBody);
+			if ( object instanceof JSONArray ) {
+				JSONArray jsonArray = (JSONArray) object ;
+				for ( Object repositoryObject: jsonArray ) {
+					JSONObject jsonObject = (JSONObject) repositoryObject ; 
+					repositories.add( buildDepotElementFromJSON(jsonObject) );
 				}
 			}
 			else {
@@ -128,6 +134,10 @@ public class GitHubClient implements DepotClient {
 		return repositories;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.telosys.tools.commons.depot.DepotClient#getRepositories(org.telosys.tools.commons.depot.Depot)
+	 */
+	@Override
 	public DepotResponse getRepositories(Depot depot) throws TelosysToolsException {
 		checkDepotIsGitHub(depot);
 
@@ -206,26 +216,22 @@ public class GitHubClient implements DepotClient {
 		}
 	}
 
-	protected String buildGitHubDownloadURL(String userName, String repoName) {
-		HashMap<String,String> hmVariables = new HashMap<>();
-		hmVariables.put("${USER}", userName);
-		hmVariables.put("${REPO}", repoName);
-		VariablesManager variablesManager = new VariablesManager(hmVariables);
-		return variablesManager.replaceVariables(GIT_HUB_DOWNLOAD_URL_PATTERN);
+	protected String buildDownloadBranchURL(String userName, String repoName, String branch) {
+		HashMap<String,String> variables = new HashMap<>();
+		variables.put("${DEPOT}", userName);
+		variables.put("${REPO}", repoName);
+		variables.put("${BRANCH}", branch);
+		VariablesManager variablesManager = new VariablesManager(variables);
+		return variablesManager.replaceVariables(DOWNLOAD_BRANCH_URL_PATTERN);
 	}
 	
-	/**
-	 * Downloads a GitHub repository (e.g. "https://github.com/telosys-templates/{REPOSITORY}-master.zip" )<br>
-	 * Simple HTTP download, doesn't use the GitHub API <br>
-	 * @param depot
-	 * @param repoName GitHub repository name ( e.g. "php7-web-mvc" or "python-web-rest-bottle" )
-	 * @param destinationFile the full file name on the filesystem 
-	 * @return file size (bytes count)
-	 * @throws TelosysToolsException
+	/* (non-Javadoc)
+	 * @see org.telosys.tools.commons.depot.DepotClient#downloadRepositoryBranch(org.telosys.tools.commons.depot.Depot, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public final long downloadRepository(Depot depot, String repoName, String destinationFile) throws TelosysToolsException {
+	@Override
+	public final long downloadRepositoryBranch(Depot depot, String repoName, String branch, String destinationFile) throws TelosysToolsException {
 		checkDepotIsGitHub(depot);
-		String url = buildGitHubDownloadURL(depot.getName(), repoName);
+		String url = buildDownloadBranchURL(depot.getName(), repoName, branch);
 		HttpClient httpClient = buildHttpClient();
 		try {
 			return httpClient.downloadFile(url, destinationFile);

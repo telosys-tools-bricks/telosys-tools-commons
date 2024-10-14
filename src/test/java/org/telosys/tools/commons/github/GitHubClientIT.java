@@ -1,5 +1,6 @@
 package org.telosys.tools.commons.github;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.Ignore;
@@ -10,6 +11,7 @@ import org.telosys.tools.commons.depot.DepotElement;
 import org.telosys.tools.commons.depot.DepotResponse;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import junit.env.telosys.tools.commons.TestsEnv;
@@ -28,9 +30,8 @@ public class GitHubClientIT {
 	private void log(String msg) {
 		System.out.println(msg);
 	}
-	private void printJavaVersion() {
-		log("Setting system property 'https.protocols'... ");
-
+	private void printJavaVersionAndHttpCfg() {
+//		log("Setting system property 'https.protocols'... ");
 //		// OK    on testGetRepositories(), testGetRepositoriesWithoutProperties()
 //		// Error on testDownloadRepository() : SSLException: Received fatal alert: protocol_version
 //		//System.setProperty("https.protocols", "SSLv3,TLSv1,TLSv1.1,TLSv1.2"); 
@@ -48,45 +49,55 @@ public class GitHubClientIT {
 	}
 
 	@Test
-	public void testGetRepositories() throws TelosysToolsException  {
+	public void testGetRepositoriesForBundles() throws TelosysToolsException  {
 		log("Getting repositories with properties ... ");
-		printJavaVersion() ;
-		getRepositories();
+		List<DepotElement> repositories = getRepositories("github_user:telosys-templates");
+		assertNotNull(repositories);
+		for ( DepotElement repo : repositories ) {
+			assertEquals("public", repo.getVisibility() );
+			assertEquals("master", repo.getDefaultBranch() );
+		}
 	}
 	
 	@Test
-	public void testGetRepositoriesWithoutProperties() throws TelosysToolsException  {		
+	public void testGetRepositoriesForModels() throws TelosysToolsException  {		
 		log("Getting repositories without properties (null argument) ... ");
-		printJavaVersion() ;
-		getRepositories();
+		List<DepotElement> repositories = getRepositories("github_org:telosys-models");
+		assertNotNull(repositories);
+		for ( DepotElement repo : repositories ) {
+			assertEquals("public", repo.getVisibility() );
+			assertEquals("master", repo.getDefaultBranch() );
+		}
 	}
 	
 	private GitHubClient buildGitHubClient() {
 		return new GitHubClient( TestsEnv.getTestFile("cfg/telosys-tools.cfg").getAbsolutePath() ); // v 4.1.1
 	}
 	
-	private void getRepositories() throws TelosysToolsException  {
+	private List<DepotElement> getRepositories(String depotDefinition) throws TelosysToolsException  {
 		log("Getting repositories... ");
-		printJavaVersion() ;
+		printJavaVersionAndHttpCfg() ;
 
 		GitHubClient gitHubClient = buildGitHubClient();
 		
-		DepotResponse githubResponse = gitHubClient.getRepositories(new Depot("github_user:telosys-templates"));
+		DepotResponse githubResponse = gitHubClient.getRepositories(new Depot(depotDefinition));
 		
 		log( githubResponse.getResponseBody() );
 		
 		List<DepotElement> repositories = githubResponse.getElements();
 		log("Repositories (" + repositories.size() + ") : ");
 		for ( DepotElement repo : repositories ) {
-			log(" .  '" + repo.getName() + "' / " 
-					+ repo.getId() + " / '" + repo.getDescription() + "' / " + repo.getSize() );
+			log(" .  '" + repo.getName() + "'" 
+					+ " / " + repo.getId() + " / '" + repo.getDescription() + "' / " + repo.getSize()
+					+ " / '" + repo.getDefaultBranch() + "' / '" + repo.getVisibility() + "'");
 		}
+		return repositories;
 	}
 	
 	@Test
-	public void testDownloadRepository() throws TelosysToolsException {
+	public void testDownloadRepositoryBranch() throws TelosysToolsException {
 
-		printJavaVersion() ;
+		printJavaVersionAndHttpCfg() ;
 		
 		GitHubClient gitHubClient = buildGitHubClient(); 
 		
@@ -94,8 +105,9 @@ public class GitHubClientIT {
 		String destinationFile = TestsEnv.getTmpDownloadFolderFullPath() + "/" + repoName + ".zip" ;
 		log("Download repository " + repoName );
 		log("                 to " + destinationFile );
-		gitHubClient.downloadRepository(new Depot("github_user:telosys-templates"), repoName, destinationFile);
+		gitHubClient.downloadRepositoryBranch(new Depot("github_user:telosys-templates"), repoName, "master", destinationFile);
 		log("Done.");		
+		assertTrue(new File(destinationFile).exists());
 	}
 
 	@Test

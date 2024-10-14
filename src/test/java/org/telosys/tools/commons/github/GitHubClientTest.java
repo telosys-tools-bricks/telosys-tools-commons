@@ -22,10 +22,14 @@ public class GitHubClientTest {
 	}
 	
 	@Test
-	public void testDownloadRepository() {
+	public void testDownloadRepositoryURL() {
 		GitHubClient gitHubClient = buildGitHubClient(); 
-		String url = gitHubClient.buildGitHubDownloadURL("telosys-templates", "php7-web-mvc");
-		assertEquals("https://github.com/telosys-templates/php7-web-mvc/archive/master.zip", url);
+		
+		String url = gitHubClient.buildDownloadBranchURL("telosys-templates", "php7-web-mvc", "master");
+		assertEquals("https://github.com/telosys-templates/php7-web-mvc/archive/refs/heads/master.zip", url);
+
+		url = gitHubClient.buildDownloadBranchURL("telosys-models", "foo-model", "main");
+		assertEquals("https://github.com/telosys-models/foo-model/archive/refs/heads/main.zip", url);
 	}
 
 }

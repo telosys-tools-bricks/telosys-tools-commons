@@ -7,6 +7,7 @@ import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.depot.Depot;
+import org.telosys.tools.commons.depot.DepotElement;
 import org.telosys.tools.commons.depot.DepotResponse;
 import org.telosys.tools.commons.github.GitHubToken;
 
@@ -22,6 +23,10 @@ import junit.framework.TestCase;
  *
  */
 public class ModelsManagerIT extends TestCase {
+	private static final String DEPOT = "github_org:telosys-models" ;  
+	private static final String MASTER = "master" ;
+	private static final String BRANCH = "master" ;
+	private static final String MODEL_NAME = "cars" ;
 
 	private void println(String s) {
 		System.out.println(s);
@@ -47,9 +52,11 @@ public class ModelsManagerIT extends TestCase {
 		println("--- response body");
 		println(depotResponse.getResponseBody());
 		println("---");
-		for ( String s : depotResponse.getElementNames() ) {
-			println(" . " + s );
-		}
+		for ( DepotElement e : depotResponse.getElements() ) {
+			println(" . " + e.getName() + " / " + e.getDefaultBranch() );
+			assertEquals("public", e.getVisibility() );
+			assertEquals(MASTER, e.getDefaultBranch() );
+		}		
 		println("Message : " + depotResponse.getRateLimit().getStandardMessage() );
 		return depotResponse;
 	}
@@ -62,7 +69,7 @@ public class ModelsManagerIT extends TestCase {
 	
 	@Test
 	public void testGetModelsFromDepotViaGitHubOrg() throws TelosysToolsException {
-		DepotResponse depotResponse = getModelsFromDepot("github_org:telosys-models");
+		DepotResponse depotResponse = getModelsFromDepot(DEPOT);
 		assertEquals(200, depotResponse.getHttpStatusCode());
 	}
 	
@@ -72,67 +79,28 @@ public class ModelsManagerIT extends TestCase {
 		assertEquals(401, depotResponse.getHttpStatusCode()); // No user token => 401 "Requires authentication"
 	}
 	
-//	public void testIsBundleInstalled() {
-//		println("========== isBundleAlreadyInstalled  ");
-//		ModelsManager mm = initProjectAndGetModelsManager() ;
-//		boolean b = mm.isModelAlreadyInstalled("no-installed");
-//		assertFalse(b);
-//	}
-
-	public void testDownloadOK() throws TelosysToolsException {
-		println("========== Download  ");
+	@Test
+	public void testIsModelAlreadyInstalled() throws TelosysToolsException {
 		ModelsManager mm = initProjectAndGetModelsManager() ;
-//		println("Downloading bundle '" + BUNDLE_NAME + "'...");
-		String zipFileFullPath = mm.downloadModel(new Depot("github_org:telosys-models"), "cars");
-		println("File " + zipFileFullPath);
-		assertTrue(zipFileFullPath.endsWith("cars.zip"));
+		boolean b = mm.isModelAlreadyInstalled("no-installed");
+		assertFalse(b);
 	}
 
-//	public void testDownloadBundleInSpecificFolder() throws TelosysToolsException  {
-//		println("========== Download in specific folder ");
-//		BundlesManager bm = getBundlesManager();
-//		println("Downloading bundle in specific folder '" + BUNDLE_NAME + "'...");
-//		TestsEnv.getTmpExistingFolder("myproject/TelosysTools/downloads2"); // Creates the folder if it doesn't exists yet
-//		String zipFileFullPath = bm.downloadBundle(DEPOT_NAME, BUNDLE_NAME, "TelosysTools/downloads2");
-//		assertTrue(zipFileFullPath.endsWith(BUNDLE_NAME+".zip"));
-//	}
-//
-//	@Test
-//	public void testDownloadBundleInNonExistentFolder() {
-//		println("========== Download in non existent folder ");
-//		BundlesManager bm = getBundlesManager();
-//		println("Downloading bundle '" + BUNDLE_NAME + "'...");
-//
-//		org.junit.Assert.assertThrows(TelosysToolsException.class, () -> bm.downloadBundle(DEPOT_NAME, BUNDLE_NAME, "TelosysTools/downloads-inex") );
-//	}
-//
-//	public void testDownloadThenInstallBundle() throws TelosysToolsException { 
-//		println("========== Download + Install ");
-//		String bundleName = BUNDLE_NAME2 ; 
-//		BundlesManager bm = getBundlesManager();
-//		println("Downloading bundle '" + bundleName + "'...");
-//		
-//		String zipFileFullPath = bm.downloadBundle(DEPOT_NAME, bundleName);
-//		assertTrue(zipFileFullPath.endsWith(bundleName+".zip"));
-//		
-//		bm.deleteBundle(bundleName);
-//		assertFalse(bm.isBundleAlreadyInstalled(bundleName));
-//		
-//		// 1rst time : not already installed
-//		assertTrue(  bm.installBundle(zipFileFullPath, bundleName) );
-//		// 2nd time : already installed
-//		assertFalse(  bm.installBundle(zipFileFullPath, bundleName) );
-//	}
-//
-//	public void testDownloadAndInstallBundle() throws TelosysToolsException { 
-//		println("========== downloadAndInstallBundle ");
-//		BundlesManager bm = getBundlesManager();
-//
-//		bm.deleteBundle(BUNDLE_NAME2);
-//		// 1rst time : not already installed
-//		assertTrue( bm.downloadAndInstallBundle(DEPOT_NAME, BUNDLE_NAME2) );
-//		// 2nd time : already installed
-//		assertFalse( bm.downloadAndInstallBundle(DEPOT_NAME, BUNDLE_NAME2) );
-//	}
+	@Test
+	public void testDownloadOK() throws TelosysToolsException {
+		ModelsManager mm = initProjectAndGetModelsManager() ;
+		String zipFileFullPath = mm.downloadModelBranch(new Depot(DEPOT), MODEL_NAME, BRANCH);
+		assertTrue(zipFileFullPath.endsWith("cars.zip"));
+	}
+	
+	@Test
+	public void testDownloadAndInstall() throws TelosysToolsException { 
+		ModelsManager mm = initProjectAndGetModelsManager() ;
+		mm.deleteModel(MODEL_NAME);
+		// 1rst time : not already installed
+		assertTrue( mm.downloadAndInstallModelBranch(new Depot(DEPOT), MODEL_NAME, BRANCH) );
+		// 2nd time : already installed
+		assertFalse( mm.downloadAndInstallModelBranch(new Depot(DEPOT), MODEL_NAME, BRANCH) );
+	}
 
 }

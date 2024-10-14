@@ -129,25 +129,27 @@ public class BundlesManager {
 	 * Dowloads the given bundle from the given depot 
 	 * @param depot
 	 * @param bundleName
+	 * @param branch
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public String downloadBundle(Depot depot, String bundleName) throws TelosysToolsException {
+	public String downloadBundleBranch(Depot depot, String bundleName, String branch) throws TelosysToolsException {
 		String downloadedFile = FileUtil.buildFilePath(telosysToolsCfg.getDownloadsFolderAbsolutePath(), bundleName + ".zip");		
 		DepotClient depotClient = DepotClientProvider.getDepotClient(depot, telosysToolsCfg);
-		depotClient.downloadRepository(depot, bundleName, downloadedFile);
+		depotClient.downloadRepositoryBranch(depot, bundleName, branch, downloadedFile);
 		return downloadedFile;
 	}
 	
 	/**
 	 * Dowloads the given bundle from the given depot and install it 
 	 * @param depot
-	 * @param modelName
+	 * @param bundleName
+	 * @param branch
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public boolean downloadAndInstallBundle(Depot depot, String bundleName) throws TelosysToolsException {
-		String downloadedFile = downloadBundle(depot, bundleName ) ;
+	public boolean downloadAndInstallBundleBranch(Depot depot, String bundleName, String branch) throws TelosysToolsException {
+		String downloadedFile = downloadBundleBranch(depot, bundleName, branch) ;
 		return installBundle(downloadedFile, bundleName);
 	}
 	//--------------------------------------------------------------------------------------------------

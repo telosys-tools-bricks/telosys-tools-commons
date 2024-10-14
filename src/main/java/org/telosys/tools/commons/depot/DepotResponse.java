@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.telosys.tools.commons.Filter;
+
 /**
  * This class holds a list of bubdles provided by a "depot" (GitHub, GitLab, etc) <br>
  * it also contains "API Rate Limit" information if provided by the depot API 
@@ -123,6 +125,40 @@ public class DepotResponse {
 		return elements;
 	}
 
+	/**
+	 * Search and return an element by its name 
+	 * @param elementName
+	 * @return element found or null
+	 */
+	public DepotElement getElementByName(String elementName) {
+		for ( DepotElement e : elements) {
+			if ( elementName.equals(e.getName()) ) {
+				return e; 
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Filter elements list according to given criteria
+	 * @param criteria
+	 * @return
+	 */
+	public List<DepotElement> filterElementsByName(List<String> criteria) {
+		if ( Filter.noCriteria(criteria)) {
+			return elements; // no filtering
+		}
+		else {
+			List<DepotElement> result = new LinkedList<>();
+			for ( DepotElement element : elements ) {
+				if ( Filter.keepElement(element.getName(), criteria) ) {
+					result.add(element);
+				}
+			}
+			return result;
+		}
+	}
+	
 	/**
 	 * Returns a list of element names (repository names)
 	 * @return

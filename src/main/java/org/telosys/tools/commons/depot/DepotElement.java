@@ -32,6 +32,9 @@ public class DepotElement {
 
 	private final long   size ;
 	
+	private final String defaultBranch ; // v 4.2.0
+
+	private final String visibility ; // v 4.2.0
 	
 	/**
 	 * Constructor
@@ -39,13 +42,17 @@ public class DepotElement {
 	 * @param name
 	 * @param description
 	 * @param size
+	 * @param defaultBranch
+	 * @param visibility
 	 */
-	public DepotElement(long id, String name, String description, long size) {
+	public DepotElement(long id, String name, String description, long size, String defaultBranch, String visibility) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.size = size ;
+		this.defaultBranch = defaultBranch ;
+		this.visibility = visibility ;
 	}
 
 	public long getId() {
@@ -64,4 +71,11 @@ public class DepotElement {
 		return size;
 	}
 
+	public String getDefaultBranch() {
+		return defaultBranch;
+	}
+	
+	public String getVisibility() {
+		return visibility;
+	}
 }

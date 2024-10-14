@@ -10,6 +10,35 @@ import junit.framework.TestCase;
 
 public class FilterTest extends TestCase {
 
+	@Test
+	public void testNoCriterion() {
+		assertTrue(Filter.noCriterion(null));		
+		assertTrue(Filter.noCriterion("")); 
+		assertTrue(Filter.noCriterion("*")); 
+		
+		assertFalse(Filter.noCriterion("aa"));
+		assertFalse(Filter.noCriterion(" "));
+	}
+
+	@Test
+	public void testNoCriteria() {
+
+		assertTrue(Filter.noCriteria(null));
+		
+		List<String> criteria = new LinkedList<>();
+		assertTrue(Filter.noCriteria(criteria)); // void => no criteria
+		
+		criteria.add("aaa");
+		criteria.add("*"); // all => no criteria
+		criteria.add("bbb");
+		assertTrue(Filter.noCriteria(criteria));
+
+		criteria = new LinkedList<>();
+		criteria.add("aaa");
+		assertFalse(Filter.noCriteria(criteria));
+		criteria.add("bb");
+		assertFalse(Filter.noCriteria(criteria));
+	}
 
 	@Test
 	public void testCriteriaNull() {
@@ -26,7 +55,7 @@ public class FilterTest extends TestCase {
 	@Test
 	public void testCriteriaVoid() {
 		List<String> list = Arrays.asList("foo", "bar");
-		List<String> list2 = Filter.filter(list, new LinkedList<String>());
+		List<String> list2 = Filter.filter(list, new LinkedList<>());
 		assertEquals(2, list2.size()); 
 	}
 	@Test

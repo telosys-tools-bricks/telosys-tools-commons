@@ -19,8 +19,23 @@ import org.telosys.tools.commons.TelosysToolsException;
 
 public interface DepotClient {
 
+	/**
+	 * Get all repositories available in the given depot
+	 * @param depot
+	 * @return
+	 * @throws TelosysToolsException
+	 */
 	DepotResponse getRepositories(Depot depot) throws TelosysToolsException ;
 	
-	long downloadRepository(Depot depot, String bundleName, String downloadedFile) throws TelosysToolsException;
+	/**
+	 * Download a repository from the given depot 
+	 * @param depot
+	 * @param repoName repository to download 
+	 * @param branch   repository branch to download
+	 * @param downloadedFile
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	long downloadRepositoryBranch(Depot depot, String repoName, String branch, String downloadedFile) throws TelosysToolsException;
 
 }

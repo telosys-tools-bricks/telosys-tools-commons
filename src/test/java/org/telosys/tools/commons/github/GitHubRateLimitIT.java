@@ -5,6 +5,8 @@ import org.telosys.tools.commons.depot.Depot;
 import org.telosys.tools.commons.http.HttpClient;
 import org.telosys.tools.commons.http.HttpResponse;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * This class is "IT" ( Integration Test) 
  * 
@@ -41,7 +43,7 @@ public class GitHubRateLimitIT {
 		print(new String(response.getBodyContent())) ;
 	}
 
-	private void getRateLimit( String urlString) throws Exception {
+	private GitHubRateLimit getRateLimit( String urlString) throws Exception {
 
 		HttpClient httpClient = new HttpClient();
 		HttpResponse response;
@@ -61,19 +63,23 @@ public class GitHubRateLimitIT {
 		print(" . getLimitAsInt()     -> " + gitHubRateLimit.getLimitAsInt() ) ;
 		print(" . getRemainingAsInt() -> " + gitHubRateLimit.getRemainingAsInt() ) ;
 		print(" . getResetAsDate()    -> " + gitHubRateLimit.getResetAsDate() ) ;
+		
+		return gitHubRateLimit;
 	}
 	
 	@Test
 	public void testGetRateLimitFromUserInfo() throws Exception  {
 		// with specific URL 
-		getRateLimit( "https://api.github.com/users/telosys-templates"); // 200 OK
+		GitHubRateLimit rateLimit = getRateLimit( "https://api.github.com/users/telosys-templates"); // 200 OK
+		assertTrue( rateLimit.getRemainingAsInt() <= rateLimit.getLimitAsInt() );
 	}
 	
 	@Test
 	public void testGetRateLimit() throws Exception  {
 		// with standard URL "/rate_limit" in the host defined in the depot
 		Depot depot = new Depot("github_org:myorg"); // any "github_xxx" depot type
-		getRateLimit(depot.getApiRateLimitUrl()); // 200 OK
+		GitHubRateLimit rateLimit = getRateLimit(depot.getApiRateLimitUrl()); // 200 OK
+		assertTrue( rateLimit.getRemainingAsInt() <= rateLimit.getLimitAsInt() );
 	}
 	
 }

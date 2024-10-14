@@ -656,12 +656,10 @@ public class TelosysToolsCfg
     }
     
 	/**
-	 * Set the specific templates folder (absolute path) <br>
-	 * ( e.g. "X:/foo/bar/myfolder" or "" for not defined )
+	 * For tests only
 	 * @param newValue
-     * @since v 3.0.0
 	 */
-	public void setSpecificTemplatesFolderAbsolutePath(String newValue) {
+	protected void setSpecificTemplatesFolderAbsolutePath(String newValue) {
 		if ( newValue == null ) {
 			specificTemplatesFolder = "" ;
 		}

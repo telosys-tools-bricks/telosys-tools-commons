@@ -17,6 +17,7 @@ package org.telosys.tools.commons.models;
 
 import java.io.File;
 
+import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.ZipUtil;
@@ -81,21 +82,29 @@ public class ModelsManager {
 		return depotClient.getRepositories(depot);
 	}
 
-	public String downloadModel(Depot depot, String modelName) throws TelosysToolsException {
+	/**
+	 * @param depot
+	 * @param modelName
+	 * @param branch
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public String downloadModelBranch(Depot depot, String modelName, String branch) throws TelosysToolsException {
 		String downloadedFile = FileUtil.buildFilePath(telosysToolsCfg.getDownloadsFolderAbsolutePath(), modelName + ".zip");
 		DepotClient depotClient = DepotClientProvider.getDepotClient(depot, telosysToolsCfg);
-		depotClient.downloadRepository(depot, modelName, downloadedFile);
+		depotClient.downloadRepositoryBranch(depot, modelName, branch, downloadedFile);
 		return downloadedFile;
 	}
 	
 	/**
 	 * @param depot
 	 * @param modelName
+	 * @param branch
 	 * @return
 	 * @throws TelosysToolsException
 	 */
-	public boolean downloadAndInstallModel(Depot depot, String modelName) throws TelosysToolsException {
-		String downloadedFile = downloadModel(depot, modelName ) ;
+	public boolean downloadAndInstallModelBranch(Depot depot, String modelName, String branch) throws TelosysToolsException {
+		String downloadedFile = downloadModelBranch(depot, modelName, branch ) ;
 		return installModel(downloadedFile, modelName);
 	}
 
@@ -123,12 +132,39 @@ public class ModelsManager {
 	}
 
 	/**
+	 * Deletes the given model
+	 * @param modelName
+	 * @return true if found and deleted, false if not found
+	 * @throws TelosysToolsException
+	 */
+	public boolean deleteModel( String modelName ) throws TelosysToolsException {
+		String modelFolder = telosysToolsCfg.getModelFolderAbsolutePath(modelName);
+		File file = new File(modelFolder);
+		if ( file.isDirectory() ) {  // file exists and is a directory
+			// directory found => deleted it 
+			DirUtil.deleteDirectory(file);
+			return true ;
+		}
+		return false ;
+	}
+	
+	/**
 	 * Returns true if the given file/folder is a 'model' ( a directory containing a 'model.yaml' file )
 	 * @param file
 	 * @return
 	 */
 	public boolean isModel(File file) {
 		return file != null && file.isDirectory() && modelFolderContainsModelYamlFile(file) ;
+	}
+	
+	/**
+	 * Returns true if the model is already installed (if the model's folder exists)
+	 * @param modelName
+	 * @return
+	 */
+	public boolean isModelAlreadyInstalled(String modelName) {
+		File file = getModelFolder(modelName) ;
+		return file.exists();
 	}
 	
 	/**

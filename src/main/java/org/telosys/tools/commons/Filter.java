@@ -29,12 +29,12 @@ public class Filter {
 	/**
 	 * Filter the given list with the given criterion
 	 * @param elements
-	 * @param criteria
+	 * @param criterion
 	 * @return
 	 */
 	public static List<String> filter(List<String> elements, String criterion) {
 
-		if ( criterion == null || criterion.isEmpty() || "*".equals(criterion))  {
+		if ( noCriterion(criterion) )  {
 			// No criterion => no filter => return the same list
 			return elements ;
 		}
@@ -74,7 +74,13 @@ public class Filter {
 		}
 	}
 	
-	private static boolean keepElement(String element, List<String> criteria) {
+	/**
+	 * Returns true if the given element must be kept according with the given criteria
+	 * @param element
+	 * @param criteria
+	 * @return
+	 */
+	public static boolean keepElement(String element, List<String> criteria) {
 		for ( String criterion : criteria ) {
 			if ( keepElement(element, criterion) ) {
 				return true;
@@ -82,25 +88,23 @@ public class Filter {
 		}
 		return false;
 	}
-	private static boolean keepElement(String element, String criterion) {
-		if ( element.contains(criterion) ) {
-			return true;
-		}
-		return false;
+	
+	/**
+	 * Returns true if the given element must be kept according with the given criterion
+	 * @param element
+	 * @param criterion
+	 * @return
+	 */
+	public static boolean keepElement(String element, String criterion) {
+		return element.contains(criterion);
 	}
 	
-	private static boolean noCriteria(List<String> criteria) {
-		if ( criteria == null ) {
-			return true ;
-		}
-		else if ( criteria.isEmpty() )  {
-			return true ;
-		}
-		else if ( criteria.contains("*") )  {
-			// only 1 element = "*"
-			return true ;
-		}
-		return false;
+	public static boolean noCriterion(String criterion) {
+		return criterion == null || criterion.isEmpty() || "*".equals(criterion);
+	}
+	
+	public static boolean noCriteria(List<String> criteria) {
+		return criteria == null || criteria.isEmpty() || criteria.contains("*"); 
 	}
 	
 }
