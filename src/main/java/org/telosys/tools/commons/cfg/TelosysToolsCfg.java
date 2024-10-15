@@ -99,13 +99,11 @@ public class TelosysToolsCfg
      * @param prop the project configuration properties (if null default values will be used) 
      */
     protected TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop ) { // v 3.0.0
-    	// v 3.0.0
-    	TelosysToolsEnv env = TelosysToolsEnv.getInstance();
-    	telosysToolsFolder = env.getTelosysToolsFolder();
-    	modelsFolder       = env.getModelsFolder() ; // "TelosysTools/models" since v 3.4.0
-    	templatesFolder    = env.getTemplatesFolder() ; 
-    	downloadsFolder    = env.getDownloadsFolder() ; 
-    	librariesFolder    = env.getLibrariesFolder() ;
+    	telosysToolsFolder = TelosysToolsEnv.getTelosysToolsFolder();
+    	modelsFolder       = TelosysToolsEnv.getModelsFolder() ; // "TelosysTools/models" since v 3.4.0
+    	templatesFolder    = TelosysToolsEnv.getTemplatesFolder() ; 
+    	downloadsFolder    = TelosysToolsEnv.getDownloadsFolder() ; 
+    	librariesFolder    = TelosysToolsEnv.getLibrariesFolder() ;
     	
     	if ( projectAbsolutePath == null ) {
     		throw new IllegalArgumentException("projectAbsolutePath is null");
@@ -250,7 +248,7 @@ public class TelosysToolsCfg
      */
     public String getDatabasesDbCfgFile() {
     	// v 3.4.0 
-    	return FileUtil.buildFilePath(getTelosysToolsFolder(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+    	return FileUtil.buildFilePath(getTelosysToolsFolder(), TelosysToolsEnv.getDatabasesDbCfgFileName() );
 	}
     /**
      * Returns the absolute file name of the "databases.yaml" file 
@@ -259,7 +257,7 @@ public class TelosysToolsCfg
      */
     public String getDatabasesDbCfgFileAbsolutePath() {
     	// v 3.4.0 
-    	return FileUtil.buildFilePath(getTelosysToolsFolderAbsolutePath(), TelosysToolsEnv.getInstance().getDatabasesDbCfgFileName() );
+    	return FileUtil.buildFilePath(getTelosysToolsFolderAbsolutePath(), TelosysToolsEnv.getDatabasesDbCfgFileName() );
 	}
 
     //==============================================================================
@@ -272,15 +270,7 @@ public class TelosysToolsCfg
     public String getSRC() {
     	return varSrc;
 	}
-    /**
-     * Set the "source folder" ( $SRC predefined variable )
-     * @param srcFolder
-     */
-    public void setSRC(String srcFolder) {
-    	varSrc = srcFolder ;
-	}
     
-	//--------------------------------------------------------------------------------
     /**
      * Returns the "resources folder" ( $RES predefined variable )
      * @return
@@ -288,15 +278,7 @@ public class TelosysToolsCfg
     public String getRES() {
     	return varRes;
 	}
-    /**
-     * Set the "resources folder" ( $RES predefined variable )
-     * @param resourcesFolder
-     */
-    public void setRES(String resourcesFolder) {
-    	varRes = resourcesFolder ;
-	}
     
-	//--------------------------------------------------------------------------------
     /**
      * Returns the "web folder" ( $WEB predefined variable )
      * @return
@@ -304,15 +286,7 @@ public class TelosysToolsCfg
     public String getWEB() {
     	return varWeb;
 	}
-    /**
-     * Set the "web folder" ( $WEB predefined variable )
-     * @param webFolder
-     */
-    public void setWEB(String webFolder) {
-    	varWeb = webFolder ;
-	}
     
-	//--------------------------------------------------------------------------------
     /**
      * Returns the "test resources folder" ( $TEST_RES predefined variable )
      * @return
@@ -320,15 +294,7 @@ public class TelosysToolsCfg
     public String getTEST_RES() {
     	return varTestRes;
 	}
-    /**
-     * Set the "test resources folder" ( $TEST_RES predefined variable )
-     * @param testResourcesFolder
-     */
-    public void setTEST_RES(String testResourcesFolder) {
-    	varTestRes = testResourcesFolder ;
-	}
     
-	//--------------------------------------------------------------------------------
     /**
      * Returns the "test source folder" ( $TEST_SRC predefined variable )
      * @return
@@ -336,15 +302,7 @@ public class TelosysToolsCfg
     public String getTEST_SRC() {
     	return varTestSrc;
 	}
-    /**
-     * Set the "test source folder" ( $TEST_SRC predefined variable )
-     * @param testSourceFolder
-     */
-    public void setTEST_SRC(String testSourceFolder) {
-    	varTestSrc = testSourceFolder ;
-	}
     
-	//--------------------------------------------------------------------------------
     /**
      * Returns the "documentation folder" ( $DOC predefined variable )
      * @return
@@ -352,15 +310,7 @@ public class TelosysToolsCfg
     public String getDOC(){
     	return varDoc;
 	}
-    /**
-     * Set the "documentation folder" ( $DOC predefined variable )
-     * @param docFolder
-     */
-    public void setDOC(String docFolder) {
-    	varDoc = docFolder ;
-	}
     
-	//--------------------------------------------------------------------------------
     /**
      * Returns the "temporary folder" ( $TMP predefined variable )
      * @return
@@ -368,15 +318,7 @@ public class TelosysToolsCfg
     public String getTMP() {
     	return varTmp;
 	}
-    /**
-     * Set the "temporary folder" ( $TMP predefined variable )
-     * @param tmpFolder
-     */
-    public void setTMP(String tmpFolder) {
-    	varTmp = tmpFolder ;
-	}
     
-	//------------------------------------------------------------------------------------------------------
     /**
      * Returns the 'TelosysTools' folder in the current project (relative path in the project) <br>
      * ( e.g. 'TelosysTools' )
@@ -578,12 +520,7 @@ public class TelosysToolsCfg
 	public String getEntityPackage() {
 		return varEntityPkg ;
 	}
-	/**
-	 * Returns the package for entity classes ( $ENTITY_PKG predefined variable ) <br>
-	 * ( e.g. "org.demo.bean" )
-	 * @param entityPackage
-	 */
-	public void setEntityPackage(String entityPackage)  {
+	protected void setEntityPackage(String entityPackage)  {
 		varEntityPkg = entityPackage ;
 	}
 	
@@ -595,14 +532,6 @@ public class TelosysToolsCfg
 	 */
 	public String getRootPackage() {
 		return varRootPkg ;
-	}
-	/**
-	 * Set the root package ( $ROOT_PKG predefined variable )  <br> 
-	 * ( e.g. "org.demo" )
-	 * @param rootPackage
-	 */
-	public void setRootPackage(String rootPackage) {
-		varRootPkg = rootPackage ;
 	}
 	
     //=======================================================================================================
@@ -727,22 +656,6 @@ public class TelosysToolsCfg
 		return ! specificVariables.isEmpty();
 	}
 	
-	/**
-	 * Set the specific variables defined for the current project  
-	 * @param variables
-	 */
-	public void setSpecificVariables(List<Variable> variables ) {
-		// v 3.0.0 : from Array to LinkedList
-		if ( variables != null ) {
-			specificVariables = new LinkedList<>() ;
-			for ( Variable var : variables ) {
-				specificVariables.add(var);
-			}
-		}
-		else {
-			specificVariables = new LinkedList<>() ;
-		}
-	}	
 	//------------------------------------------------------------------------------------------------------
 	public void setSpecificVariable(Variable variable) {
 		

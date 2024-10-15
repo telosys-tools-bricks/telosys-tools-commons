@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.telosys.tools.commons.DirUtil;
+import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
@@ -16,6 +17,8 @@ import junit.framework.TestCase;
 
 public class EnvironmentManagerTest extends TestCase {
 
+	private static final String MYPROJECT2 = "myproject2";
+	
 	public void println(String s) {
 		System.out.println(s);
 	}
@@ -78,7 +81,7 @@ public class EnvironmentManagerTest extends TestCase {
 		println(sb.toString());
 	}
 
-	public void testInitTelosysToolsConfigFile() throws TelosysToolsException {
+	public void testInitTelosysToolsConfigFile() {
 		printSeparator();
 		println("testInitTelosysToolsConfigFile()...");
 
@@ -89,7 +92,7 @@ public class EnvironmentManagerTest extends TestCase {
 		File file = new File(filePath);
 		if ( file.exists() ) {
 			println("Delete " + filePath);
-			file.delete();
+			FileUtil.delete(file);
 		}
 		
 		StringBuilder sb = new StringBuilder();
@@ -111,7 +114,7 @@ public class EnvironmentManagerTest extends TestCase {
 		File file = new File(filePath);
 		if ( file.exists() ) {
 			println("Delete " + filePath);
-			file.delete();
+			FileUtil.delete(file);
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -145,12 +148,12 @@ public class EnvironmentManagerTest extends TestCase {
 		printSeparator();
 		println("testInitEnvironmentWithVariables()...");
 
-		String projectFullPath = TestsEnv.getTmpExistingFolderFullPath("myproject2") ;
+		String projectFullPath = TestsEnv.getTmpExistingFolderFullPath(MYPROJECT2) ;
 		EnvironmentManager em = new EnvironmentManager( projectFullPath);
 		cleanTelosysToolsEnvironment(em);
 		
 		List<Variable> variables = new LinkedList<>();
-		variables.add(new Variable("PROJECT_NAME","myproject2") );
+		variables.add(new Variable("PROJECT_NAME",MYPROJECT2) );
 		variables.add(new Variable("MY_VAR1","value1") );
 		
 		StringBuilder sb = new StringBuilder();
@@ -175,7 +178,7 @@ public class EnvironmentManagerTest extends TestCase {
 		
 		var = telosysToolsCfg.getSpecificVariable("PROJECT_NAME");
 		assertNotNull(var);
-		assertEquals("myproject2", var.getValue());
+		assertEquals(MYPROJECT2, var.getValue());
 	}
 	
 	public void testIsInitialized() {
@@ -233,7 +236,7 @@ public class EnvironmentManagerTest extends TestCase {
 	public void cleanTelosysToolsCfg(EnvironmentManager em) {
 		File telosysToolsCfg = new File(em.getTelosysToolsConfigFileFullPath() );
 		if ( telosysToolsCfg.exists() ) {
-			telosysToolsCfg.delete() ;
+			FileUtil.delete(telosysToolsCfg);
 			println("'telosys-tools.cfg' file deleted." );
 		}
 	}

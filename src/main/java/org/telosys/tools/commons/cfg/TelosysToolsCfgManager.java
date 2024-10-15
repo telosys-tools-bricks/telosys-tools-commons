@@ -41,7 +41,7 @@ public class TelosysToolsCfgManager {
 			throw new IllegalArgumentException("Project path is null");
 		}
 		// 'telosys-tools.cfg' file path in the project
-		String telosysToolsCfgFilePathInProject = TelosysToolsEnv.getInstance().getTelosysToolsConfigFilePath(); // v 3.0.0
+		String telosysToolsCfgFilePathInProject = TelosysToolsEnv.getTelosysToolsConfigFilePath(); // v 3.0.0
 		
 		this.projectAbsolutePath = projectAbsolutePath;
 		this.cfgFileAbsolutePath = FileUtil.buildFilePath(projectAbsolutePath, telosysToolsCfgFilePathInProject);

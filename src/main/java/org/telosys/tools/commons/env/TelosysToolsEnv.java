@@ -18,7 +18,6 @@ package org.telosys.tools.commons.env;
 
 /**
  * Telosys Tools standard environment. <br>
- * Singleton. <br>
  * Immutable files names and folders names <br>
  *   
  * @author Laurent GUERIN
@@ -26,19 +25,6 @@ package org.telosys.tools.commons.env;
  */
 public class TelosysToolsEnv 
 {
-	//==============================================================================
-    // SINGLETON MANAGEMENT 
-    //==============================================================================
-	private static final TelosysToolsEnv instance = new TelosysToolsEnv();
-	
-	public static final TelosysToolsEnv getInstance() {
-		return instance ;
-	}
-	
-	//==============================================================================
-    // INSTANCE 
-    //==============================================================================
-	
 	private static final String TELOSYS_TOOLS_FOLDER = "TelosysTools" ;
 	
 	private static final String MODELS_FOLDER        = TELOSYS_TOOLS_FOLDER + "/models" ;  // v 3.4.0
@@ -52,9 +38,8 @@ public class TelosysToolsEnv
 	private static final String DATABASES_CONFIG_FILE_NAME   = "databases.yaml"; // v 3.4.0
 	private static final String DATABASES_CONFIG_FILE_PATH   = TELOSYS_TOOLS_FOLDER + "/databases.yaml"; // v 3.4.0
 	
-	//----------------------------------------------------------------------------------------
     /**
-     * Constructor 
+     * Private constructor 
      */
     private TelosysToolsEnv ()  {
     }
@@ -67,7 +52,7 @@ public class TelosysToolsEnv
 	 * ( e.g. 'telosys-tools.cfg' )
 	 * @return
 	 */
-    public String getTelosysToolsConfigFileName() {
+    public static final String getTelosysToolsConfigFileName() {
 		return TELOSYS_TOOLS_CFG_FILE_NAME ;
 	}
 
@@ -76,8 +61,7 @@ public class TelosysToolsEnv
 	 * ( e.g. 'TelosysTools/telosys-tools.cfg' )
 	 * @return
 	 */
-//  v 3.0.0
-    public String getTelosysToolsConfigFilePath() {
+    public static final String getTelosysToolsConfigFilePath() {
 		return TELOSYS_TOOLS_CFG_FILE_PATH ;
 	}
 
@@ -85,7 +69,7 @@ public class TelosysToolsEnv
      * Returns the "databases.yaml" file name 
      * @return
      */
-    public String getDatabasesDbCfgFileName() {
+    public static final String getDatabasesDbCfgFileName() {
     	return DATABASES_CONFIG_FILE_NAME ;
 	}
     
@@ -94,7 +78,7 @@ public class TelosysToolsEnv
      * ( e.g. 'TelosysTools/databases.yaml' )
      * @return
      */
-    public String getDatabasesDbCfgFilePath() {
+    public static final String getDatabasesDbCfgFilePath() {
     	return DATABASES_CONFIG_FILE_PATH ;
 	}
     
@@ -106,7 +90,7 @@ public class TelosysToolsEnv
 	 * ( e.g. 'TelosysTools' )
 	 * @return
 	 */
-    public String getTelosysToolsFolder() {
+    public static final String getTelosysToolsFolder() {
 		return TELOSYS_TOOLS_FOLDER ;
 	}
     
@@ -116,7 +100,7 @@ public class TelosysToolsEnv
      * ( e.g. 'TelosysTools/templates' )
      * @return
      */
-    public String getTemplatesFolder() {
+    public static final String getTemplatesFolder() {
     	return TEMPLATES_FOLDER ;
 	}
     //------------------------------------------------------------------------------------------------------
@@ -125,7 +109,7 @@ public class TelosysToolsEnv
      * ( e.g. 'TelosysTools/downloads' )
      * @return
      */
-    public String getDownloadsFolder() {
+    public static final String getDownloadsFolder() {
     	return DOWNLOADS_FOLDER ;
     }
     //------------------------------------------------------------------------------------------------------
@@ -134,16 +118,16 @@ public class TelosysToolsEnv
      * ( e.g. 'TelosysTools/lib' )
      * @return
      */
-    public String getLibrariesFolder() {
+    public static final String getLibrariesFolder() {
     	return LIBRARIES_FOLDER ;
     }
     //------------------------------------------------------------------------------------------------------
     /**
      * Returns the models folder in the current project (relative path in the project) <br>
-     * ( e.g. 'TelosysTool' until v 3.3.0, 'TelosysTools/models' since 3.4.0 )
+     * ( e.g. 'TelosysTools/models' )
      * @return
      */
-    public String getModelsFolder()
+    public static final String getModelsFolder()
 	{
     	return MODELS_FOLDER ;
 	}
