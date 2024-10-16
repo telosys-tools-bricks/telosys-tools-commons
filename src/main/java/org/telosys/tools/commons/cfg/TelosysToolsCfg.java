@@ -677,11 +677,22 @@ public class TelosysToolsCfg
 	 * @return array of variables (never null, void array if none)
 	 */
 	public Variable[] getAllVariables() {
-		return buildAllVariablesArray() ;
+		Map<String, String> allVariablesMap = getAllVariablesMap();
+    	//--- Map to array
+    	Variable[] allVariablesArray = new Variable[ allVariablesMap.size() ];
+    	int i = 0 ;
+    	for ( Map.Entry<String, String> entry : allVariablesMap.entrySet() ) {
+    		allVariablesArray[i++] = new Variable( entry.getKey(), entry.getValue() ) ;
+    	}
+		return allVariablesArray ;
 	}	
 	
-	//------------------------------------------------------------------------------------------------------
-	private Variable[] buildAllVariablesArray() {
+	/**
+	 * Returns all the variables defined for the current project <br>
+	 * (standard variables + specific variables )
+	 * @return
+	 */
+	public Map<String, String> getAllVariablesMap() {
     	//--- All variables : specific project variables + predefined variables 
     	HashMap<String, String> allVariables = new HashMap<>();
     	
@@ -701,13 +712,6 @@ public class TelosysToolsCfg
     	allVariables.put( VariablesNames.TEST_RES, varTestRes );
     	allVariables.put( VariablesNames.DOC,      varDoc      );
     	allVariables.put( VariablesNames.TMP,      varTmp      );
-    	
-    	//--- 3) build the array
-    	Variable[] allVariablesArray = new Variable[ allVariables.size() ];
-    	int i = 0 ;
-    	for ( Map.Entry<String, String> entry : allVariables.entrySet() ) {
-    		allVariablesArray[i++] = new Variable( entry.getKey(), entry.getValue() ) ;
-    	}
-		return allVariablesArray ;
-	}
+    	return allVariables;
+	}	
 }

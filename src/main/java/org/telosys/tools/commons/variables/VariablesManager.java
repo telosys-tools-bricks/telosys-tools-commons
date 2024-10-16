@@ -29,18 +29,19 @@ import org.telosys.tools.commons.exception.TelosysRuntimeException;
  *
  */
 public class VariablesManager {
+	
+	private static final String VAR_PREFIX = "${" ;
+	private static final String VAR_SUFFIX = "}" ;
 
 	/**
-	 * Set of variables with their values 
-	 * 
-	 * e.g.  "${VAR1}" --> "VALUE1"
+	 * Map of variables with their values (e.g. "VAR1" --> "VALUE1")
 	 */
 	private final HashMap<String,String> hmVariables ; 
 	
 	
 	/**
-	 * Constructor
-	 * @param hmVariables set of variables, each variable name is supposed to contains "${" and "}" 
+	 * Constructor by copy (a new Map is created to store the given variables)
+	 * @param hmVariables map of variables
 	 */
 	public VariablesManager(Map<String,String> variables) {
 		super();
@@ -53,30 +54,29 @@ public class VariablesManager {
 
 	/**
 	 * Constructor
-	 * @param variables set of variables, each variable name is NOT supposed to contains "${" and "}" 
+	 * @param variables array of variables
 	 */
 	public VariablesManager(Variable[] variables) {
 		super();
+		// init by copy in order to be able to change some values after
 		this.hmVariables = new HashMap<>() ;
 		if ( variables != null ) {
 			for ( int i = 0 ; i < variables.length ; i++ ) {
 				Variable v = variables[i];
 				if ( v != null  &&  v.getName() != null  &&  v.getValue() != null ) {
-					this.hmVariables.put( "${"+v.getName()+"}", v.getValue() );
+					this.hmVariables.put(v.getName(), v.getValue() );
 				}
 			}
 		}
 	}
 
 	/**
-	 * Returns all the variables names ( list of ${name} )
+	 * Returns all the variables names 
 	 * @return
 	 */
-	public List<String> getVariablesNames()
-	{
+	public List<String> getVariablesNames() {
 		LinkedList<String> list = new LinkedList<>() ;
-		if ( hmVariables != null )
-		{
+		if ( hmVariables != null ) {
 			for (String varName : hmVariables.keySet()) {
 				list.add(varName);
 			}
@@ -84,17 +84,14 @@ public class VariablesManager {
 		return list ;
 	}
 	
-	public String getVariableValue(String var)
-	{
-		if ( hmVariables != null )
-		{
+	public String getVariableValue(String var) {
+		if ( hmVariables != null ) {
 			return hmVariables.get(var);
 		}
 		return null ;
 	}
-	
-	public String replaceVariables(String s)
-	{
+
+	public String replaceVariables(String s) {
 		if ( null == s ) return null ;
 		if ( s.length() < 3 ) return s ; // cannot contain "${x}"
 		
@@ -108,41 +105,58 @@ public class VariablesManager {
 			return ;
 		}
 		
-        int i = s.indexOf("${");
+        int i = s.indexOf(VAR_PREFIX);
         if ( i >= 0 ) {
-            int j = s.indexOf("}");
+            int j = s.indexOf(VAR_SUFFIX);
             if ( j > i ) {
-                String var = s.substring(i,j+1); // "${MYVAR}"                
-                String value = getVariableValue(var);
+                String symbolicVariableName = s.substring(i,j+1); // "${MYVAR}"                
+                String varValue = getVariableValue(extractVariableName(symbolicVariableName));
 
-                String sBeforeVar = s.substring(0,i);
-                String sAfterVar  = s.substring(j+1);
-                sb.append( sBeforeVar ) ;
-                if ( value != null ) {
-                    sb.append( value ) ;
+                String partBeforeVar = s.substring(0,i);
+                String partAfterVar  = s.substring(j+1);
+                sb.append( partBeforeVar ) ;
+                if ( varValue != null ) {
+                    sb.append( varValue ); // replace by variable value
                 }
                 else {
-                    sb.append( var ) ;
+                    sb.append( symbolicVariableName ); // keep symbolic name as is 
                 }
                 // recursive call 
-                replaceVariables( sAfterVar, sb );
+                replaceVariables( partAfterVar, sb );
             }
         }
         else {
             sb.append( s ) ;
         }
 	}
-
+	
+	
 	/**
-	 * Change the value for a given variable (only in the VariableManger context)
+	 * Extract the variable name from the given symbilic name 
+	 * @param symbolicVariableName  example '${varName}'
+	 * @return 
+	 */
+	protected String extractVariableName(String symbolicVariableName) {
+		if ( symbolicVariableName.startsWith(VAR_PREFIX) && symbolicVariableName.endsWith(VAR_SUFFIX)) {
+			String s = symbolicVariableName.substring(2); // Removes the first 2 characters
+			return s.substring(0, s.length() - 1); // Removes the last character
+		}
+		else {
+			throw new IllegalArgumentException("Invalid symbolic variable name '" + symbolicVariableName + "'");
+		}
+	}
+	/**
+	 * Set a variable (usable to create or update a variable)
 	 * @param variableName
 	 * @param variableValue
 	 * @return
+	 * @since  4.2.0
 	 */
-	public void changeVariableValue(String variableName, String variableValue )
-	{
-		if ( null == variableName ) return ;
-		if ( null == variableValue ) return ;
+	public void setVariable(String variableName, String variableValue ) {
+		if ( null == variableName ) throw new IllegalArgumentException("Variable name is null") ;
+		if ( null == variableValue ) throw new IllegalArgumentException("Variable value is null") ;
+		hmVariables.put(variableName, variableValue);
+
 		if ( hmVariables.get(variableName) != null ) {
 			hmVariables.put(variableName, variableValue);
 		}
@@ -150,18 +164,23 @@ public class VariablesManager {
 			throw new TelosysRuntimeException("Unknown variable '" + variableName +"'");
 		}
 	}
+
+	/**
+	 * Set a variable (does nothing if the variable is not defined)
+	 * @param variableName
+	 * @since  4.2.0
+	 */
+	public void unsetVariable(String variableName) {
+		if ( null == variableName ) throw new IllegalArgumentException("Variable name is null") ;
+		hmVariables.remove(variableName);
+	}
 	
 	/**
-	 * Transform all the values of variables ending by "_PKG" (replace '.' by '/' )
+	 * Returns a 'deep copy' of the current instance
+	 * @return
 	 */
-	public void transformPackageVariablesToDirPath(){
-		List<String> names = this.getVariablesNames();
-		for ( String name : names ) {
-			if ( name.endsWith("_PKG}" ) ) {
-				String value = this.getVariableValue(name) ;
-				String newValue = value.replace('.', '/');
-				this.changeVariableValue(name, newValue);
-			}
-		}		
-	}	
+	public VariablesManager copy() {
+		return new VariablesManager(this.hmVariables); // Constructor by copy
+	}
+	
 }

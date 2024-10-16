@@ -218,9 +218,9 @@ public class GitHubClient implements DepotClient {
 
 	protected String buildDownloadBranchURL(String userName, String repoName, String branch) {
 		HashMap<String,String> variables = new HashMap<>();
-		variables.put("${DEPOT}", userName);
-		variables.put("${REPO}", repoName);
-		variables.put("${BRANCH}", branch);
+		variables.put("DEPOT", userName);
+		variables.put("REPO", repoName);
+		variables.put("BRANCH", branch);
 		VariablesManager variablesManager = new VariablesManager(variables);
 		return variablesManager.replaceVariables(DOWNLOAD_BRANCH_URL_PATTERN);
 	}
