@@ -16,6 +16,7 @@
 package org.telosys.tools.commons;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
@@ -51,10 +52,7 @@ public class VersionProvider {
 	 */
 	private final String propertiesFileName ;
 
-	private Properties properties = null ;
-
-	private String propertiesLoadingError = null ;
-	
+	private final Properties versionProperties ;
 
 	/**
 	 * Constructor 
@@ -63,9 +61,10 @@ public class VersionProvider {
 	public VersionProvider(String propertiesFileName) {
 		if ( propertiesFileName.startsWith("/") ) {
 			this.propertiesFileName = propertiesFileName;
+			this.versionProperties = loadBuildProperties();
 		}
 		else {
-			throw new TelosysRuntimeException("Invalid properties file name '" + propertiesFileName + "' (must start with '/')");
+			throw new TelosysRuntimeException("Invalid version properties file name '" + propertiesFileName + "' (must start with '/')");
 		}
 	}
 	
@@ -74,13 +73,7 @@ public class VersionProvider {
 	 * @return
 	 */
 	public final String getVersionWithBuilId() {
-		String version = getVersion() ;
-		if ( propertiesLoadingError != null ) { // test error on first access
-			return propertiesLoadingError;
-		}
-		else {
-			return version + " (build: " + getBuildId() + ")";
-		}
+		return getVersion() + " (build: " + getBuildId() + ")";
 	}
 	
 	/**
@@ -88,7 +81,7 @@ public class VersionProvider {
 	 * @return
 	 */
 	public final String getName() {
-		return getProperty(PROJECT_NAME, "unknown name");
+		return getProperty(PROJECT_NAME);
 	}
 
 	/**
@@ -96,7 +89,7 @@ public class VersionProvider {
 	 * @return
 	 */
 	public final String getVersion() {
-		return getProperty(PROJECT_VERSION, "unknown version");
+		return getProperty(PROJECT_VERSION);
 	}
 
 	/**
@@ -104,39 +97,35 @@ public class VersionProvider {
 	 * @return
 	 */
 	public final String getBuildId() {
-		return getProperty(PROJECT_BUILD, "unknown build");
+		return getProperty(PROJECT_BUILD);
 	}
 
 	
-	private final String getProperty(String propertyName, String defaultValue) {
-	    Properties prop = getBuildProperties();
-	    if ( propertiesLoadingError != null ) {
-	    	// error detected => return error message instead
-		    return propertiesLoadingError;
-	    }
-	    else {
-	    	// ok: properties found and loaded
-		    return prop.getProperty(propertyName, defaultValue);	
-	    }
-	}
-
-	private final Properties getBuildProperties() {
-		if ( properties == null ) {
-			// not loaded yet
-			properties = loadBuildProperties();
+	private final String getProperty(String propertyName) {
+		if ( versionProperties != null) {
+			String s = versionProperties.getProperty(propertyName);
+			return s != null ? s : "unknown ("+propertyName+")";
 		}
-		return properties ;
+		else {
+			return "no properties (file:"+propertiesFileName+")";
+		}
 	}
-	
+
 	private final Properties loadBuildProperties() {
-	    Properties prop = new Properties();
-	    try {
-	    	prop.load(VersionProvider.class.getResourceAsStream(propertiesFileName));
-	    	propertiesLoadingError = null;
-	    } 
+		
+		try ( InputStream is = VersionProvider.class.getResourceAsStream(propertiesFileName) ) {
+			// InputStream can be null if file not found
+			if ( is != null) {
+			    Properties properties = new Properties();
+		    	properties.load(is);
+		    	return properties;
+			}
+			else {
+				throw new TelosysRuntimeException("Version properties file not found ("+propertiesFileName+")");
+			}
+		}
 	    catch (IOException e) {	    	
-	    	propertiesLoadingError = "ERROR: cannot load build properties, error: " + e.getMessage() ;
+			throw new TelosysRuntimeException("Cannot read version properties file IOException ("+propertiesFileName+")");
 	    }
-    	return prop;
 	}
 }
