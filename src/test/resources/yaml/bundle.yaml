@@ -1,0 +1,50 @@
+# 'root' Map<String,Object> 
+title: My bundle
+version: '1.0.0'
+description: Basic bundle example
+
+# 'requirements' Map<String,Object> 
+requirements:
+  telosys-version: "4.2"
+  xxx: "aaa"
+ 
+# 'targets' List<Object> (list of Map<String,Object>)
+targets:
+ - name: "record"
+   # dir:  "${SRC}/${ROOT_PKG}/data/record"
+   # file: "${ENT}Record.java" 
+   target:  "${SRC}/${ROOT_PKG}/data/record/${ENT}Record.java"
+   template: "main-java/XxxRecord_java.vm" 
+   type: "*" # "*" by default 
+   
+ - name: "jdbc_prop"
+   # dir:  "${RES}"
+   # file: "jdbc.properties" 
+   target: "${RES}/jdbc.properties"
+   template: "main-resources/jdbc_properties.vm" 
+   type: "1" # "*", "1", "R" ("*" by default)
+
+variables:
+  AAA_INT   : 123      # java.lang.Integer
+  BBB_FLOAT : 78.923   # java.lang.Double
+  CCC_BOOL  : true     # java.lang.Boolean
+  DDD_STR   : "abc  "  # java.lang.String
+
+  EEE_LIST :  # java.util.ArrayList
+   - "aaa"
+   - "bbb"
+   - "ccc qsdqdd"
+   
+  FFF_LIST : # java.util.ArrayList
+   - 1
+   - 2
+
+  GGG_LIST : # java.util.ArrayList
+   - 1
+   - 34.56
+   - true
+   - "abc"
+
+  HHH_OBJ : # java.util.LinkedHashMap
+     name : "aaaa"
+     age : 123
