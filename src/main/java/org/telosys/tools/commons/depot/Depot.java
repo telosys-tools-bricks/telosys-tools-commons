@@ -44,6 +44,7 @@ public class Depot {
 	private static final String GITHUB_USER         = "github_user"; 
 	private static final String GITHUB_CURRENT_USER = "github_current_user"; 
 	private static final String GITHUB_DEFAULT_ROOT_URL = "https://api.github.com" ;
+	private static final String GITHUB_PER_PAGE         = "per_page=100" ;
 
 
 	// GitLab 
@@ -168,15 +169,15 @@ public class Depot {
 	private String buildGitHubURL(String root) throws TelosysToolsException {
 		if ( this.isGitHubOrganization() ) {
 			// example: https://api.github.com/orgs/telosys-models/repos  
-			return root + "/orgs/" + getName() + "/repos" ; 
+			return root + "/orgs/" + getName() + "/repos?" + GITHUB_PER_PAGE ; 
 		}
 		else if ( this.isGitHubUser()) {
 			// example: https://api.github.com/users/telosys-models/repos  
-			return root + "/users/" + getName() + "/repos" ; 
+			return root + "/users/" + getName() + "/repos?" + GITHUB_PER_PAGE ; 
 		}
 		else if ( this.isGitHubCurrentUser() ) {
 			// fixed URL
-			return root + "/user/repos";
+			return root + "/user/repos?" + GITHUB_PER_PAGE ;
 		}
 		else {
 			throw new TelosysToolsException("Cannot build GitHub depot URL (invalid depot type)");

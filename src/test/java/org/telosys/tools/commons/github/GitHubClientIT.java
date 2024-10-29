@@ -58,6 +58,16 @@ public class GitHubClientIT {
 			assertEquals("master", repo.getDefaultBranch() );
 		}
 	}
+	@Test
+	public void testGetRepositoriesForBundlesV3() throws TelosysToolsException  {
+		log("Getting repositories with properties ... ");
+		List<DepotElement> repositories = getRepositories("github_org:telosys-templates-v3");
+		assertNotNull(repositories);
+		for ( DepotElement repo : repositories ) {
+			assertEquals("public", repo.getVisibility() );
+			assertEquals("master", repo.getDefaultBranch() );
+		}
+	}
 	
 	@Test
 	public void testGetRepositoriesForModels() throws TelosysToolsException  {		
@@ -82,7 +92,8 @@ public class GitHubClientIT {
 		
 		DepotResponse githubResponse = gitHubClient.getRepositories(new Depot(depotDefinition));
 		
-		log( githubResponse.getResponseBody() );
+		log( "URL: " + githubResponse.getDepotURL() );
+		log( "Number of req: " + githubResponse.getNumberOfRequests() );
 		
 		List<DepotElement> repositories = githubResponse.getElements();
 		log("Repositories (" + repositories.size() + ") : ");

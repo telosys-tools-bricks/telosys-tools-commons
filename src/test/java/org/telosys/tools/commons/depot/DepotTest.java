@@ -1,6 +1,7 @@
 package org.telosys.tools.commons.depot;
 
 import org.junit.Test;
+import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +21,7 @@ public class DepotTest {
 		assertEquals("github_org", d.getType());
 		assertEquals("my-org", d.getName());
 		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/orgs/my-org/repos", d.getApiUrl());
+		assertEquals("https://api.github.com/orgs/my-org/repos", StrUtil.removeFrom(d.getApiUrl(), '?') ); // without "?per_page=nn"
 		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
 
 		d = new Depot(" github_org : my-org   ");
@@ -29,7 +30,7 @@ public class DepotTest {
 		assertEquals("github_org", d.getType());
 		assertEquals("my-org", d.getName());
 		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/orgs/my-org/repos", d.getApiUrl());
+		assertEquals("https://api.github.com/orgs/my-org/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
 
 		d = new Depot("github_org:my-templates ( https://myhost:9090 ) ");
@@ -38,7 +39,7 @@ public class DepotTest {
 		assertEquals("github_org", d.getType());
 		assertEquals("my-templates", d.getName());
 		assertEquals("https://myhost:9090", d.getRootURL());
-		assertEquals("https://myhost:9090/orgs/my-templates/repos", d.getApiUrl());
+		assertEquals("https://myhost:9090/orgs/my-templates/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 		assertEquals("https://myhost:9090/rate_limit", d.getApiRateLimitUrl());
 
 		//--- GitHub user 
@@ -48,7 +49,7 @@ public class DepotTest {
 		assertEquals("github_user", d.getType());
 		assertEquals("toto", d.getName());
 		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/users/toto/repos", d.getApiUrl());
+		assertEquals("https://api.github.com/users/toto/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
 
 		d = new Depot(" github_user :toto(http://myhost)  ");
@@ -57,7 +58,7 @@ public class DepotTest {
 		assertEquals("github_user", d.getType());
 		assertEquals("toto", d.getName());
 		assertEquals("http://myhost", d.getRootURL());
-		assertEquals("http://myhost/users/toto/repos", d.getApiUrl());
+		assertEquals("http://myhost/users/toto/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 		assertEquals("http://myhost/rate_limit", d.getApiRateLimitUrl());
 
 		// GitHub current user 
@@ -67,7 +68,7 @@ public class DepotTest {
 		assertEquals("github_current_user", d.getType());
 		assertEquals("", d.getName());
 		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/user/repos", d.getApiUrl());
+		assertEquals("https://api.github.com/user/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 
 		d = new Depot(" github_current_user( https://myhost:8888) ");
 		assertTrue(d.isGitHubDepot());
@@ -75,8 +76,7 @@ public class DepotTest {
 		assertEquals("github_current_user", d.getType());
 		assertEquals("", d.getName());
 		assertEquals("https://myhost:8888", d.getRootURL());
-		assertEquals("https://myhost:8888/user/repos", d.getApiUrl());
-
+		assertEquals("https://myhost:8888/user/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 	}
 
 	@Test(expected = TelosysToolsException.class)

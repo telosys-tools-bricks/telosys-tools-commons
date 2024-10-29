@@ -49,8 +49,7 @@ public class ModelsManagerIT extends TestCase {
 		DepotResponse depotResponse = mm.getModelsFromDepot(new Depot(depot));
 		println("Depot URL : " + depotResponse.getDepotURL() ); 
 		println("--- status code : " + depotResponse.getHttpStatusCode() );
-		println("--- response body");
-		println(depotResponse.getResponseBody());
+		println("--- number of req : " + depotResponse.getNumberOfRequests() );
 		println("---");
 		for ( DepotElement e : depotResponse.getElements() ) {
 			println(" . " + e.getName() + " / " + e.getDefaultBranch() );

@@ -57,9 +57,9 @@ public class DepotResponse {
 	private final DepotRateLimit rateLimit ;
 
 	/**
-	 * Response body
+	 * Number of http requests ( for example with pagination : 3 requets to get 3 pages )
 	 */
-	private final String responseBody ;
+	private final int numberOfRequests ;
 
 	/**
 	 * Constructor
@@ -68,9 +68,9 @@ public class DepotResponse {
 	 * @param httpStatusCode
 	 * @param elements
 	 * @param rateLimit
-	 * @param responseBody
+	 * @param numberOfRequests
 	 */
-	public DepotResponse(String depotName, String depotURL, int httpStatusCode, List<DepotElement> elements, DepotRateLimit rateLimit, String responseBody) {
+	public DepotResponse(String depotName, String depotURL, int httpStatusCode, List<DepotElement> elements, DepotRateLimit rateLimit, int numberOfRequests) {
 		super();
 		this.depotName = depotName;
 		this.depotURL = depotURL;
@@ -79,7 +79,7 @@ public class DepotResponse {
 		sortByName(this.elements);
 		
 		this.rateLimit = rateLimit ;
-		this.responseBody = responseBody ;
+		this.numberOfRequests = numberOfRequests ;
 	}
 	
 	/**
@@ -177,8 +177,12 @@ public class DepotResponse {
 		return rateLimit;
 	}
 
-	public String getResponseBody() {
-		return responseBody;
+	/**
+	 * Returns the number of requests used to get the depot elements (more than 1 is possible in case of pagination)
+	 * @return
+	 */
+	public int getNumberOfRequests() {
+		return numberOfRequests;
 	}
 
 }

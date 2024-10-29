@@ -25,6 +25,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.depot.Depot;
 import org.telosys.tools.commons.depot.DepotClient;
@@ -111,10 +112,9 @@ public class GitHubClient implements DepotClient {
 		return new DepotElement(id, name, description, size, defaultBranch, visibility );
 	}
 	
-	private List<DepotElement> getDepotElementsFromJSON(String responseBody) throws TelosysToolsException {
+	private void getDepotElementsFromJSON(String responseBody, List<DepotElement> repositories) throws TelosysToolsException {
 
 		// JSON parsing
-		List<DepotElement> repositories = new LinkedList<>();
 		JSONParser parser = new JSONParser();
 		try {
 			Object object = parser.parse(responseBody);
@@ -131,7 +131,6 @@ public class GitHubClient implements DepotClient {
 		} catch (ParseException e) {
 			throw new TelosysToolsException("JSON error : cannot parse the JSON response.");
 		}
-		return repositories;
 	}
 	
 	/* (non-Javadoc)
@@ -141,26 +140,61 @@ public class GitHubClient implements DepotClient {
 	public DepotResponse getRepositories(Depot depot) throws TelosysToolsException {
 		checkDepotIsGitHub(depot);
 
+		List<DepotElement> depotElements = new LinkedList<>();
+		// Initial URL (first page)
+		String initialURL = depot.getApiUrl();
+		int numberOfRequests = 1; 
 		// Call GitHub API via HTTP
-		String url = depot.getApiUrl();
-		HttpResponse response = httpGet(url);
+		// Get first page 
+		HttpResponse httpResponse = getRepositoriesPage(initialURL, depotElements);
+		// Get next pages if any
+		String nextPageURL = getNextPageURL(httpResponse);
+		while ( httpResponse.getStatusCode() == 200 && nextPageURL != null ) {
+			httpResponse = getRepositoriesPage(nextPageURL, depotElements);
+			nextPageURL = getNextPageURL(httpResponse);
+			numberOfRequests++;
+		}
 
 		// Rate Limit from http headers 
-		GitHubRateLimit rl = new GitHubRateLimit(response);
+		GitHubRateLimit rl = new GitHubRateLimit(httpResponse);
 		DepotRateLimit rateLimit = new DepotRateLimit(rl.getLimit(), rl.getRemaining(), rl.getReset());
+		// Return the result
+		return new DepotResponse(depot.getDefinition(), initialURL, httpResponse.getStatusCode(), depotElements, rateLimit, numberOfRequests);
+	}
+	
+	private HttpResponse getRepositoriesPage(String url, List<DepotElement> depotElements ) throws TelosysToolsException {
+		HttpResponse httpResponse = httpGet(url);
 		
-		// Repositories from http response body  
-		String responseBody = new String(response.getBodyContent());
-		
-		List<DepotElement> depotElements = new LinkedList<>();
-		if ( response.getStatusCode() == 200 ) { 
+		if ( httpResponse.getStatusCode() == 200 ) { 
 			// Parse the response body (repositories list in JSON format) 
-			depotElements = getDepotElementsFromJSON(responseBody);
+			getDepotElementsFromJSON(new String(httpResponse.getBodyContent()), depotElements);
 		}
 		// If status is 403 : noting to do (the ratelimit is provided in the result)
-
-		// Return the result
-		return new DepotResponse(depot.getDefinition(), url, response.getStatusCode(), depotElements, rateLimit, responseBody);
+		return httpResponse;
+	}
+	
+	private String getNextPageURL(HttpResponse httpResponse) {
+		String linkHeader = getLinkFromHeaders(httpResponse);
+		if ( linkHeader != null ) {
+			String[] links = StrUtil.split(linkHeader, ',' );
+			for ( String sRaw : links ) {
+				String s = sRaw.trim();
+				if (s.endsWith("rel=\"next\"")) {
+					// link for "next page" 
+					// example : <https://api.github.com/organizations/20856286/repos?per_page=2&page=4>; rel="next"
+					return StrUtil.extractStringBetween(s, "<", ">");
+				}
+			}
+		}
+		return null;
+	}
+	
+	private String getLinkFromHeaders(HttpResponse httpResponse) {
+		String s = httpResponse.getHeader("Link"); // the effective header name for GitHub API 
+		if ( s == null ) {
+			s = httpResponse.getHeader("link");
+		}
+		return s;
 	}
 	
 	private static final String JSON_ERR_ATTRIBUTE = "JSON error : attribute ";

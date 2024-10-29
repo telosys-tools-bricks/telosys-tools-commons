@@ -116,7 +116,35 @@ public class StrUtilTest {
 	}
 
 	@Test
-	public void testRemodeEnd() {
+	public void testRemoveStart() {
+		assertEquals( "cd",    StrUtil.removeStart("ab:cd", "ab:" ) ) ;
+		assertEquals( "abcd",  StrUtil.removeStart("abcd",  "zz") ) ;
+		assertEquals( " zzcd", StrUtil.removeStart(" zzcd",  "zz") ) ;
+		assertEquals( "",      StrUtil.removeStart("", "aa" ) ) ;
+		assertEquals( "abcd",  StrUtil.removeStart("abcd", null) ) ;
+		
+		assertNull( StrUtil.removeStart(null, "a") ) ;
+		assertNull( StrUtil.removeStart(null, null) ) ;
+	}
+	
+	@Test
+	public void testExtractStringBetween() {
+		assertEquals( "bc",   StrUtil.extractStringBetween("a<bc>def", "<", ">") ) ;   
+		assertEquals( "123",  StrUtil.extractStringBetween("[123]zzz", "[", "]") ) ;
+		assertEquals( "123",  StrUtil.extractStringBetween("aaa[[123]]zzz", "[[", "]]") ) ;
+		assertNull( StrUtil.extractStringBetween("abcdef",  "<", ">")) ;
+		assertNull( StrUtil.extractStringBetween("ab<cdef", "<", ">")) ;
+		assertNull( StrUtil.extractStringBetween("abcd>ef", "<", ">")) ;
+		assertNull( StrUtil.extractStringBetween("ab>cd<ef", "<", ">")) ;
+		assertNull( StrUtil.extractStringBetween(null,  "<", ">")) ;
+		assertNull( StrUtil.extractStringBetween(null, 	null, null)) ;
+		assertNull( StrUtil.extractStringBetween("ab<cd>ef", null, null)) ;
+		assertNull( StrUtil.extractStringBetween("ab<cd>ef", "<", null)) ;
+		assertNull( StrUtil.extractStringBetween("ab<cd>ef", null, ">")) ;
+	}
+	
+	@Test
+	public void testRemoveEnd() {
 		assertEquals( "ab",  StrUtil.removeEnd("abcd",      "cd"     ) ) ;
 		assertEquals( "abc", StrUtil.removeEnd("abcd",      "d") ) ;
 		assertEquals( "foo", StrUtil.removeEnd("foo_model", "_model" ) ) ;

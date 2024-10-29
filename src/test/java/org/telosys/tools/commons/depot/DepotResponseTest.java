@@ -19,7 +19,7 @@ public class DepotResponseTest {
 		elements.add(new DepotElement(1, "element-aaa", "desc", 963, "master", "public"));
 		elements.add(new DepotElement(2, "element-bbb", "desc", 963, "master", "public"));
 		elements.add(new DepotElement(3, "element-ccc", "desc", 963, "master", "public"));
-		DepotResponse depotResponse = new DepotResponse("my-depot", "my-url", 200, elements, depotRateLimit, "") ;
+		DepotResponse depotResponse = new DepotResponse("my-depot", "my-url", 200, elements, depotRateLimit, 1) ;
 
 		assertEquals( 3, depotResponse.getElementNames().size());
 		
@@ -39,7 +39,7 @@ public class DepotResponseTest {
 		elements.add(new DepotElement(1, "element-aaa", "desc", 963, "master", "public"));
 		elements.add(new DepotElement(2, "element-bbb", "desc", 963, "master", "public"));
 		elements.add(new DepotElement(3, "element-ccc", "desc", 963, "master", "public"));
-		DepotResponse depotResponse = new DepotResponse("my-depot", "my-url", 200, elements, depotRateLimit, "") ;
+		DepotResponse depotResponse = new DepotResponse("my-depot", "my-url", 200, elements, depotRateLimit, 1) ;
 
 		List<DepotElement> r = depotResponse.filterElementsByName(Arrays.asList("","*",""));
 		assertEquals( 3, r.size());

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
 import junit.env.telosys.tools.commons.TestsEnv;
 import junit.framework.TestCase;
 
@@ -103,24 +105,39 @@ public class HttpClientIT extends TestCase {
 		printHeader(httpResponse, "X-RateLimit-Reset");
 	}
 	
+	@Test
 	public void testHttpGet() throws Exception {
 		httpGet(getHttpClient());
 		httpGet(new HttpClient());
 	}
 	
+	@Test
 	public void testGetGitHubAPI() throws Exception {
 		httpGetGitHubAPI(getHttpClient());
 		httpGetGitHubAPI(new HttpClient());
 	}
 	
+	@Test
+	public void testGetGitHubAPI2() throws Exception {
+		HttpClient httpClient = new HttpClient();
+		HttpResponse httpResponse = httpClient.get("https://api.github.com/orgs/telosys-templates-v3/repos?per_page=10", getHeaders() );
+		assertEquals(200, httpResponse.getStatusCode());
+		String link = httpResponse.getHeader("Link");
+		assertNotNull(link);
+		assertTrue(link.contains("next"));
+		assertTrue(link.contains("page=2"));
+	}
+	
 	//==========================================================================================
 	
+	@Test
 	public void testHead1() throws Exception {
 		println("--- Test http HEAD 1 --- ");		
 		HttpClient httpClient = getHttpClient();
 		checkResponse(httpClient.head(URL_GOOGLE_FR, getHeaders()), 200);
 	}
 	
+	@Test
 	public void testHead2() throws Exception {
 		println("--- Test http HEAD 2 --- ");		
 		HttpClient httpClient = getHttpClient();		
@@ -128,6 +145,7 @@ public class HttpClientIT extends TestCase {
 		checkResponse(httpClient.head(request), 200);
 	}
 	
+	@Test
 	public void testHead3() throws Exception {
 		println("--- Test http HEAD 3 --- ");		
 		HttpClient httpClient = getHttpClient();
@@ -136,12 +154,14 @@ public class HttpClientIT extends TestCase {
 	
 	//==========================================================================================
 	
+	@Test
 	public void testDelete1() throws Exception {
 		println("--- Test http DELETE 1 --- ");		
 		HttpClient httpClient = getHttpClient();
 		checkResponse(httpClient.delete(URL_GOOGLE_FR, getHeaders()), 405); // HTTP 405 : Method not allowed
 	}
 	
+	@Test
 	public void testDelete2() throws Exception {
 		println("--- Test http DELETE 2 --- ");		
 		HttpClient httpClient = getHttpClient();
@@ -150,6 +170,7 @@ public class HttpClientIT extends TestCase {
 	}
 	
 	//==========================================================================================
+	@Test
 	public void testDownload1() throws Exception {
 		println("Test DOWNLOAD 1 via HTTP ... ");
 		
@@ -161,6 +182,7 @@ public class HttpClientIT extends TestCase {
 		println("File " + urlString + " donwloaded (" + r + " bytes)");
 	}
 
+	@Test
 	public void testDownload2() throws Exception {
 		println("Test DOWNLOAD 2 via HTTPS (SSL)... ");
 		

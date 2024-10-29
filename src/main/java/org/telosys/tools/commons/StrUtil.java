@@ -452,6 +452,42 @@ public final class StrUtil
 			return sb.toString() ;
 		}
 	}
+
+	/**
+	 * Remove a given string if the original string starts with it 
+	 * @param originalString
+	 * @param stringToBeRemoved
+	 * @return
+	 * @since 4.2.0
+	 */
+	public static final String removeStart(String originalString, String stringToBeRemoved) {
+        if (originalString != null && stringToBeRemoved != null && originalString.startsWith(stringToBeRemoved)) {
+            return originalString.substring(stringToBeRemoved.length());
+        }
+        return originalString;		
+	}
+	
+    /**
+     * Extract a string located between opening and closing strings
+     * @param str
+     * @param opening
+     * @param closing
+     * @return
+	 * @since 4.2.0
+     */
+    public static final String extractStringBetween(String str, String opening, String closing) {
+    	if ( str != null && opening != null && closing != null ) {
+	        int startIndex = str.indexOf(opening);
+	        if ( startIndex != -1 ) {
+	            int endIndex = str.indexOf(closing, startIndex + opening.length());
+	            if ( endIndex != -1 ) {
+	            	// star end end found => extract
+	                return str.substring(startIndex + opening.length(), endIndex);
+	            }
+	        }
+    	}
+        return null;
+    }
 	
 	/**
 	 * Removes a given string if present at the end of the original string <br>
@@ -461,13 +497,10 @@ public final class StrUtil
 	 * @return the original string without the end ( e.g. 'ab' )
 	 */
 	public static final String removeEnd(String originalString, String stringToBeRemoved) {
-		if ( originalString == null || stringToBeRemoved == null ) {
-			return originalString;
-		}
-		if (originalString.endsWith(stringToBeRemoved)) {
+        if (originalString != null && stringToBeRemoved != null && originalString.endsWith(stringToBeRemoved)) {
 			return originalString.substring(0, originalString.length() - stringToBeRemoved.length());
-		}
-		return originalString;
+        }
+        return originalString;		
 	}
 
 	/**
@@ -642,29 +675,11 @@ public final class StrUtil
             }
             
             if ( count > 0 ) {
-	            String[] sTokens = new String[count+1] ;
-	            int iToken = 0;
-	            int iOffset = 0 ;
-	            int iLength = 0 ;
-	            for ( int i = 0 ; i < chars.length ; i++ ) {
-	                if ( chars[i] == c ) {
-	                    //--- Create new token 
-	                    sTokens[iToken] = new String(chars, iOffset, iLength );
-	                    iToken++;
-	                    //--- Reset 
-	                    iOffset = i + 1 ;
-	                    iLength = 0 ;
-	                }
-	                else {
-	                    iLength++;
-	                }
-	            }
-	            //--- Last Token ( current token ) 
-                sTokens[iToken] = new String(chars, iOffset, iLength );
-	            return sTokens ;
+            	// At least one separator
+            	return split(chars, c, count+1);
             }
             else {
-                //--- No separator
+                // No separator
                 String[] ret = new String[1];
                 ret[0] = s ;
                 return ret ;
@@ -672,7 +687,28 @@ public final class StrUtil
         }
         return new String[0]; 
     }
-    
+    private static final String[] split(char[] chars, char separator, int numberOfTokens) {
+        String[] tokens = new String[numberOfTokens] ;
+        int iToken = 0;
+        int offset = 0 ;
+        int length = 0 ;
+        for ( int i = 0 ; i < chars.length ; i++ ) {
+            if ( chars[i] == separator ) {
+                //--- Create new token 
+                tokens[iToken] = new String(chars, offset, length );
+                iToken++;
+                //--- Reset 
+                offset = i + 1 ;
+                length = 0 ;
+            }
+            else {
+            	length++;
+            }
+        }
+        //--- Last Token ( current token ) 
+        tokens[iToken] = new String(chars, offset, length );
+        return tokens ;
+    }
 	//-------------------------------------------------------------------------------
 	public static final String toCamelCase(String start) {
 		if (nullOrVoid(start)) {
