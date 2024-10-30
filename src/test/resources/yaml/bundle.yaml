@@ -6,9 +6,9 @@ description: Basic bundle example
 # 'requirements' Map<String,Object> 
 requirements:
   telosys-version: "4.2"
-  xxx: "aaa"
+  other: "aaa"
  
-# 'targets' List<Object> (list of Map<String,Object>)
+# Option 1 : all targets : 'targets' List<Object> (list of Map<String,Object>)
 targets:
  - name: "record"
    # dir:  "${SRC}/${ROOT_PKG}/data/record"
@@ -23,6 +23,39 @@ targets:
    target: "${RES}/jdbc.properties"
    template: "main-resources/jdbc_properties.vm" 
    type: "1" # "*", "1", "R" ("*" by default)
+
+# Option 2 : targets organized by level ( project, model, entity, resources, etc) => no "type" attribute
+project-targets: # gen -p  ( usable without model => no "$MOD", "$ENT" var ) 
+ - name: "jdbc_prop"  # "name" is optional 
+   target: "${RES}/jdbc.properties"
+   template: "main-resources/jdbc_properties.vm" 
+
+model-targets: # gen -m
+ - name: "index_page"
+   target:  "${WEB}/static/${MOD}/index.html"
+   template: "xxxx.vm" 
+
+entity-targets: # gen -e
+ - name: "record"
+   target:  "${SRC}/${ROOT_PKG}/data/record/${ENT}Record.java"
+   template: "main-java/XxxRecord_java.vm" 
+
+enum-targets: # gen -enum
+ - name: "enum"
+   target:  "${SRC}/${ROOT_PKG}/data/enum/${ENU}.java"
+   template: "main-java/Xxxx_java.vm" 
+
+resources: # gen -r  (copy static resources)
+ # copy file to file
+ - from: "foo/aaaa.yml" 
+   to:  "${SRC}/dir/foo/aaaa.yaml"
+ # copy file to dir
+ - from: "foo/bar/zzz.txt" 
+   to:  "${RES}/dir"
+ # copy dir to dir
+ - from: "foo/bar" 
+   to:  "${RES}/dir/foo/bar"
+
 
 variables:
   AAA_INT   : 123      # java.lang.Integer
