@@ -16,15 +16,11 @@
 package org.telosys.tools.commons.env;
 
 import java.io.File;
-import java.util.List;
 
 import org.telosys.tools.commons.DirUtil;
 import org.telosys.tools.commons.FileUtil;
 import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.cfg.TelosysToolsCfg;
-import org.telosys.tools.commons.cfg.TelosysToolsCfgManager;
-import org.telosys.tools.commons.variables.Variable;
 
 /**
  * Telosys Tools environment manager <br>
@@ -68,26 +64,16 @@ public class EnvironmentManager {
 	 * @param sb
 	 */
 	public void initEnvironment(StringBuilder sb) {
-		initEnvironment(sb, null);
-	}
-	
-	/**
-	 * Initializes the environment using the standard default folders and configuration files <br>
-	 * Initializes the given variables in the 'cfg' file (if any)
-	 * @param sb
-	 * @param variables list of specific variables to set in the '.cfg' file (can be null if none)
-	 */
-	public void initEnvironment(StringBuilder sb, List<Variable> variables) {
 		//--- Create folders
 		createFolder( TelosysToolsEnv.getTelosysToolsFolder(), sb );
 		createFolder( TelosysToolsEnv.getDownloadsFolder(), sb );
 		createFolder( TelosysToolsEnv.getLibrariesFolder(), sb );
 		createFolder( TelosysToolsEnv.getTemplatesFolder(), sb );
-		createFolder( TelosysToolsEnv.getModelsFolder(), sb ); // v 3.4.0
+		createFolder( TelosysToolsEnv.getModelsFolder(), sb );
 		//--- Init 'databases.yaml' file
 		initDatabasesConfigFile(sb);
 		//--- Init 'telosys-tools.cfg' file
-		initTelosysToolsConfigFile(sb, variables);
+		initTelosysToolsConfigFile(sb);
 	}
 	
 	/**
@@ -147,29 +133,9 @@ public class EnvironmentManager {
 		sb.append("\n");
 	}	
 	
-	/**
-	 * Initializes the Telosys Tools configuration file <br>
-	 * Copy the default configuration file in the environment folder <br>
-	 * If the destination file already exists it is not copied <br>
-	 * Initializes the given variables in the file if any 
-	 * @param sb
-	 * @param variables list of specific variables to set in the '.cfg' file (can be null if none)
-	 */
-	protected void initTelosysToolsConfigFile( StringBuilder sb, List<Variable> variables ) {
+	protected void initTelosysToolsConfigFile(StringBuilder sb) {
 		//--- Initialize the file (from META-INF) in the project environment
 		initFileFromMetaInf(TelosysToolsEnv.getTelosysToolsConfigFileName(), getTelosysToolsConfigFileFullPath(), sb );
-		//--- Set specific variables if any
-		if ( ( variables != null ) && ( ! variables.isEmpty() ) ) {
-			TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(environmentDirectory);
-			//--- Load the configuration
-			TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
-			//--- Set the given specific variables values
-			for ( Variable var : variables ) {
-				telosysToolsCfg.setSpecificVariable(var);
-			}
-			//--- Save the configuration
-			telosysToolsCfgManager.saveTelosysToolsCfg(telosysToolsCfg);
-		}
 	}
 	
 	/**

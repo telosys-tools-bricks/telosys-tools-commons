@@ -100,40 +100,41 @@ public class TelosysToolsCfgManagerTest extends TestCase {
 		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
 	}
 
-	public void testLoadUpdateSave() throws TelosysToolsException {
-		printSeparator();
-		System.out.println("Test : Load, Update, Save and ReLoad" );
-		File file = getTelosysToolCfgFile();
-		System.out.println("config file    : " + file.getAbsolutePath() );
-		String projectFolder = file.getParentFile().getParent();
-		System.out.println("project folder : " + projectFolder );
-		print(file);
-		if ( createParentFolderIfNotExist(file) ) {
-			System.out.println("Parent directory created" );
-		}
-		TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectFolder);
-
-		System.out.println("config manager file path : " + cfgManager.getCfgFileAbsolutePath() );
-		 
-		System.out.println("Load");
-		TelosysToolsCfg telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
-		assertEquals("", telosysToolsCfg.getSpecificDestinationFolder() );
-
-		System.out.println("Update");
-		telosysToolsCfg.setEntityPackage("org.demo.entity");
-		assertEquals("org.demo.entity", telosysToolsCfg.getEntityPackage() );
-		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
-		telosysToolsCfg.setSpecificDestinationFolder("x:/foo/bar/dest");
-
-		System.out.println("Save");
-		cfgManager.saveTelosysToolsCfg(telosysToolsCfg);
-		
-		System.out.println("Re-Load");
-		telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
-		assertEquals("org.demo.entity", telosysToolsCfg.getEntityPackage() );
-		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
-		assertEquals("x:/foo/bar/dest", telosysToolsCfg.getSpecificDestinationFolder() );
-		
-	}
+// removed in v 4.2.0 (cfgManager.saveTelosysToolsCfg removed)
+//	public void testLoadUpdateSave() throws TelosysToolsException {
+//		printSeparator();
+//		System.out.println("Test : Load, Update, Save and ReLoad" );
+//		File file = getTelosysToolCfgFile();
+//		System.out.println("config file    : " + file.getAbsolutePath() );
+//		String projectFolder = file.getParentFile().getParent();
+//		System.out.println("project folder : " + projectFolder );
+//		print(file);
+//		if ( createParentFolderIfNotExist(file) ) {
+//			System.out.println("Parent directory created" );
+//		}
+//		TelosysToolsCfgManager cfgManager = new TelosysToolsCfgManager(projectFolder);
+//
+//		System.out.println("config manager file path : " + cfgManager.getCfgFileAbsolutePath() );
+//		 
+//		System.out.println("Load");
+//		TelosysToolsCfg telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
+//		assertEquals("", telosysToolsCfg.getSpecificDestinationFolder() );
+//
+//		System.out.println("Update");
+//		telosysToolsCfg.setEntityPackage("org.demo.entity");
+//		assertEquals("org.demo.entity", telosysToolsCfg.getEntityPackage() );
+//		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
+//		telosysToolsCfg.setSpecificDestinationFolder("x:/foo/bar/dest");
+//
+//		System.out.println("Save");
+//		cfgManager.saveTelosysToolsCfg(telosysToolsCfg);
+//		
+//		System.out.println("Re-Load");
+//		telosysToolsCfg = cfgManager.loadTelosysToolsCfg();
+//		assertEquals("org.demo.entity", telosysToolsCfg.getEntityPackage() );
+//		//assertEquals("8080", telosysToolsCfg.getProperties().getProperty("http.proxyPort") );
+//		assertEquals("x:/foo/bar/dest", telosysToolsCfg.getSpecificDestinationFolder() );
+//		
+//	}
 
 }

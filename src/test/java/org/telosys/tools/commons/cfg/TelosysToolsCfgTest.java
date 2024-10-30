@@ -82,7 +82,7 @@ public class TelosysToolsCfgTest {
 		assertEquals("TelosysTools/downloads",  telosysToolsCfg.getDownloadsFolder() );
 		// No getTemplatesFolder() : only absolute path
 		assertEquals("TelosysTools/lib",        telosysToolsCfg.getLibrariesFolder() );
-		assertEquals("TelosysTools/models",     telosysToolsCfg.getModelsFolder() );
+//		assertEquals("TelosysTools/models",     telosysToolsCfg.getModelsFolder() ); // removed in v 4.2.0
 
 		assertEquals("TelosysTools/databases.yaml", telosysToolsCfg.getDatabasesDbCfgFile() );
 

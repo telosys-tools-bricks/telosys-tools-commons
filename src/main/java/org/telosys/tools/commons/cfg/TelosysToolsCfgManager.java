@@ -71,8 +71,7 @@ public class TelosysToolsCfgManager {
 	 * If the properties file doesn't exist the configuration contains the default values
 	 * @return the configuration (never null, use default values if the doesn't exist) 
 	 */
-	public TelosysToolsCfg loadTelosysToolsCfg()
-	{
+	public TelosysToolsCfg loadTelosysToolsCfg() {
 		PropertiesManager propManager = new PropertiesManager( this.cfgFileAbsolutePath ) ;
 		Properties prop = propManager.load(); // Ret NULL if file not found
 		if ( prop != null ) {
@@ -82,22 +81,5 @@ public class TelosysToolsCfgManager {
 			// Properties file not found, no properties loaded : use default values
 			return new TelosysToolsCfg(this.projectAbsolutePath, this.cfgFileAbsolutePath, null );
 		}
-	}
-	
-	/**
-	 * Creates a default instance of TelosysToolsCfg without loading from file
-	 * @return
-	 */
-	public TelosysToolsCfg createDefaultTelosysToolsCfg() 
-	{
-		return new TelosysToolsCfg(this.projectAbsolutePath, this.cfgFileAbsolutePath, null );
-	}
-	
-	//-------------------------------------------------------------------------------------------------
-	public void saveTelosysToolsCfg( TelosysToolsCfg telosysToolsCfg )
-	{
-		PropertiesManager propManager = new PropertiesManager( this.cfgFileAbsolutePath ) ;
-		// Save the configuration as a set of properties
-		propManager.save( telosysToolsCfg.getProperties() );
 	}
 }

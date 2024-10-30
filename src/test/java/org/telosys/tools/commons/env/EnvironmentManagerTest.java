@@ -96,7 +96,8 @@ public class EnvironmentManagerTest extends TestCase {
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		em.initTelosysToolsConfigFile(sb, null); // no variables to initialize
+//		em.initTelosysToolsConfigFile(sb, null); // no variables to initialize
+		em.initTelosysToolsConfigFile(sb); // no variables to initialize
 		String result = sb.toString();
 		println(result);
 		assertFalse( result.contains("not created"));
@@ -144,42 +145,43 @@ public class EnvironmentManagerTest extends TestCase {
 		assertTrue( TestsEnv.getTmpFileOrFolder("myproject1/TelosysTools/telosys-tools.cfg").exists() );
 	}
 	
-	public void testInitEnvironmentWithVariables() {
-		printSeparator();
-		println("testInitEnvironmentWithVariables()...");
-
-		String projectFullPath = TestsEnv.getTmpExistingFolderFullPath(MYPROJECT2) ;
-		EnvironmentManager em = new EnvironmentManager( projectFullPath);
-		cleanTelosysToolsEnvironment(em);
-		
-		List<Variable> variables = new LinkedList<>();
-		variables.add(new Variable("PROJECT_NAME",MYPROJECT2) );
-		variables.add(new Variable("MY_VAR1","value1") );
-		
-		StringBuilder sb = new StringBuilder();
-		em.initEnvironment(sb, variables);
-		println(sb.toString());
-		
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/lib").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/downloads").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/templates").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/models").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/databases.yaml").exists() );
-		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/telosys-tools.cfg").exists() );
-		
-		TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(projectFullPath) ;
-		TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
-		Variable var ;
-
-		var = telosysToolsCfg.getSpecificVariable("MY_VAR1");
-		assertNotNull(var);
-		assertEquals("value1", var.getValue());
-		
-		var = telosysToolsCfg.getSpecificVariable("PROJECT_NAME");
-		assertNotNull(var);
-		assertEquals(MYPROJECT2, var.getValue());
-	}
+// removed v 4.2.0
+//	public void testInitEnvironmentWithVariables() {
+//		printSeparator();
+//		println("testInitEnvironmentWithVariables()...");
+//
+//		String projectFullPath = TestsEnv.getTmpExistingFolderFullPath(MYPROJECT2) ;
+//		EnvironmentManager em = new EnvironmentManager( projectFullPath);
+//		cleanTelosysToolsEnvironment(em);
+//		
+//		List<Variable> variables = new LinkedList<>();
+//		variables.add(new Variable("PROJECT_NAME",MYPROJECT2) );
+//		variables.add(new Variable("MY_VAR1","value1") );
+//		
+//		StringBuilder sb = new StringBuilder();
+//		em.initEnvironment(sb, variables);
+//		println(sb.toString());
+//		
+//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools").exists() );
+//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/lib").exists() );
+//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/downloads").exists() );
+//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/templates").exists() );
+//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/models").exists() );
+//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/databases.yaml").exists() );
+//		assertTrue( TestsEnv.getTmpFileOrFolder("myproject2/TelosysTools/telosys-tools.cfg").exists() );
+//		
+//		TelosysToolsCfgManager telosysToolsCfgManager = new TelosysToolsCfgManager(projectFullPath) ;
+//		TelosysToolsCfg telosysToolsCfg = telosysToolsCfgManager.loadTelosysToolsCfg();
+//		Variable var ;
+//
+//		var = telosysToolsCfg.getSpecificVariable("MY_VAR1");
+//		assertNotNull(var);
+//		assertEquals("value1", var.getValue());
+//		
+//		var = telosysToolsCfg.getSpecificVariable("PROJECT_NAME");
+//		assertNotNull(var);
+//		assertEquals(MYPROJECT2, var.getValue());
+//	}
 	
 	public void testIsInitialized() {
 		printSeparator();

@@ -99,11 +99,11 @@ public class TelosysToolsCfg
      * @param prop the project configuration properties (if null default values will be used) 
      */
     protected TelosysToolsCfg ( String projectAbsolutePath, String cfgFileAbsolutePath, Properties prop ) { // v 3.0.0
-    	telosysToolsFolder = TelosysToolsEnv.getTelosysToolsFolder();
-    	modelsFolder       = TelosysToolsEnv.getModelsFolder() ; // "TelosysTools/models" since v 3.4.0
-    	templatesFolder    = TelosysToolsEnv.getTemplatesFolder() ; 
-    	downloadsFolder    = TelosysToolsEnv.getDownloadsFolder() ; 
-    	librariesFolder    = TelosysToolsEnv.getLibrariesFolder() ;
+    	this.telosysToolsFolder = TelosysToolsEnv.getTelosysToolsFolder();
+    	this.modelsFolder       = TelosysToolsEnv.getModelsFolder() ; // "TelosysTools/models" since v 3.4.0
+    	this.templatesFolder    = TelosysToolsEnv.getTemplatesFolder() ; 
+    	this.downloadsFolder    = TelosysToolsEnv.getDownloadsFolder() ; 
+    	this.librariesFolder    = TelosysToolsEnv.getLibrariesFolder() ;
     	
     	if ( projectAbsolutePath == null ) {
     		throw new IllegalArgumentException("projectAbsolutePath is null");
@@ -463,16 +463,6 @@ public class TelosysToolsCfg
     	}    	
     }
     
-	//------------------------------------------------------------------------------------------------------
-    /**
-     * Returns the models folder in the current project (relative path in the project) <br>
-     * ( e.g. 'TelosysTools' )
-     * @return
-     */
-    public String getModelsFolder() {
-    	return modelsFolder ;
-	}
-
     /**
      * Returns the models folder absolute path <br>
      * ( e.g. 'X:/dir/myproject/TelosysTools/models' )
