@@ -17,11 +17,14 @@ package org.telosys.tools.commons.http;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+
+import org.telosys.tools.commons.TelosysToolsException;
 
 public class HttpClient {
 
@@ -57,75 +60,75 @@ public class HttpClient {
 	//---------------------------------------------------------------------
 	// GET
 	//---------------------------------------------------------------------
-	public HttpResponse get(HttpRequest request)  throws Exception {
+	public HttpResponse get(HttpRequest request)  throws TelosysToolsException {
 		return get(request.getURL(), request.getHeadersMap());
 	}
 	
-	public HttpResponse get(String url, Map<String, String> headers)  throws Exception {
+	public HttpResponse get(String url, Map<String, String> headers)  throws TelosysToolsException {
 		return get(getURL(url), headers);
 	}
 	
-	private HttpResponse get(URL url, Map<String, String> headers) throws Exception {
+	private HttpResponse get(URL url, Map<String, String> headers) throws TelosysToolsException {
 		return process(url, "GET", headers, null);
 	}
 
 	//---------------------------------------------------------------------
 	// HEAD
 	//---------------------------------------------------------------------
-	public HttpResponse head(HttpRequest request)  throws Exception {
+	public HttpResponse head(HttpRequest request)  throws TelosysToolsException {
 		return head(request.getURL(), request.getHeadersMap());
 	}
 	
-	public HttpResponse head(String url, Map<String, String> headers)  throws Exception {
+	public HttpResponse head(String url, Map<String, String> headers)  throws TelosysToolsException {
 		return head(getURL(url), headers);
 	}
 	
-	private HttpResponse head(URL url, Map<String, String> headers ) throws Exception {
+	private HttpResponse head(URL url, Map<String, String> headers ) throws TelosysToolsException {
 		return process(url, "HEAD", headers, null);
 	}
 
 	//---------------------------------------------------------------------
 	// POST
 	//---------------------------------------------------------------------
-	public HttpResponse post(HttpRequest request)  throws Exception {
+	public HttpResponse post(HttpRequest request)  throws TelosysToolsException {
 		return post(request.getURL(), request.getHeadersMap(), request.getContent());
 	}
 	
-	public HttpResponse post(String url, Map<String, String> headers, byte[] data) throws Exception {
+	public HttpResponse post(String url, Map<String, String> headers, byte[] data) throws TelosysToolsException {
 		return post(getURL(url), headers, data );
 	}
 
-	private HttpResponse post(URL url, Map<String, String> headers, byte[] data) throws Exception {
+	private HttpResponse post(URL url, Map<String, String> headers, byte[] data) throws TelosysToolsException {
 		return process(url, "POST", headers, data);
 	}
 
 	//---------------------------------------------------------------------
 	// PUT
 	//---------------------------------------------------------------------
-	public HttpResponse put(HttpRequest request)  throws Exception {
+	public HttpResponse put(HttpRequest request)  throws TelosysToolsException {
 		return put(request.getURL(), request.getHeadersMap(), request.getContent());
 	}
 	
-	public HttpResponse put(String url, Map<String, String> headers, byte[] data) throws Exception {
+	public HttpResponse put(String url, Map<String, String> headers, byte[] data) throws TelosysToolsException {
 		return put(getURL(url), headers, data );
 	}
 	
-	private HttpResponse put(URL url, Map<String, String> headers, byte[] data) throws Exception {
+	private HttpResponse put(URL url, Map<String, String> headers, byte[] data) throws TelosysToolsException {
 		return process(url, "PUT", headers, data);
 	}
 
 	//---------------------------------------------------------------------
 	// DELETE
 	//---------------------------------------------------------------------
-	public HttpResponse delete(HttpRequest request)  throws Exception {
+	public HttpResponse delete(HttpRequest request)  throws TelosysToolsException {
 		return delete(request.getURL(), request.getHeadersMap());
 	}
 	
-	public HttpResponse delete(String url, Map<String, String> headers ) throws Exception {
+	public HttpResponse delete(String url, Map<String, String> headers ) throws TelosysToolsException {
 		return delete(getURL(url), headers);
 	}
 	
-	private HttpResponse delete(URL url, Map<String, String> headers ) throws Exception {
+	private HttpResponse delete(URL url, Map<String, String> headers ) throws TelosysToolsException {
 		return process(url, "DELETE", headers, null);
 	}
 
@@ -139,25 +142,32 @@ public class HttpClient {
 	 * @param headers http headers 
 	 * @param data the data to be posted  
 	 * @return
-	 * @throws Exception
+	 * @throws TelosysToolsException
 	 */
-	private HttpResponse process(URL url, String method, Map<String, String> headers, byte[] data) throws Exception {
+	private HttpResponse process(URL url, String method, Map<String, String> headers, byte[] data) throws TelosysToolsException {
 		HttpURLConnection connection = connect(url, method, headers);
 		if ( data != null ) {
 			postData(connection, data);
 		}
-		HttpResponse response = new HttpResponse(connection);
-		connection.disconnect();
+		HttpResponse response;
+		try {
+			response = new HttpResponse(connection);
+		} catch (IOException e) {
+			throw new TelosysToolsException("Cannot create HttpResponse (IOException)", e);
+		}
+		finally {
+			connection.disconnect();
+		}
 		return response ;
 	}
 	
 	//---------------------------------------------------------------------
-	private URL getURL(String sUrl) throws Exception {
+	private URL getURL(String sUrl) throws TelosysToolsException {
 		URL url = null;
 		try {
 			url = new URL(sUrl);
 		} catch (Exception e) {
-			throw new Exception("Invalid URL");
+			throw new TelosysToolsException("Invalid URL");
 		}
 		return url;
 	}
@@ -169,9 +179,9 @@ public class HttpClient {
 	 * @param method the http method to be used 
 	 * @param headers the headers to be set (can be null)
 	 * @return 
-	 * @throws Exception
+	 * @throws TelosysToolsException
 	 */
-	private HttpURLConnection connect(URL url, String method, Map<String, String> headers) throws Exception {
+	private HttpURLConnection connect(URL url, String method, Map<String, String> headers) throws TelosysToolsException {
 		HttpURLConnection connection = null;
 		try {
 			// url.openConnection() :
@@ -199,7 +209,7 @@ public class HttpClient {
 			connection.connect();
 			return connection;
 		} catch (Exception e) {
-			throw new Exception("Connection failed", e);
+			throw new TelosysToolsException("Connection failed", e);
 		}
 	}
 	
@@ -220,14 +230,14 @@ public class HttpClient {
 	}
 	
 	//---------------------------------------------------------------------
-	private void postData(HttpURLConnection connection, byte[] data) throws Exception {
+	private void postData(HttpURLConnection connection, byte[] data) throws TelosysToolsException {
 		try {
 			OutputStream os = connection.getOutputStream();
 			os.write(data);
 			os.flush();
 			os.close();
 		} catch (Exception e) {
-			throw new Exception("Cannot post date (unable to write in output stream)");
+			throw new TelosysToolsException("Cannot post date (unable to write in output stream)");
 		}
 	}
 	//---------------------------------------------------------------------
@@ -237,8 +247,12 @@ public class HttpClient {
 	 * @param destFileName the destination for the downloaded file 
 	 * @return the number of bytes (file size)
 	 */
-	public long downloadFile(String url, String destFileName ) throws Exception {
-		return downloadFileV2(getURL(url), destFileName );
+	public long downloadFile(String url, String destFileName ) throws TelosysToolsException {
+		try {
+			return downloadFileV2(getURL(url), destFileName );
+		} catch (IOException e) {
+			throw new TelosysToolsException("Cannot download file (IOException)", e);
+		}
 	}
 	
 	private static final int BUFFER_SIZE = 128 * 1024 ; // 128 k
@@ -248,9 +262,9 @@ public class HttpClient {
 	 * @param url
 	 * @param destFileName
 	 * @return
-	 * @throws Exception, IOException
+	 * @throws TelosysToolsException, IOException
 	 */
-	private long downloadFileV2(URL url, String destFileName) throws Exception {
+	private long downloadFileV2(URL url, String destFileName) throws TelosysToolsException, IOException {
 
 		checkDestination(destFileName);
 
@@ -267,7 +281,7 @@ public class HttpClient {
 		
 		// check HTTP response code first
 		if ( responseCode != HttpURLConnection.HTTP_OK ) {
-			throw new Exception ("Unexpected HTTP Response Code " + responseCode);
+			throw new TelosysToolsException ("Unexpected HTTP Response Code " + responseCode);
 		}
 		
         long totalBytesRead = 0L;		
@@ -284,11 +298,11 @@ public class HttpClient {
 		return totalBytesRead ;
 	}
 	
-	private void checkDestination(String destFileName) throws Exception {
+	private void checkDestination(String destFileName) throws TelosysToolsException {
 		File file = new File (destFileName) ;
 		File parent = file.getParentFile();
 		if ( ! parent.exists() ) {
-			throw new Exception("Download folder doesn't exist '" + parent.getAbsolutePath() + "' ");
+			throw new TelosysToolsException("Download folder doesn't exist '" + parent.getAbsolutePath() + "' ");
 		}
 	}
 }
