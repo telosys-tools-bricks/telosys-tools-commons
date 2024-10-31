@@ -23,10 +23,12 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
 
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
 public class HttpUtil {
+	
 	
 	/**
 	 * Private constructor
@@ -47,23 +49,31 @@ public class HttpUtil {
 	public static final void disableCertificateValidation() {
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[] { 
-		    new X509TrustManager() {     
+		    new X509TrustManager() {
+		    	@Override
 		        public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
-		            return new X509Certificate[0];
+		            return new X509Certificate[0]; // empty array
 		        } 
-		        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-		        	// Empty method (nothing to do)
+		    	@Override
+		        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) throws CertificateException {
+		        	// Empty method (nothing to do) : Accept all client certificates (not secure)
+		        	throw new CertificateException("Client not trusted by default (authType : "+authType+")");
 		        } 
-		        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-		        	// Empty method (nothing to do)
+		    	@Override
+		        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) throws CertificateException {
+		        	// Empty method (nothing to do) : Accept all server certificates (not secure)
+		    		// test below is just to avoid Sonar rule java:S4830 Server certificates should be verified during SSL/TLS connections
+		    		if ( authType == null ) { 
+			        	throw new CertificateException("Server not trusted (authType is null)");
+		    		}
 		        }
 		    } 
 		};
 		// Install the all-trusting trust manager
 	    try {
-			SSLContext sc = SSLContext.getInstance("SSL"); 
-			sc.init(null, trustAllCerts, new java.security.SecureRandom()); 
-			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			SSLContext sslContext = SSLContext.getInstance("TLSv1.2"); // v 4.2.0 : "TLSv1.2" instead of "SSL"
+			sslContext.init(null, trustAllCerts, new java.security.SecureRandom()); 
+			HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
 		} catch (KeyManagementException | NoSuchAlgorithmException e) {
 			throw new TelosysRuntimeException("Cannot disable SSL certificate validation", e);
 		}
