@@ -40,7 +40,8 @@ public class DateUtilTest {
 	public void test01() throws ParseException {		
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	    dateFormat.setLenient(false); // non lenient parsing ( exception if invalid date )
-	    dateFormat.parse("2018-11-28");
+	    Date date = dateFormat.parse("2018-11-28");
+		assertEquals("2018-11-28", DateUtil.dateISO(date));
 	}
 	
 	@Test( expected=ParseException.class )

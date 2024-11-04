@@ -37,6 +37,7 @@ public class YamlFileManagerTest {
 		TestsEnv.getTmpExistingFolder("/yaml");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testLoadMap() throws TelosysYamlException  {
 		print("--- testLoadMap");
@@ -50,6 +51,8 @@ public class YamlFileManagerTest {
 		
 		print("  name : " + model.get("name")) ;
 		print("  version : " + model.get("version")) ;
+		assertEquals("MyModelName", model.get("name"));
+		assertEquals(1.0, model.get("version")); // Double
 	}
 
 	@Test
@@ -70,54 +73,13 @@ public class YamlFileManagerTest {
 		try {
 			yaml.load(FileUtil.getFileByClassPath("/yaml/student-invalid.yaml"), Student.class);
 		} catch (TelosysYamlException  e) {
+			assertTrue(e.getCause() instanceof YAMLException);
 			assertTrue(e.getCause() instanceof MarkedYAMLException);
-//			print("Exception class : " + e.getClass().getCanonicalName() );
-//			print("Exception msg   : " + e.getMessage() );
-//
-//			print("------------ Search Cause #1"); 
-//			Throwable cause = e.getCause();
-//			print("Cause #1 (Throwable) class : " + cause.getClass().getCanonicalName() );
-//			print("Cause #1 (Throwable) msg   : " + cause.getMessage() );
-//			if ( cause instanceof YAMLException ) {
-//				printYamlExceptionType((YAMLException) cause);
-//				//YAMLException ye = (YAMLException) cause ;
-////				print("------------ Search Cause #2"); 
-////				if ( cause.getCause() != null ) {
-////					cause = cause.getCause();
-////					print("Cause #2 class : " + cause.getClass().getCanonicalName() );
-////					if ( cause instanceof MarkedYAMLException ) {
-////						MarkedYAMLException mye = (MarkedYAMLException) cause ;
-////						print("Cause #2 (MarkedYAMLException) class : " + mye.getClass().getCanonicalName() );
-////						print("Cause #2 (MarkedYAMLException) msg   : " + mye.getMessage() );
-////						Mark mark = mye.getProblemMark();
-////						int line = mark.getLine() + 1;
-////						// mark.getName() : 'reader'
-////						print("--- line " + line + " snippet '" + mark.get_snippet() + "'");
-////						//mark.getBuffer()
-////					}
-////					else {
-////						print("Cause #2 not instance of MarkedYAMLException"); 
-////					}
-////				}
-////				else {
-////					print("No Cause #2"); 
-////				}
-//			}
-//			if ( cause.getCause() != null ) {
-//				cause = cause.getCause();
-//				print("Cause #2 (Throwable) class : " + cause.getClass().getCanonicalName() );
-//				print("Cause #2 (Throwable) msg   : " + cause.getMessage() );
-//				printYamlExceptionType((YAMLException) cause);
-//			}
-//			else {
-//				print("No Cause #2"); 
-//			}
-//			//e.printStackTrace();
-//			
+			printYamlExceptionType((YAMLException)e.getCause());
 		}
 	}
 	
-	private void printYamlExceptionType(YAMLException ye) {
+	protected void printYamlExceptionType(YAMLException ye) {
 		if ( ye instanceof MarkedYAMLException ) {
 			print("--- YAMLException is instance of MarkedYAMLException"); 
 			MarkedYAMLException mye = (MarkedYAMLException) ye ;
@@ -137,6 +99,11 @@ public class YamlFileManagerTest {
 		}
 		else {
 			print("--- YAMLException : no subclass "); 
+		}
+		if (ye.getCause() != null) {
+			Throwable cause = ye.getCause();
+			print("Cause class : " + cause.getClass().getCanonicalName());
+			print("Cause msg   : " + cause.getMessage());
 		}
 	}
 
@@ -163,8 +130,13 @@ public class YamlFileManagerTest {
 		data.put("map1", map1);
 		data.put("list", list);
 		
-		save(TestsEnv.getTmpFile("yaml/data1.yaml"), map1);
-		save(TestsEnv.getTmpFile("yaml/data2.yaml"), data);
+		File file1 = TestsEnv.getTmpFile("yaml/data1.yaml");
+		save(file1, map1);
+		assertTrue(file1.exists());
+		
+		File file2 = TestsEnv.getTmpFile("yaml/data2.yaml");
+		save(file2, data);
+		assertTrue(file2.exists());
 	}
 
 	@Test
@@ -175,7 +147,10 @@ public class YamlFileManagerTest {
 		student.setYear(2022);
 		student.setDepartment("Math");
 		student.setCourses(courses);
-		save(TestsEnv.getTmpFile("yaml/data3-student.yaml"), student);
+
+		File file = TestsEnv.getTmpFile("yaml/data3-student.yaml");
+		save(file, student);
+		assertTrue(file.exists());
 	}
 
 	private void save(File file, Object data) {
@@ -184,13 +159,5 @@ public class YamlFileManagerTest {
 		YamlFileManager yaml = new YamlFileManager();
 		yaml.save(file, data);
 	}
-
-
-//	private void saveBean(File file, Map<String,Object> data) {
-//		print("Saving data : " + data);
-//		print("in file : " + file.getAbsolutePath() );
-//		YamlFileManager yaml = new YamlFileManager();
-//		yaml.save(file, data);
-//	}
 
 }
