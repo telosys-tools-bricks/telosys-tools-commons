@@ -16,11 +16,12 @@
 package org.telosys.tools.commons;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 /**
  * Zip utility 
@@ -30,6 +31,9 @@ import java.util.zip.ZipInputStream;
  */
 public class ZipUtil {
 
+	private static final int MAX_ENTRIES   =      10000; // 10 KB - Secutity threshold to avoid "Zip Bomb" risk
+	private static final int MAX_FILE_SIZE = 1000000000; //  1 GB - Secutity threshold to avoid "Zip Bomb" risk
+	
 	/**
 	 * Private constructor for static class
 	 */
@@ -37,73 +41,80 @@ public class ZipUtil {
 	}
 	
 	/**
-	 * Unzip the given ZIP file in the output folder, without the root folder part 
-	 * @param zipFile
-	 * @param outputFolder
-	 * @param createFolder
+	 * Unzip the given ZIP file in the given output dir <br>
+	 * The root part of each file path is removed ( eg 'my-bundle-master/aaa/bbb' -> 'aaa/bbb' ) 
+	 * @param zipFilePath
+	 * @param outputDirPath
+	 * @param createOutputDir
 	 * @throws TelosysToolsException
 	 */
-	public static void unzip(final String zipFile, final String outputFolder,
-			final boolean createFolder) throws TelosysToolsException {
+	public static void unzip(String zipFilePath, String outputDirPath, boolean createOutputDir) throws TelosysToolsException {
 
 		//--- Check output directory existence
-		File folder = new File(outputFolder);
+		File folder = new File(outputDirPath);
 		if (!folder.exists()) {
-			if (createFolder) {
+			if (createOutputDir) {
 				// Create all parent directories 
 				DirUtil.createDirectory( folder );
 			} else {
-				throw new TelosysToolsException("Cannot UnZip : destination dir '" + outputFolder + "' doesn't exist");
+				throw new TelosysToolsException("Cannot UnZip : destination dir '" + outputDirPath + "' doesn't exist");
 			}
 		}
 
-		try ( ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile)) ) {
-			ZipEntry zipEntry = zis.getNextEntry();
-			while (zipEntry != null) {
+		File file = new File(zipFilePath);
+		if ( ! file.isFile() ) {
+			throw new TelosysToolsException("Cannot UnZip : '" + zipFilePath + "' is not a file");
+		}
+		
+		int numberOfEntries = 0 ;
+		try ( ZipFile zipFile = new ZipFile(file) ) {
+			Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+			
+			while (zipEntries.hasMoreElements()) {
+				numberOfEntries++;
+				if ( numberOfEntries > MAX_ENTRIES ) {
+					throw new TelosysToolsException("Too much entries in zip file ('zip bomb' risk, max="+ MAX_ENTRIES+")"); 
+				}
+				ZipEntry zipEntry = zipEntries.nextElement();
 
-				final String zipEntryName = zipEntry.getName();
+				String zipEntryName = zipEntry.getName();
 
-				// cut the root folder (e.g.  for "basic-templates-master/aaa/bbb" return "aaa/bbb" ) 
-				String entryDestination = cutEntryName(zipEntryName) ;
-				if ( entryDestination.length() > 0 ) {
-					//--- Install this entry
+				// cut the root dir (e.g. for "basic-templates-master/aaa/bbb"
+				// return "aaa/bbb" )
+				String entryDestination = cutEntryRootDir(zipEntryName);
+				if (entryDestination.length() > 0) {
+					// --- Install this entry
 					// build the destination file name
-					File destinationFile = new File(outputFolder + File.separator + entryDestination );
+					File destinationFile = new File(outputDirPath + File.separator + entryDestination);
 					// unzip ( file or directory )
-					if ( zipEntry.isDirectory() ) {
+					if (zipEntry.isDirectory()) {
 						DirUtil.createDirectory(destinationFile); // v 3.0.0
-					}
-					else {
-						unzipEntry(zis, destinationFile); // extract to file
+					} else {
+						InputStream is = zipFile.getInputStream(zipEntry);
+						unzipEntry(is, destinationFile); // extract to file
 					}
 				}
-				zipEntry = zis.getNextEntry();
 			}
-			zis.closeEntry();
-
-		} catch (IOException ex) {
-			throw new TelosysToolsException("UnZip Error (IOException)", ex);
 		}
+		catch ( IOException ex) {
+			throw new TelosysToolsException("UnZip Error (IOException)", ex); 
+		}
+	}
+	private static void unzipEntry(InputStream is, File destinationFile) throws IOException, TelosysToolsException {
+		int outputFileSize = 0;
+        byte[] buffer = new byte[4096];
+        try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
+            int nBytes ;
+            while ((nBytes = is.read(buffer)) > 0) {
+            	outputFileSize += nBytes;
+            	if ( outputFileSize > MAX_FILE_SIZE ) {
+            		throw new TelosysToolsException("Output file size too large ('zip bomb' risk, max="+ MAX_FILE_SIZE+" bytes)"); 
+            	}
+                fos.write(buffer, 0, nBytes);
+            }
+        }
 	}
 	
-	/**
-	 * Unzip the given entry (a single file stored in the zip file)
-	 * @param zis entry input stream
-	 * @param destinationFile the new file to be created
-	 * @throws IOException
-	 */
-	private static void unzipEntry(ZipInputStream zis, File destinationFile) throws IOException {
-
-		// create non existent parent folders (to avoid FileNotFoundException) ???
-
-		byte[] buffer = new byte[1024];
-		try ( FileOutputStream fos = new FileOutputStream(destinationFile) ) {
-			int len;
-			while ((len = zis.read(buffer)) > 0) {
-				fos.write(buffer, 0, len);
-			}
-		}
-	}
 
 	/**
 	 * Remove the "root directory" for the given path <br>
@@ -111,7 +122,7 @@ public class ZipUtil {
 	 * @param entryName
 	 * @return
 	 */
-	protected static String cutEntryName(String entryName) {
+	protected static String cutEntryRootDir(String entryName) {
         final int pos = getFirstSeparator(entryName) ;
         if ( pos < 0 ) {
         	// separator not found => nothing after
