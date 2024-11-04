@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -27,11 +28,14 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoAES {
 	
 	private static final String AES = "AES";
+	private static final String ALGORITHM = "AES/GCM/NoPadding";
+    private static final int    GCM_TAG_LENGTH = 128;
 
 	/**
 	 * Private constructor for static class
@@ -133,17 +137,31 @@ public class CryptoAES {
 			throw new TelosysToolsException("Cannot decrypt with AES key", e);
 		}
 	}
-	
-	private static Cipher buildCipher(int cipherMode, SecretKey secretKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-		Cipher cipher = Cipher.getInstance(AES);
-        cipher.init(cipherMode, secretKey);
+
+	private static Cipher buildCipher(int cipherMode, SecretKey secretKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+		Cipher cipher = Cipher.getInstance(ALGORITHM);
+
+		// Define a fixed 12-byte IV  (not random because the same IV must be used for encryption and decryption)
+		// AES-GCM mode requires that the Initialization Vector (IV) used in decryption matches exactly the IV used during encryption.
+        byte[] fixedIV = new byte[] { 
+                (byte)0x05, (byte)0x06, (byte)0x07, (byte)0x08,
+                (byte)0x01, (byte)0x02, (byte)0x03, (byte)0x04,
+                (byte)0x09, (byte)0x0A, (byte)0x0B, (byte)0x0C
+            };
+        
+        // Create GCMParameterSpec (implements AlgorithmParameterSpec required by Cipher.init)
+        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH, fixedIV);
+        
+        // Init cipher with AlgorithmParameterSpec parameter (required for "GCM") 
+        cipher.init(cipherMode, secretKey, gcmParameterSpec); 
         return cipher;
 	}
 	
 	public static void writeSecretKey(File file, SecretKey secretKey) throws TelosysToolsException {
 		File parentDir = file.getParentFile(); // Get the parent directory
         if (parentDir != null && !parentDir.exists()) {
-            if ( ! parentDir.mkdirs() ) { // try to create parent directories
+        	boolean dirCreated = parentDir.mkdirs(); // try to create parent directories
+            if ( ! dirCreated ) { 
     			throw new TelosysToolsException("Cannot create file parent directories");
             }
         }
