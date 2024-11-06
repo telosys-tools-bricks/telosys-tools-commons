@@ -18,8 +18,7 @@
 	<properties>
 		<maven.build.timestamp.format>yyMMdd.HHmmss.S</maven.build.timestamp.format>	<!-- day in the year . min . milliseconds -->	
 		<build.id>${maven.build.timestamp}</build.id> <!-- for resource filtering -->
-		<!-- TEMPORARELY -->
-		<!-- <properties> <skip-license>true</skip-license> </properties> -->
+		<!-- TEMPORARELY (if needed) : <skip-license>true</skip-license> -->
 	</properties>
 
 	<dependencies>

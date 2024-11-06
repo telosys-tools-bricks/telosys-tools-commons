@@ -57,11 +57,13 @@ public class DriverLoaderlTest {
 		assertNotNull(driver);
 	}
 
-	@Test // (expected=TelosysToolsException.class)
+	@Test (expected=TelosysToolsException.class)
 	public void test10() throws TelosysToolsException {
 		// Void specific libraries
 		String[] libraries = { } ;
 		DriverLoader driverLoader = new DriverLoader(libraries);   
+		// Not supposed to found JDBC driver => TelosysToolsException
+		driverLoader.getDriver("org.apache.derby.jdbc.ClientDriver");
 	}
 
 	@Test

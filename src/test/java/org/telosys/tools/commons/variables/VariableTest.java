@@ -28,6 +28,15 @@ public class VariableTest extends TestCase {
 		Collections.sort(variables, new VariableNameComparator());
 		print(variables);
 		print(variables.toArray(new Variable[0]));
+
+		assertEquals("A", variables.get(0).getName());
+		assertEquals("Value A", variables.get(0).getValue());
+		
+		assertEquals("B", variables.get(1).getName());
+		assertEquals("Value B", variables.get(1).getValue());
+
+		assertEquals("V3", variables.get(4).getName());
+		assertEquals("3",   variables.get(4).getValue());
 	}
 	
 	private void print(List<Variable> variables ) {
