@@ -24,7 +24,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Zip utility 
+ * Zip utility class to unzip bundles and models after download from GitHub.   
+ * Safe unzip to avoid "zip bomb" risk 
+ * See https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream 
  * 
  * @author Laurent GUERIN
  *
@@ -33,13 +35,14 @@ public class ZipUtil {
 
 	private static final int MAX_ENTRIES   =      10000; // 10 KB - Secutity threshold to avoid "Zip Bomb" risk
 	private static final int MAX_FILE_SIZE = 1000000000; //  1 GB - Secutity threshold to avoid "Zip Bomb" risk
+	private static final int ZIP_FILE_TOOBIG = -1; 
 	
 	/**
 	 * Private constructor for static class
 	 */
 	private ZipUtil() {
 	}
-	
+
 	/**
 	 * Unzip the given ZIP file in the given output dir <br>
 	 * The root part of each file path is removed ( eg 'my-bundle-master/aaa/bbb' -> 'aaa/bbb' ) 
@@ -50,7 +53,49 @@ public class ZipUtil {
 	 */
 	public static void unzip(String zipFilePath, String outputDirPath, boolean createOutputDir) throws TelosysToolsException {
 
-		//--- Check output directory existence
+		File file = preprocessing(zipFilePath, outputDirPath, createOutputDir);
+		
+		try ( ZipFile zipFile = new ZipFile(file) ) {
+			Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+			int numberOfEntries = 0 ;
+			while (zipEntries.hasMoreElements()) {
+				numberOfEntries++;
+				if ( numberOfEntries > MAX_ENTRIES ) {
+					throw new TelosysToolsException("Too much entries in zip file ('zip bomb' risk, max="+ MAX_ENTRIES+")"); 
+				}
+				ZipEntry zipEntry = zipEntries.nextElement();
+				// remove root dir (for "basic-templates-master/aaa/bbb" return "aaa/bbb" )
+				String entryDestination = cutEntryRootDir(zipEntry.getName());
+				if (entryDestination.length() > 0) {
+					// --- Install this entry
+					// build the destination file name
+					File destinationFile = new File(outputDirPath + File.separator + entryDestination);
+					// unzip ( file or directory )
+					if (zipEntry.isDirectory()) {
+						// entry is a directory => create the directory 
+						DirUtil.createDirectory(destinationFile);
+					} else {
+						// entry is a file => unzip the file 
+						int r = unzipEntry(zipFile, zipEntry, destinationFile);
+		            	if ( r == ZIP_FILE_TOOBIG ) {
+		            		throw new TelosysToolsException("Output file size too large ('zip bomb' risk, max="+ MAX_FILE_SIZE+" bytes)"); 
+		            	}
+					}
+				}
+			}
+		}
+		catch ( IOException ex) {
+			throw new TelosysToolsException("UnZip Error (IOException)", ex); 
+		}
+	}
+
+	private static File preprocessing(String zipFilePath, String outputDirPath, boolean createOutputDir) throws TelosysToolsException {
+		// check ZIP file existence
+		File file = new File(zipFilePath);
+		if ( ! file.isFile() ) {
+			throw new TelosysToolsException("Cannot UnZip : '" + zipFilePath + "' is not a file");
+		}
+		// check output directory existence
 		File folder = new File(outputDirPath);
 		if (!folder.exists()) {
 			if (createOutputDir) {
@@ -60,47 +105,19 @@ public class ZipUtil {
 				throw new TelosysToolsException("Cannot UnZip : destination dir '" + outputDirPath + "' doesn't exist");
 			}
 		}
-
-		File file = new File(zipFilePath);
-		if ( ! file.isFile() ) {
-			throw new TelosysToolsException("Cannot UnZip : '" + zipFilePath + "' is not a file");
-		}
-		
-		int numberOfEntries = 0 ;
-		try ( ZipFile zipFile = new ZipFile(file) ) {
-			Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
-			
-			while (zipEntries.hasMoreElements()) {
-				numberOfEntries++;
-				if ( numberOfEntries > MAX_ENTRIES ) {
-					throw new TelosysToolsException("Too much entries in zip file ('zip bomb' risk, max="+ MAX_ENTRIES+")"); 
-				}
-				ZipEntry zipEntry = zipEntries.nextElement();
-
-				String zipEntryName = zipEntry.getName();
-
-				// cut the root dir (e.g. for "basic-templates-master/aaa/bbb"
-				// return "aaa/bbb" )
-				String entryDestination = cutEntryRootDir(zipEntryName);
-				if (entryDestination.length() > 0) {
-					// --- Install this entry
-					// build the destination file name
-					File destinationFile = new File(outputDirPath + File.separator + entryDestination);
-					// unzip ( file or directory )
-					if (zipEntry.isDirectory()) {
-						DirUtil.createDirectory(destinationFile); // v 3.0.0
-					} else {
-						InputStream is = zipFile.getInputStream(zipEntry);
-						unzipEntry(is, destinationFile); // extract to file
-					}
-				}
-			}
+		return file;
+	}
+	
+	private static int unzipEntry(ZipFile zipFile, ZipEntry zipEntry, File destinationFile) throws TelosysToolsException {
+		try ( InputStream is = zipFile.getInputStream(zipEntry) ) {
+			return unzipInputStream(is, destinationFile); // extract to file
 		}
 		catch ( IOException ex) {
 			throw new TelosysToolsException("UnZip Error (IOException)", ex); 
 		}
 	}
-	private static void unzipEntry(InputStream is, File destinationFile) throws IOException, TelosysToolsException {
+
+	private static int unzipInputStream(InputStream is, File destinationFile) throws IOException {
 		int outputFileSize = 0;
         byte[] buffer = new byte[4096];
         try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
@@ -108,11 +125,14 @@ public class ZipUtil {
             while ((nBytes = is.read(buffer)) > 0) {
             	outputFileSize += nBytes;
             	if ( outputFileSize > MAX_FILE_SIZE ) {
-            		throw new TelosysToolsException("Output file size too large ('zip bomb' risk, max="+ MAX_FILE_SIZE+" bytes)"); 
+            		return ZIP_FILE_TOOBIG; // Too big => Stop here 
             	}
-                fos.write(buffer, 0, nBytes);
+            	else {
+                    fos.write(buffer, 0, nBytes);
+            	}
             }
         }
+        return outputFileSize;
 	}
 	
 
