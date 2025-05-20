@@ -39,4 +39,8 @@ public class VariablesNames {
 	public static final String  DOC      = "DOC" ;
 	public static final String  TMP      = "TMP" ;
 	
+	//--- Default target language and default target database ( v 4.2.1 )
+	public static final String  TARGET_LANGUAGE      = "TARGET_LANGUAGE" ;
+	public static final String  TARGET_DATABASE      = "TARGET_DATABASE" ;
+	
 }

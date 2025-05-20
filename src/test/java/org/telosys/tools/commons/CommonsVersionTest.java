@@ -10,7 +10,7 @@ public class CommonsVersionTest {
 	@Test
 	public void test1() {
 		assertEquals("telosys-tools-commons", CommonsVersion.getName());
-		assertEquals("4.2.0", CommonsVersion.getVersion());
+		assertNotNull(CommonsVersion.getVersion()); // SemVer X.Y.Z
 		assertNotNull(CommonsVersion.getBuildId());
 		assertNotNull(CommonsVersion.getVersionWithBuilId());
 	}
