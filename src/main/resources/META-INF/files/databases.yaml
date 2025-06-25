@@ -131,10 +131,9 @@ databases :
     url: jdbc:derby://localhost:1527/mydatabase;create=true
     user: root
     password: admin
-    schema: ROOT
     # Metadata parameters
+    schema: ROOT
     catalog:
-    schema:
     tableNamePattern:
     tableNameInclude:
     tableNameExclude:
