@@ -192,7 +192,7 @@ public class SqlScriptRunner {
             printlnError(e);
             throw e;
         } finally {
-            conn.rollback();
+            // conn.rollback(); // why rollback here ???
             flush();
         }
     }

@@ -29,6 +29,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
@@ -393,6 +395,20 @@ public class FileUtil {
 			return false;
 		} catch (IOException e) {
 			throw new TelosysRuntimeException("Cannot delete file '" + file.getName() + "'", e);
+		}
+	}
+
+	public static Path getAbsolutePath(String fileName, String currentDir) {
+		Path path = Paths.get(fileName);
+		if (path.isAbsolute()) {
+			return path;
+		}
+		else {
+			Path currentDirPath = Paths.get(currentDir);
+			// Resolve the filename against the given current dir
+            // .resolve(name) : combines the base directory with the relative filename
+            // .normalize() : cleans up "." and ".." (to return a clean path)
+            return currentDirPath.resolve(fileName).normalize(); 
 		}
 	}
 
