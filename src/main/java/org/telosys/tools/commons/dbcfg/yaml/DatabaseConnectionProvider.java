@@ -123,8 +123,10 @@ public class DatabaseConnectionProvider {
         catch (SQLException e) {
             throw new TelosysToolsException("Cannot connect to database (SQLException)", e);
         }
-        catch (Exception e) {
-            throw new TelosysToolsException("Cannot connect to database (Exception)", e);
+        // Catch all other Exception/Error (to be secure watever the Exception/Error)
+        catch (Error | Exception e) {  // Catch all top level Errors and Exceptions
+        	// Error added in ver 4.3 (to secure driver loading whatever the error)
+        	throw new TelosysToolsException("Cannot connect to database (unexpected Error/Exception)", e);
         }
         
         //--- Check connection

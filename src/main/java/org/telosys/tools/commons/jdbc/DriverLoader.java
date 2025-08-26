@@ -55,7 +55,6 @@ public class DriverLoader {
 
     private final MySpecificClassLoader     specificClassLoader ; // Specific Class Loader instance
 
-//    private final Hashtable<String,Driver>  drivers = new Hashtable<>(); // Loaded drivers
     private final Map<String,Driver>  drivers = new HashMap<>(); // Loaded drivers
     
     //-----------------------------------------------------------------------------
@@ -159,40 +158,55 @@ public class DriverLoader {
     	return sb.toString();
     }
     
-    //-----------------------------------------------------------------------------
-    // The method to provide a driver (via the specific class loader)
-    //-----------------------------------------------------------------------------
-    public Driver getDriver(String sDriverClassName) throws TelosysToolsException
-    {
-        Driver driverInstance = null;
-
-        //--- Try to find an existing instance of this type of driver 
-        driverInstance = drivers.get(sDriverClassName);
-        if ( driverInstance != null ) {
-            // Driver already loaded 
-            return driverInstance ;
-        }
-                        
-        //--- Try to load the driver class with the specific class loader
+    public Class<?> loadDriverClass(String driverClassName) throws TelosysToolsException {
         Class<?> driverClass = null;
         try {
             if (specificClassLoader != null) {
                 // Loading with specific class loader
-                driverClass = specificClassLoader.loadClass(sDriverClassName);
+                driverClass = specificClassLoader.loadClass(driverClassName);
             }
             else {
                 // Loading with default class loader ...
-            	driverClass = loadWithDefaultClassLoader(sDriverClassName) ; // v 2.1.1 #LGU
+            	driverClass = loadWithDefaultClassLoader(driverClassName);
             }
         } 
         catch (ClassNotFoundException e) {
-        	throw new TelosysToolsException("Cannot load class '" + sDriverClassName + "' (ClassNotFoundException)", e);
+        	throw new TelosysToolsException("Cannot load driver class '" + driverClassName + "' (ClassNotFoundException)", e);
         }
-        if (driverClass == null) {
-        	// Unexpected situation 
-        	throw new TelosysToolsException("Cannot load class '" + sDriverClassName + "' (unknown reason)");
+        catch (NoClassDefFoundError e) {  // ( hierarchy: extends LinkageError  extends Error  extends Throwable )
+        	// added in ver 4.3 (to manage Derby driver loading error)
+        	throw new TelosysToolsException("Cannot load driver class '" + driverClassName + "' (NoClassDefFoundError)", e);
         }
+        catch (Error | Exception e) {  // Catch all top level Errors and Exceptions
+        	// added in ver 4.3 (to secure driver loading whatever the error)
+        	throw new TelosysToolsException("Cannot load driver class '" + driverClassName + "' (unexpected Error/Exception)", e);
+        }
+        //--- Check driver class is ready 
+        if (driverClass != null) {
+            return driverClass;
+        }
+        else {
+        	// Unexpected situation (not supposed to happen)
+        	throw new TelosysToolsException("Cannot load driver class '" + driverClassName + "' (unknown reason)");
+        }
+    }
+    
+    //-----------------------------------------------------------------------------
+    // The method to provide a driver (via the specific class loader)
+    //-----------------------------------------------------------------------------
+    public Driver getDriver(String driverClassName) throws TelosysToolsException {
+        Driver driverInstance = null;
 
+        //--- Try to find an existing instance of this type of driver 
+        driverInstance = drivers.get(driverClassName);
+        if ( driverInstance != null ) {
+            // Driver already loaded 
+            return driverInstance ;
+        }
+        
+        //--- Tryu to load the driver class
+        Class<?> driverClass = loadDriverClass(driverClassName);
+        		
         //--- Try to create an instance of this driver
         try {
             driverInstance = (Driver) driverClass.newInstance();
@@ -203,15 +217,25 @@ public class DriverLoader {
         catch (IllegalAccessException e) {
         	throw new TelosysToolsException("Cannot create driver instance (IllegalAccessException)", e);
         }
+        catch (NoClassDefFoundError e) {  // ( hierarchy: extends LinkageError  extends Error  extends Throwable )
+        	// added in ver 4.3 (to manage Derby driver loading error)
+        	throw new TelosysToolsException("Cannot create driver instance (NoClassDefFoundError)", e);
+        }
+        catch (Error | Exception e) {  // Catch all top level Errors and Exceptions
+        	// added in ver 4.3 (to secure driver loading whatever the error)
+        	throw new TelosysToolsException("Cannot create driver instance (unexpected Error/Exception)", e);
+        }
 
+        //--- Check driver instance is ready 
         if ( driverInstance != null ) {
             //--- Store the driver instance ( for the future )
-            drivers.put(sDriverClassName, driverInstance);
+            drivers.put(driverClassName, driverInstance);
+            return driverInstance ;
         }
         else {
+        	// Unexpected situation (not supposed to happen)
         	throw new TelosysToolsException("Cannot create driver instance (unknown reason)");
         }
-        return driverInstance ;
     }
     
     /**
