@@ -20,8 +20,11 @@ public class DepotTest {
 		assertFalse(d.isGitLabDepot());
 		assertEquals("github_org", d.getType());
 		assertEquals("my-org", d.getName());
-		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/orgs/my-org/repos", StrUtil.removeFrom(d.getApiUrl(), '?') ); // without "?per_page=nn"
+		assertEquals("", d.getRootURL()); 
+		// url with default values
+		assertEquals("https://github.com", d.getGitHubRootUrl() ); 
+		assertEquals("https://api.github.com", d.getGitHubApiRootUrl() );
+		assertEquals("https://api.github.com/orgs/my-org/repos?per_page=100", d.getApiUrl());
 		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
 
 		d = new Depot(" github_org : my-org   ");
@@ -39,6 +42,7 @@ public class DepotTest {
 		assertEquals("github_org", d.getType());
 		assertEquals("my-templates", d.getName());
 		assertEquals("https://myhost:9090", d.getRootURL());
+		assertEquals("https://myhost:9090", d.getGitHubApiRootUrl() );
 		assertEquals("https://myhost:9090/orgs/my-templates/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 		assertEquals("https://myhost:9090/rate_limit", d.getApiRateLimitUrl());
 
@@ -52,7 +56,7 @@ public class DepotTest {
 		assertEquals("https://api.github.com/users/toto/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
 		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
 
-		d = new Depot(" github_user :toto(http://myhost)  ");
+		d = new Depot(" github_user :toto(http://myhost/ )  "); // trailing "/" is removed
 		assertTrue(d.isGitHubDepot());
 		assertFalse(d.isGitLabDepot());
 		assertEquals("github_user", d.getType());
@@ -109,5 +113,24 @@ public class DepotTest {
 	@Test(expected = TelosysToolsException.class)
 	public void testInvalid902() throws TelosysToolsException {
 		new Depot(":");
+	}
+	
+	@Test
+	public void testBuildGitRepositoryURL() throws TelosysToolsException {
+		Depot depot ;
+		// GitHub
+		depot = new Depot("github_org:telosys-templates");
+		assertEquals("https://github.com/telosys-templates/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		depot = new Depot("github_org:telosys-templates");
+		assertEquals("https://github.com/telosys-templates/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		depot = new Depot("github_org:myorga");
+		assertEquals("https://github.com/myorga/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		depot = new Depot("github_org:myorga (https://foo.org)");
+		assertEquals("https://foo.org/myorga/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		depot = new Depot("github_org:myorga (https://foo.org/)");
+		assertEquals("https://foo.org/myorga/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		// GitLab
+		depot = new Depot("gitlab_user:telosys-templates");
+		assertEquals("https://gitlab.com/telosys-templates/myrepo", depot.buildGitRepositoryURL("myrepo") );
 	}
 }

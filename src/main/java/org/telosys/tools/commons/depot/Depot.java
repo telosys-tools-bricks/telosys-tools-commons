@@ -39,25 +39,27 @@ public class Depot {
 
 	private static final String INVALID_DEPOT = "Invalid depot"; 
 	
-	// GitHub 
-	private static final String GITHUB_ORG          = "github_org"; 
-	private static final String GITHUB_USER         = "github_user"; 
-	private static final String GITHUB_CURRENT_USER = "github_current_user"; 
-	private static final String GITHUB_DEFAULT_ROOT_URL = "https://api.github.com" ;
-	private static final String GITHUB_PER_PAGE         = "per_page=100" ;
+	//--- GitHub 
+	private static final String GITHUB_ORG          = "github_org";  // GitHub "organization" type
+	private static final String GITHUB_USER         = "github_user"; // GitHub "user" type
+	private static final String GITHUB_CURRENT_USER = "github_current_user"; //  GitHub "current user" type
+	private static final String GITHUB_DEFAULT_ROOT_URL     = "https://github.com" ; 
+	private static final String GITHUB_DEFAULT_API_ROOT_URL = "https://api.github.com" ;
+	private static final String GITHUB_PER_PAGE             = "per_page=100" ;
 
+	//--- GitLab 
+	private static final String GITLAB_GROUP  = "gitlab_group"; // GitLab "group" or "subgroup" type
+	private static final String GITLAB_USER   = "gitlab_user";  // GitLab "user" type
+	private static final String GITLAB_DEFAULT_ROOT_URL     = "https://gitlab.com" ; 
 
-	// GitLab 
-	private static final String GITLAB_GROUP  = "gitlab_group"; // GitLab "group" or "subgroup" 
-	private static final String GITLAB_USER   = "gitlab_user"; 
-	
 	private static final List<String> VALID_TYPES = Arrays.asList(GITHUB_ORG,   GITHUB_USER, GITHUB_CURRENT_USER,  
 																  GITLAB_GROUP, GITLAB_USER );
 	
 	private final String definition;
 	private final String type;
 	private final String name;
-	private final String rootUrl;
+	private final String rootUrl;    // specific root URL 
+	private final String apiRootUrl; // specific API root URL 
 
 	public Depot(String depotString) throws TelosysToolsException {
 		super();
@@ -69,6 +71,7 @@ public class Depot {
 		this.type = parseDepotType(depotString);
 		this.name = parseDepotName(depotString);
 		this.rootUrl = parseRootUrl(depotString);
+		this.apiRootUrl = this.rootUrl ; // temporary ( in the future add "(api-root-url)" after "(root-url)" in depot definition ? )
 		checkParts();
 	}
 	
@@ -100,13 +103,17 @@ public class Depot {
         if ( start >= 0 ) {
             int end = depotString.indexOf(')', start);
             if ( end > start ) {
-            	return depotString.substring(start + 1, end).trim();
+            	String s = depotString.substring(start + 1, end).trim();
+            	// no trailing "/" at the end 
+            	return StrUtil.removeEnd(s, "/");
             }
             else {
             	throw invalidDepotError(depotString, "closing ')' expected");
             }
         }
-        return "";
+        else {
+            return "";
+        }
 	}
 	
 	private void checkParts() throws TelosysToolsException {
@@ -157,16 +164,16 @@ public class Depot {
 	 */
 	public String getApiUrl() throws TelosysToolsException {
 		if ( isGitHubDepot() ) {
-			return buildGitHubURL( this.rootUrl.isEmpty() ? GITHUB_DEFAULT_ROOT_URL : this.rootUrl );
+			return buildGitHubApiURL( getGitHubApiRootUrl() );
 		}
 		else if ( isGitLabDepot() ) {
-			return buildGitLabURL();
+			return buildGitLabApiURL();
 		}
 		else {
 			throw new TelosysToolsException("Cannot build depot URL (unexpected depot type)");
 		}
 	}
-	private String buildGitHubURL(String root) throws TelosysToolsException {
+	private String buildGitHubApiURL(String root) throws TelosysToolsException {
 		if ( this.isGitHubOrganization() ) {
 			// example: https://api.github.com/orgs/telosys-models/repos  
 			return root + "/orgs/" + getName() + "/repos?" + GITHUB_PER_PAGE ; 
@@ -183,14 +190,23 @@ public class Depot {
 			throw new TelosysToolsException("Cannot build GitHub depot URL (invalid depot type)");
 		}		
 	}
-	private String buildGitLabURL() throws TelosysToolsException {
+	private String buildGitLabApiURL() throws TelosysToolsException {
 		throw new TelosysToolsException("Cannot build depot URL - GitLab not yet supported");
 	}
 
+	protected String getGitHubRootUrl() { // v 4.3.0
+		return this.rootUrl.isEmpty() ? GITHUB_DEFAULT_ROOT_URL : this.rootUrl ;
+	}
+	protected String getGitLabRootUrl() { // v 4.3.0
+		return this.rootUrl.isEmpty() ? GITLAB_DEFAULT_ROOT_URL : this.rootUrl ;
+	}
+	protected String getGitHubApiRootUrl() { // v 4.3.0
+		return this.apiRootUrl.isEmpty() ? GITHUB_DEFAULT_API_ROOT_URL : this.apiRootUrl ;
+	}
+	
 	public String getApiRateLimitUrl() throws TelosysToolsException {
 		if ( isGitHubDepot() ) {
-			String root = this.rootUrl.isEmpty() ? GITHUB_DEFAULT_ROOT_URL : this.rootUrl ;
-			return root + "/rate_limit" ;
+			return getGitHubApiRootUrl() + "/rate_limit" ;
 		}
 		else if ( isGitLabDepot() ) {
 			throw new TelosysToolsException("Cannot build rate limit URL - GitLab not yet supported");
@@ -227,5 +243,32 @@ public class Depot {
 	public String toString() {
 		return definition;
 	}
-	
+
+	/**
+	 * Builds the repository URL in the depot 
+	 * @param repositoryName
+	 * @return
+	 * @throws TelosysToolsException
+	 * @since 4.3.0
+	 */
+	public String buildGitRepositoryURL(String repositoryName) throws TelosysToolsException { // v 4.3.0
+		if ( this.isGitHubDepot() ) {
+			// With GitHub the URL structure is the same for "user" and "organization" 
+			//  - HTTPS:  https://github.com/<owner>/<repo>.git
+			//  - SSH:    git@github.com:<owner>/<repo>.git
+			// where <owner> = either a username (for personal repos) or an organization name
+			// example: https://github.com/telosys-models/cars 
+			return getGitHubRootUrl() + "/" + getName() + "/" + repositoryName ; // ".git" suffix is optional (can be used or not) 
+		}
+		else if ( this.isGitLabDepot() ) {
+			// On GitLab, the pattern is "https://gitlab.com/<namespace>/<repository>"
+			// where <namespace> = either a user (personal repo), a group (equivalent of a GitHub organization) or a subgroup (groups inside groups)
+			// 
+			return getGitLabRootUrl() + "/" + getName() + "/" + repositoryName ; // ".git" suffix is optional (can be used or not) 
+		}
+		else {
+			throw new TelosysToolsException("Cannot build Git repository URL (invalid depot type)");
+		}		
+	}
+
 }
