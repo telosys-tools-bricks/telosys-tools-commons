@@ -31,6 +31,8 @@ import org.telosys.tools.commons.exception.TelosysRuntimeException;
  */
 public class DirUtil {
 	
+	private static final String DIRECTORY_ARGUMENT_IS_NULL = "directory argument is null";
+	
 	/**
 	 * Full static class : no public constructor
 	 */
@@ -45,7 +47,7 @@ public class DirUtil {
 	 */
 	public static void createDirectory(File directory) {
 	    if ( directory == null ) {
-	    	throw new IllegalArgumentException("directory argument is null");
+	    	throw new IllegalArgumentException(DIRECTORY_ARGUMENT_IS_NULL);
 	    }
 		if ( ! directory.exists() ) {
 			// Creates the directory, including any necessary but nonexistent parent directories.
@@ -70,7 +72,7 @@ public class DirUtil {
 	 */
 	public static void deleteDirectory(File directory) throws TelosysToolsException {
 	    if ( directory == null ) {
-	    	throw new TelosysToolsException("directory argument is null");
+	    	throw new TelosysToolsException(DIRECTORY_ARGUMENT_IS_NULL);
 	    }
 	    if ( directory.exists() ) {
 		    if ( ! directory.isDirectory() ) {
@@ -106,6 +108,8 @@ public class DirUtil {
 	private static final String CANNOT_DELETE = "Cannot delete " ;
 	private static void deleteOrThrowException(File file) throws TelosysToolsException {
 		try {
+			// Make sure the file is writable (to allow delete)
+			file.setWritable(true, false); // 2nd arg = false = not for 'owner only' = applies to everybody (can be usefull for Linux/macOS)
 			if ( ! Files.deleteIfExists(file.toPath()) ) {
 				throw new TelosysToolsException(CANNOT_DELETE + file.getAbsolutePath());
 			}
@@ -123,7 +127,7 @@ public class DirUtil {
 	public static List<String> getDirectoryFiles(final File directory, final boolean recursively) {
 		List<String> list = new LinkedList<>();
 	    if ( directory == null ) {
-	    	throw new IllegalArgumentException("directory argument is null");
+	    	throw new IllegalArgumentException(DIRECTORY_ARGUMENT_IS_NULL);
 	    }
 	    if ( directory.exists() ) {
 		    if ( ! directory.isDirectory() ) {
