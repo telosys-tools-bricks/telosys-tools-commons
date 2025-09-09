@@ -61,16 +61,21 @@ public class Depot {
 	private final String rootUrl;    // specific root URL 
 	private final String apiRootUrl; // specific API root URL 
 
-	public Depot(String depotString) throws TelosysToolsException {
+	/**
+	 * Constructor
+	 * @param depotDefinition depot syntax "type:name (root-url)" (eg "github_org:telosys-templates" ) 
+	 * @throws TelosysToolsException
+	 */
+	public Depot(String depotDefinition) throws TelosysToolsException {
 		super();
-		if (depotString == null) {
+		if (depotDefinition == null) {
 			throw new TelosysToolsException("Depot argument is null");
 		}
-		this.definition = depotString;
+		this.definition = depotDefinition;
 		// parse depot definition 
-		this.type = parseDepotType(depotString);
-		this.name = parseDepotName(depotString);
-		this.rootUrl = parseRootUrl(depotString);
+		this.type = parseDepotType(depotDefinition);
+		this.name = parseDepotName(depotDefinition);
+		this.rootUrl = parseRootUrl(depotDefinition);
 		this.apiRootUrl = this.rootUrl ; // temporary ( in the future add "(api-root-url)" after "(root-url)" in depot definition ? )
 		checkParts();
 	}

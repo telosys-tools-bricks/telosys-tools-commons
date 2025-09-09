@@ -173,6 +173,22 @@ public class DepotResponse {
 		return names;
 	}
 
+	/**
+	 * Returns true if the depot response contains an element having the given name
+	 * @param elementName
+	 * @return
+	 * @since 4.3.0
+	 */
+	public boolean contains(String elementName) {
+		if (elementName == null ) return false;
+		for (DepotElement element : elements ) {
+			if (elementName.equals(element.getName()) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public DepotRateLimit getRateLimit() {
 		return rateLimit;
 	}
