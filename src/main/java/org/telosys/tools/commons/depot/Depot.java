@@ -263,17 +263,23 @@ public class Depot {
 			//  - SSH:    git@github.com:<owner>/<repo>.git
 			// where <owner> = either a username (for personal repos) or an organization name
 			// example: https://github.com/telosys-models/cars 
-			return getGitHubRootUrl() + "/" + getName() + "/" + repositoryName ; // ".git" suffix is optional (can be used or not) 
+			return getGitHubRootUrl() + "/" + getName() + "/" + repositoryName + ".git" ; 
+			// ".git" suffix is optional (can be used or not) 
+			// ".git" suffix is used by "git clone" => use it too
 		}
 		else if ( this.isGitLabDepot() ) {
 			// On GitLab, the pattern is "https://gitlab.com/<namespace>/<repository>"
-			// where <namespace> = either a user (personal repo), a group (equivalent of a GitHub organization) or a subgroup (groups inside groups)
-			// 
-			return getGitLabRootUrl() + "/" + getName() + "/" + repositoryName ; // ".git" suffix is optional (can be used or not) 
+			// where <namespace> = either 
+			//  . a user (personal repo), 
+			//  . a group (equivalent of a GitHub organization) or 
+			//  . a subgroup (group inside group)
+			return getGitLabRootUrl() + "/" + getName() + "/" + repositoryName + ".git" ; 
+			// ".git" suffix is optional (can be used or not) 
+			// ".git" suffix is used by "git clone" => use it too
 		}
 		else {
 			throw new TelosysToolsException("Cannot build Git repository URL (invalid depot type)");
 		}		
 	}
-
+	
 }

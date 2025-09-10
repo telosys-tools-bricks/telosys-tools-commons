@@ -120,17 +120,17 @@ public class DepotTest {
 		Depot depot ;
 		// GitHub
 		depot = new Depot("github_org:telosys-templates");
-		assertEquals("https://github.com/telosys-templates/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		assertEquals("https://github.com/telosys-templates/myrepo.git", depot.buildGitRepositoryURL("myrepo") );
 		depot = new Depot("github_org:telosys-templates");
-		assertEquals("https://github.com/telosys-templates/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		assertEquals("https://github.com/telosys-templates/myrepo.git", depot.buildGitRepositoryURL("myrepo") );
 		depot = new Depot("github_org:myorga");
-		assertEquals("https://github.com/myorga/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		assertEquals("https://github.com/myorga/myrepo.git", depot.buildGitRepositoryURL("myrepo") );
 		depot = new Depot("github_org:myorga (https://foo.org)");
-		assertEquals("https://foo.org/myorga/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		assertEquals("https://foo.org/myorga/myrepo.git", depot.buildGitRepositoryURL("myrepo") );
 		depot = new Depot("github_org:myorga (https://foo.org/)");
-		assertEquals("https://foo.org/myorga/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		assertEquals("https://foo.org/myorga/myrepo.git", depot.buildGitRepositoryURL("myrepo") );
 		// GitLab
 		depot = new Depot("gitlab_user:telosys-templates");
-		assertEquals("https://gitlab.com/telosys-templates/myrepo", depot.buildGitRepositoryURL("myrepo") );
+		assertEquals("https://gitlab.com/telosys-templates/myrepo.git", depot.buildGitRepositoryURL("myrepo") );
 	}
 }
