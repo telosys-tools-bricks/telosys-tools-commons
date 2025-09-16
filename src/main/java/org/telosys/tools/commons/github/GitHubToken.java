@@ -16,7 +16,7 @@
 package org.telosys.tools.commons.github;
 
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.TokenUtil;
+import org.telosys.tools.commons.credentials.TokenUtil;
 
 /**
  * GitHub token utility class 

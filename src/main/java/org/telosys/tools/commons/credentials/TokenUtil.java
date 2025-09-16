@@ -13,13 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.telosys.tools.commons;
+package org.telosys.tools.commons.credentials;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.crypto.SecretKey;
+
+import org.telosys.tools.commons.CryptoAES;
+import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.TelosysToolsException;
 
 /**
  * Token utility 

@@ -3,6 +3,7 @@ package org.telosys.tools.commons;
 import java.io.File;
 
 import org.junit.Test;
+import org.telosys.tools.commons.credentials.TokenUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
