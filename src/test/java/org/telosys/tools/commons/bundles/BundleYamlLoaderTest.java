@@ -74,9 +74,9 @@ public class BundleYamlLoaderTest {
 	
 	@Test
 	public void testYaml1() throws TelosysYamlException {
-		YamlFileManager yaml = new YamlFileManager();
+		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/bundle.yaml"));
 		// Load YAML as a "map"
-		Map<String,Object> rootMap = yaml.load(FileUtil.getFileByClassPath("/yaml/bundle.yaml"));
+		Map<String,Object> rootMap = yaml.loadMap();
 		assertNotNull(rootMap);
 		
 		// First map level

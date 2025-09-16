@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.telosys.tools.commons.beans.Course;
@@ -42,9 +44,9 @@ public class YamlFileManagerTest {
 	public void testLoadMap() throws TelosysYamlException  {
 		print("--- testLoadMap");
 		
-		YamlFileManager yaml = new YamlFileManager();
+		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/model.yaml"));
 		
-		Map<String,Object> data = yaml.load(FileUtil.getFileByClassPath("/yaml/model.yaml"));
+		Map<String,Object> data = yaml.loadMap();
 		Map<String,Object> model = (Map<String,Object>) data.get("model"); // LinkedHashMap
 		print(model.getClass().getName());
 		print(model.toString());
@@ -58,8 +60,8 @@ public class YamlFileManagerTest {
 	@Test
 	public void testLoadBean() throws TelosysYamlException {
 		print("--- testLoadBean");
-		YamlFileManager yaml = new YamlFileManager();
-		Student student = yaml.load(FileUtil.getFileByClassPath("/yaml/student.yaml"), Student.class);
+		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/student.yaml"));
+		Student student = yaml.loadObject( Student.class);
 		print(student.toString());
 		assertEquals("History", student.getDepartment());
 		assertEquals(2020, student.getYear());
@@ -69,9 +71,9 @@ public class YamlFileManagerTest {
 	@Test
 	public void testLoadBeanInvalid() {
 		print("--- testLoadBeanInvalid");
-		YamlFileManager yaml = new YamlFileManager();
+		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/student-invalid.yaml"));
 		try {
-			yaml.load(FileUtil.getFileByClassPath("/yaml/student-invalid.yaml"), Student.class);
+			yaml.loadObject(Student.class);
 		} catch (TelosysYamlException  e) {
 			assertTrue(e.getCause() instanceof YAMLException);
 			assertTrue(e.getCause() instanceof MarkedYAMLException);
@@ -108,7 +110,7 @@ public class YamlFileManagerTest {
 	}
 
 	@Test
-	public void testSaveMap() {
+	public void testSaveMap() throws TelosysYamlException {
 		print("--- testSaveMap");
 		
 		Map<String,Object> innerMap = new HashMap<>();
@@ -131,16 +133,16 @@ public class YamlFileManagerTest {
 		data.put("list", list);
 		
 		File file1 = TestsEnv.getTmpFile("yaml/data1.yaml");
-		save(file1, map1);
+		saveObject(file1, map1);
 		assertTrue(file1.exists());
 		
 		File file2 = TestsEnv.getTmpFile("yaml/data2.yaml");
-		save(file2, data);
+		saveObject(file2, data);
 		assertTrue(file2.exists());
 	}
 
 	@Test
-	public void testSaveBean() {
+	public void testSaveBean() throws TelosysYamlException {
 		print("--- testSaveBean");
 		List<Course> courses = new LinkedList<>();
 		Student student = new Student();
@@ -149,15 +151,44 @@ public class YamlFileManagerTest {
 		student.setCourses(courses);
 
 		File file = TestsEnv.getTmpFile("yaml/data3-student.yaml");
-		save(file, student);
+		saveObject(file, student);
 		assertTrue(file.exists());
 	}
 
-	private void save(File file, Object data) {
+	private void saveObject(File file, Object data) throws TelosysYamlException {
 		print("Saving data : " + data);
 		print("in file : " + file.getAbsolutePath() );
-		YamlFileManager yaml = new YamlFileManager();
-		yaml.save(file, data);
+		YamlFileManager yaml = new YamlFileManager(file);
+		yaml.saveObject(data);
 	}
 
+	@Test
+	public void testSaveAndLoadMap() throws TelosysYamlException  {
+		File file = TestsEnv.getTmpFile("yaml/data-map-1.yaml");
+		YamlFileManager yaml = new YamlFileManager(file);
+		Map<String,Object> map = new HashMap<>();
+		map.put("k1", "v1");
+		map.put("k2", "v2");
+		yaml.saveMap(map);
+		
+		YamlFileManager yaml2 = new YamlFileManager(file);
+		Map<String,Object> map2 = yaml2.loadMap();
+		assertEquals(map, map2);
+	}
+
+	@Test
+	public void testSaveAndLoadMapWithEncryption() throws TelosysYamlException, TelosysToolsException {
+		SecretKey secretKey = CryptoAES.buildSecretKey();
+		File file = TestsEnv.getTmpFile("yaml/data-map-encr.yaml");
+		YamlFileManager yaml = new YamlFileManager(file);
+		Map<String,Object> map = new HashMap<>();
+		map.put("k1", "v1");
+		map.put("k2", "v2");
+		yaml.saveMap(map, secretKey);
+		
+		YamlFileManager yaml2 = new YamlFileManager(file);
+		Map<String,Object> map2 = yaml2.loadMap(secretKey);
+		assertEquals(map, map2);
+	}
+	
 }

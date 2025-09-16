@@ -73,7 +73,7 @@ public class CryptoAES {
 	 * @param key
 	 * @return
 	 */
-	public static String secretKeyToBase64(SecretKey key)  {
+	protected static String secretKeyToBase64(SecretKey key)  {
 		return Base64.getEncoder().encodeToString(key.getEncoded());
 	}
 	
@@ -82,7 +82,7 @@ public class CryptoAES {
 	 * @param keyBase64
 	 * @return
 	 */
-	public static SecretKey base64ToSecretKey(String keyBase64)  {
+	protected static SecretKey base64ToSecretKey(String keyBase64)  {
 		byte[] keyBytes = Base64.getDecoder().decode(keyBase64);
 		// rebuild key using SecretKeySpec
 		return buildSecretKey(keyBytes);

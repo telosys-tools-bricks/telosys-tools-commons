@@ -65,8 +65,8 @@ public class DatabaseDefinitionsLoader {
 	}
 	
 	private DatabaseDefinitions loadYaml(File file) throws TelosysYamlException {
-		YamlFileManager yamlFileManager = new YamlFileManager();
-		return yamlFileManager.load(file, DatabaseDefinitions.class);
+		YamlFileManager yamlFileManager = new YamlFileManager(file);
+		return yamlFileManager.loadObject(DatabaseDefinitions.class);
 	}
 
 }

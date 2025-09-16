@@ -15,6 +15,8 @@
  */
 package org.telosys.tools.commons.exception;
 
+import java.io.File;
+
 import org.yaml.snakeyaml.error.Mark;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -27,28 +29,33 @@ public class TelosysYamlException extends Exception  {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final String        yamlFile;
-	private final YAMLException yamlException;
-	private final String        yamlError;
+	private final String     yamlFile;
+	private final Exception  exception;
+	private final String     yamlError;
 
     /**
-     * Constructor 
-     * @param message
-     * @param yamlException
+     * Constructor
+     * @param yamlFile
+     * @param exception
      */
-    public TelosysYamlException(String yamlFile, YAMLException yamlException) {
-        super("YAML error in file " + yamlFile, yamlException);
-        this.yamlFile = yamlFile ;
-        this.yamlException = yamlException ;
-        this.yamlError = buildYamlError(yamlException);
+    public TelosysYamlException(File yamlFile, Exception exception) {
+        super("Error with YAML file " + yamlFile.getName(), exception);
+        this.yamlFile = yamlFile.getAbsolutePath() ;
+        this.exception = exception ;
+        if ( exception instanceof YAMLException ) {
+            this.yamlError = buildYamlError((YAMLException) exception);
+        }
+        else {
+            this.yamlError = exception.getMessage() ;
+        }
     }
 
     public String getYamlFile() {
 		return yamlFile;
 	}
 
-	public YAMLException getYamlException() {
-		return yamlException;
+	public Exception getException() {
+		return exception;
 	}
 
 	public String getYamlError() {
