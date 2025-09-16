@@ -16,8 +16,6 @@
 package org.telosys.tools.commons.credentials;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.crypto.SecretKey;
 
@@ -33,7 +31,6 @@ import org.telosys.tools.commons.TelosysToolsException;
  */
 public class TokenUtil {
 
-	static final String TOKEN_FILE_DIR = ".telosys-cfg" ;
 	static final String TOKEN_FILE_PREFIX     = "tk_" ;
 	static final String TOKEN_KEY_FILE_PREFIX = "tkk_" ;
 
@@ -45,21 +42,11 @@ public class TokenUtil {
 	private TokenUtil() {
 	}
 	
-	private static File builFile(String fileDir, String fileName) throws TelosysToolsException {
-		String userHome = System.getProperty("user.home");
-		if ( userHome != null ) {
-			Path filePath = Paths.get(userHome, fileDir, fileName);
-			return filePath.toFile();
-		}
-		else {
-			throw new TelosysToolsException("Cannot get 'user.home'");
-		}
-	}
 	private static File builTokenFile(String tokenName) throws TelosysToolsException {
-		return builFile(TOKEN_FILE_DIR, TOKEN_FILE_PREFIX + tokenName);
+		return UserHomeUtil.getFileInTelosysDir(TOKEN_FILE_PREFIX + tokenName);
 	}
 	private static File builKeyFile(String tokenName) throws TelosysToolsException {
-		return builFile(TOKEN_FILE_DIR, TOKEN_KEY_FILE_PREFIX + tokenName);
+		return UserHomeUtil.getFileInTelosysDir(TOKEN_KEY_FILE_PREFIX + tokenName);
 	}
 	
 	/**

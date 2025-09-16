@@ -23,7 +23,7 @@ import org.telosys.tools.commons.TelosysToolsException;
 
 public class UserHomeUtil {
 
-	static final String TOKEN_DIR = ".telosys-cfg" ;
+	static final String TELOSYS_DIRECTORY = ".telosys-cfg" ;
 
 	private UserHomeUtil() {
 	}
@@ -40,13 +40,13 @@ public class UserHomeUtil {
 	
 	public static File getTelosysDir() throws TelosysToolsException {
 		// Create a Path using multiple parts
-		Path filePath = Paths.get(getUserHome(), TOKEN_DIR);
+		Path filePath = Paths.get(getUserHome(), TELOSYS_DIRECTORY);
 		return filePath.toFile();
 	}
 	
 	public static File getFileInTelosysDir(String fileName) throws TelosysToolsException {
 		// Create a Path using multiple parts
-		Path filePath = Paths.get(getUserHome(), TOKEN_DIR, fileName);
+		Path filePath = Paths.get(getUserHome(), TELOSYS_DIRECTORY, fileName);
 		return filePath.toFile();
 	}
 
