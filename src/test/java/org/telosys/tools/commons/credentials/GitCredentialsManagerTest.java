@@ -39,7 +39,7 @@ public class GitCredentialsManagerTest {
 		assertEquals("ZXZXZXZXZXXZXZXZZ", utForBundles.getToken() );
 		
 		// not found
-		assertNull( gitCredentials2.getGlobalCredentials() );
+		assertNull( gitCredentials2.getCredentialsForGlobal() );
 	}
 
 
