@@ -17,24 +17,18 @@ package org.telosys.tools.commons;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 
-import javax.crypto.SecretKey;
-
-import org.telosys.tools.commons.exception.TelosysRuntimeException;
 import org.telosys.tools.commons.exception.TelosysYamlException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * YAML file utility class 
@@ -45,16 +39,66 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 public class YamlFileManager {
 
-	private final File file ;
+	protected final File file ;
 	
 	/**
 	 * Constructor 
+	 * @param file the YAML file used for save/load operations
 	 */
 	public YamlFileManager(File file) {
 		super();
+		if ( file == null ) throw new IllegalArgumentException("File is null");
 		this.file = file;
 	}
 
+	/**
+	 * Map to YAML
+	 * @param map
+	 * @return
+	 * @throws TelosysYamlException
+	 */
+	protected byte[] mapToYamlBytes(Map<String, Object> map) throws TelosysYamlException  {
+        try {
+    		Yaml yaml = new Yaml();
+    		//--- Serialize to YAML  
+            String yamlString = yaml.dump(map);
+			return yamlString.getBytes(StandardCharsets.UTF_8); // throws UnsupportedEncodingException
+		} catch (Exception e) {
+			throw new TelosysYamlException(file, e);
+		}
+	}
+	
+	/**
+	 * YAML to map
+	 * @param yamlBytes
+	 * @return
+	 * @throws TelosysYamlException
+	 */
+	protected Map<String, Object> yamlBytesToMap(byte[] yamlBytes) throws TelosysYamlException  {
+		try {
+			Yaml yaml = new Yaml();
+			//--- Deserialize from YAML  
+			String yamlString = new String(yamlBytes, StandardCharsets.UTF_8);
+			return yaml.load(yamlString);
+		} catch (Exception e) {
+			throw new TelosysYamlException(file, e);
+		}
+	}
+	protected void saveYamlBytes(byte[] yamlBytes) throws TelosysYamlException {
+        try {
+			Files.write(file.toPath(), yamlBytes ); // throws IOException
+		} catch (Exception e) {
+			throw new TelosysYamlException(file, e);
+		}
+	}
+	protected byte[] loadYamlBytes() throws TelosysYamlException {
+		try {
+			return Files.readAllBytes(file.toPath() ); // throws IOException
+		} catch (Exception e) {
+			throw new TelosysYamlException(file, e);
+		}
+	}
+	
 	/**
 	 * Loads an instance of the given class from the given YAML file
 	 * @param clazz
@@ -63,13 +107,6 @@ public class YamlFileManager {
 	 */
 	public <T> T loadObject(Class<T> clazz) throws TelosysYamlException {
 		try (InputStream inputStream = new FileInputStream(file)) {
-			//return loadSpecificObjectFromYaml(inputStream, clazz);
-//			try {
-//				Yaml yaml = new Yaml(new Constructor(clazz));
-//				return yaml.load(inputStream);
-//			} catch (Exception e) {
-//				throw new TelosysYamlException(file, e);
-//			}
 			Yaml yaml = new Yaml(new Constructor(clazz));
 			return yaml.load(inputStream);
 
@@ -80,58 +117,6 @@ public class YamlFileManager {
 		}
 	}
 
-//	/**
-//	 * Loads a map from the given YAML file
-//	 * @param file
-//	 * @return
-//	 */
-//	public Map<String, Object> load(File file) throws TelosysYamlException {
-//		try (InputStream inputStream = new FileInputStream(file)) {
-//			return loadMapFromYaml(file.getName(), inputStream);
-//		} catch (FileNotFoundException e) {
-//			throw new TelosysRuntimeException("No YAML file " + file.getName() + " (file not found)" );
-//		} catch (IOException e) { 
-//			// IOException is thrown by automatic close() invocation on inputStream
-//			throw new TelosysRuntimeException("Cannot close YAML file " + file.getName() );
-//		}
-//	}
-	
-//	/**
-//	 * Loads a map from the given YAML file using Snake Yaml 
-//	 * @param fileName
-//	 * @param inputStream
-//	 * @return
-//	 * @throws TelosysYamlException
-//	 */
-//	private Map<String, Object> loadMapFromYaml(String fileName, InputStream inputStream) throws TelosysYamlException {
-//		try {
-//			Yaml yaml = new Yaml(); // no constructor => Map as default type
-//			return yaml.load(inputStream);
-//		} catch (YAMLException yamlException) {
-//			// YAML error in the file
-//			throw new TelosysYamlException(fileName, yamlException);
-//		} catch (Exception e) {
-//			// any other unexpected exception
-//			throw new TelosysRuntimeException("Cannot load map from YAML file " + fileName, e );
-//		}
-//	}
-	
-//	/**
-//	 * Loads an instance of the given class from the given YAML file using Snake Yaml 
-//	 * @param inputStream
-//	 * @param clazz
-//	 * @return
-//	 * @throws TelosysYamlException
-//	 */
-//	private <T> T loadSpecificObjectFromYaml(InputStream inputStream, Class<T> clazz) throws TelosysYamlException {
-//		try {
-//			Yaml yaml = new Yaml(new Constructor(clazz));
-//			return yaml.load(inputStream);
-//		} catch (Exception e) {
-//			throw new TelosysYamlException(file, e);
-//		}
-//	}
-	
 	/**
 	 * Saves the given data in a YAML file
 	 * @param data
@@ -168,81 +153,24 @@ public class YamlFileManager {
 	}
 
 	/**
+	 * Serialize the given map and save in the YAML file
 	 * @param map
-	 * @since 4.3.0
+	 * @throws TelosysYamlException
 	 */
 	public void saveMap(Map<String, Object> map) throws TelosysYamlException {
-		saveMap(map, null);
+		byte[] yamlBytes = mapToYamlBytes(map);
+		saveYamlBytes(yamlBytes);
 	}
 	
 	/**
-	 * @param map
-	 * @param secretKey key for encryption (or null if file is not encrypted)
-	 * @since 4.3.0
-	 */
-	public void saveMap(Map<String, Object> map, SecretKey secretKey) throws TelosysYamlException {
-		Yaml yaml = new Yaml();
-		//--- Serialize to YAML string 
-        String yamlString = yaml.dump(map);
-        try {
-			byte[] yamlBytes = yamlString.getBytes(StandardCharsets.UTF_8); // throws UnsupportedEncodingException
-			Files.write(file.toPath(), encryptIfKey(yamlBytes, secretKey) ); // throws IOException
-		} catch (Exception e) {
-			throw new TelosysYamlException(file, e);
-		}
-	}
-	
-	/**
-	 * @since 4.3.0
+	 * Load from the YAML file and deserialize to map
 	 * @return
+	 * @throws TelosysYamlException
 	 */
 	public Map<String, Object> loadMap() throws TelosysYamlException {
-		return loadMap(null);
-	}
-	
-	/**
-	 * @param secretKey key for decryption (or null if file is not encrypted)
-	 * @since 4.3.0
-	 * @return
-	 */
-	public Map<String, Object> loadMap(SecretKey secretKey) throws TelosysYamlException {
-		byte[] data = null;
-		try {
-			byte[] rawData = Files.readAllBytes(file.toPath() );
-			data = decryptIfKey(rawData, secretKey);
-		} catch (IOException e) {
-			throw new TelosysYamlException(file, e);
-		}
-		String yamlString = new String(data, StandardCharsets.UTF_8);
-		Yaml yaml = new Yaml();
-		//--- Deserialize from YAML string 
-		return yaml.load(yamlString);
-	}
+		byte[] yamlBytes = loadYamlBytes();
+		return yamlBytesToMap(yamlBytes);
 
-	private byte[] encryptIfKey(byte[] data, SecretKey secretKey) throws TelosysYamlException {
-		if ( secretKey != null ) {
-			try {
-				return CryptoAES.encrypt(data, secretKey);
-			} catch (Exception e) {
-				throw new TelosysYamlException(file, e);
-			}
-		}
-		else {
-			return data;
-		}
-	}
-
-	private byte[] decryptIfKey(byte[] data, SecretKey secretKey) throws TelosysYamlException {
-		if ( secretKey != null ) {
-			try {
-				return CryptoAES.decrypt(data, secretKey);
-			} catch (Exception e) {
-				throw new TelosysYamlException(file, e);
-			}
-		}
-		else {
-			return data;
-		}
 	}
 	
 }

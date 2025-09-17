@@ -176,19 +176,4 @@ public class YamlFileManagerTest {
 		assertEquals(map, map2);
 	}
 
-	@Test
-	public void testSaveAndLoadMapWithEncryption() throws TelosysYamlException, TelosysToolsException {
-		SecretKey secretKey = CryptoAES.buildSecretKey();
-		File file = TestsEnv.getTmpFile("yaml/data-map-encr.yaml");
-		YamlFileManager yaml = new YamlFileManager(file);
-		Map<String,Object> map = new HashMap<>();
-		map.put("k1", "v1");
-		map.put("k2", "v2");
-		yaml.saveMap(map, secretKey);
-		
-		YamlFileManager yaml2 = new YamlFileManager(file);
-		Map<String,Object> map2 = yaml2.loadMap(secretKey);
-		assertEquals(map, map2);
-	}
-	
 }
