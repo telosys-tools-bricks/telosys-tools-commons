@@ -20,8 +20,6 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
-import org.telosys.tools.commons.exception.TelosysYamlException;
-
 /**
  * YAML file utility class 
  * 
@@ -48,7 +46,7 @@ public class YamlFileManagerWithEncryption extends YamlFileManager {
 	 * @see org.telosys.tools.commons.YamlFileManager#saveMap(java.util.Map)
 	 */
 	@Override
-	public void saveMap(Map<String, Object> map) throws TelosysYamlException {
+	public void saveMap(Map<String, Object> map) throws TelosysToolsException {
 		byte[] yamlBytes = mapToYamlBytes(map);
 		byte[] encryptedYamlBytes = encrypt(yamlBytes);
 		saveYamlBytes(encryptedYamlBytes);
@@ -58,25 +56,25 @@ public class YamlFileManagerWithEncryption extends YamlFileManager {
 	 * @see org.telosys.tools.commons.YamlFileManager#loadMap()
 	 */
 	@Override
-	public Map<String, Object> loadMap() throws TelosysYamlException {
+	public Map<String, Object> loadMap() throws TelosysToolsException {
 		byte[] encryptedYamlBytes = loadYamlBytes();
 		byte[] yamlBytes = decrypt(encryptedYamlBytes);
 		return yamlBytesToMap(yamlBytes);
 	}
 
-	private byte[] encrypt(byte[] data) throws TelosysYamlException {
+	private byte[] encrypt(byte[] data) throws TelosysToolsException {
 		try {
 			return CryptoAES.encrypt(data, secretKey);
 		} catch (Exception e) {
-			throw new TelosysYamlException(file, e);
+			throw new TelosysToolsException("Cannot encrypt YAML file", e);
 		}
 	}
 
-	private byte[] decrypt(byte[] data) throws TelosysYamlException {
+	private byte[] decrypt(byte[] data) throws TelosysToolsException {
 		try {
 			return CryptoAES.decrypt(data, secretKey);
 		} catch (Exception e) {
-			throw new TelosysYamlException(file, e);
+			throw new TelosysToolsException("Cannot decrypt YAML file", e);
 		}
 	}
 	

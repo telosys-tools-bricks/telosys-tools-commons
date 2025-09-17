@@ -19,7 +19,6 @@ import java.io.File;
 
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.YamlFileManager;
-import org.telosys.tools.commons.exception.TelosysYamlException;
 
 public class GitCredentialsManager {
 
@@ -32,20 +31,21 @@ public class GitCredentialsManager {
 	
 	public GitCredentials load() throws TelosysToolsException {
 		YamlFileManager yamlFileManager = getYamlFileManager(); 
-		try {
-			return new GitCredentials( yamlFileManager.loadMap() );
-		} catch (TelosysYamlException e) {
-			throw new TelosysToolsException("Cannot load git credentials", e);
-		}
+//		try {
+//			return new GitCredentials( yamlFileManager.loadMap() );
+//		} catch (TelosysYamlException e) {
+//			throw new TelosysToolsException("Cannot load git credentials", e);
+//		}
+		return new GitCredentials( yamlFileManager.loadMap() );
 	}
 	
 	public void save(GitCredentials gitCredentials) throws TelosysToolsException {
 		YamlFileManager yamlFileManager = getYamlFileManager();
-		try {
-			yamlFileManager.saveMap(gitCredentials.getMap());
-		} catch (TelosysYamlException e) {
-			throw new TelosysToolsException("Cannot save git credentials", e);
-		}
+//		try {
+//		} catch (TelosysYamlException e) {
+//			throw new TelosysToolsException("Cannot save git credentials", e);
+//		}
+		yamlFileManager.saveMap(gitCredentials.getMap());
 	}
 	
 }

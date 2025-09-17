@@ -23,7 +23,6 @@ import java.util.Properties;
 import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.dbcfg.JavaLibraries;
-import org.telosys.tools.commons.exception.TelosysYamlException;
 import org.telosys.tools.commons.jdbc.DriverLoader;
 
 public class DatabaseConnectionProvider {	
@@ -53,11 +52,11 @@ public class DatabaseConnectionProvider {
 		
 		// init database definitions from Telosys project
     	DatabaseDefinitionsLoader loader = new DatabaseDefinitionsLoader();
-    	try {
-			this.databaseDefinitions = loader.load(telosysToolsCfg);
-		} catch (TelosysYamlException e) {
-			throw new TelosysToolsException("YAML error, cannot load databases configuration", e);
-		}
+		this.databaseDefinitions = loader.load(telosysToolsCfg);
+//    	try {
+//		} catch (TelosysYamlException e) {
+//			throw new TelosysToolsException("YAML error, cannot load databases configuration", e);
+//		}
     }
     
     /**

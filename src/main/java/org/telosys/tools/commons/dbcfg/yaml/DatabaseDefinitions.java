@@ -37,6 +37,14 @@ public class DatabaseDefinitions {
     public DatabaseDefinitions() {
     	super();
     }
+    /**
+     * Constructor
+     * @param databaseDefinitionsList
+     */
+    public DatabaseDefinitions(List<DatabaseDefinition> databaseDefinitionsList ) {
+    	super();
+    	this.databaseDefinitionsList = databaseDefinitionsList;
+    }
 
 	public List<DatabaseDefinition> getDatabases() {
 		return databaseDefinitionsList;

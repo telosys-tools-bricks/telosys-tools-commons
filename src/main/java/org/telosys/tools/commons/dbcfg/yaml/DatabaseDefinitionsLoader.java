@@ -16,12 +16,13 @@
 package org.telosys.tools.commons.dbcfg.yaml;
 
 import java.io.File;
+import java.util.Map;
 
 import org.telosys.tools.commons.StrUtil;
+import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.YamlFileManager;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
-import org.telosys.tools.commons.exception.TelosysYamlException;
 
 public class DatabaseDefinitionsLoader {
 
@@ -34,7 +35,7 @@ public class DatabaseDefinitionsLoader {
 	 * @param telosysToolsCfg
 	 * @return
 	 */
-	public DatabaseDefinitions load(TelosysToolsCfg telosysToolsCfg) throws TelosysYamlException {
+	public DatabaseDefinitions load(TelosysToolsCfg telosysToolsCfg) throws TelosysToolsException {
 		String databasesFilePath = telosysToolsCfg.getDatabasesDbCfgFileAbsolutePath();
 		if ( ! StrUtil.nullOrVoid(databasesFilePath) ) {
 			// databases file is defined 
@@ -51,7 +52,7 @@ public class DatabaseDefinitionsLoader {
 	 * @param databasesFile
 	 * @return
 	 */
-	public DatabaseDefinitions load(File databasesFile) throws TelosysYamlException {
+	public DatabaseDefinitions load(File databasesFile) throws TelosysToolsException {
 		if ( databasesFile == null ) {
 			throw new TelosysRuntimeException("Databases file is null");
 		}
@@ -64,9 +65,16 @@ public class DatabaseDefinitionsLoader {
     	return loadYaml(databasesFile);
 	}
 	
-	private DatabaseDefinitions loadYaml(File file) throws TelosysYamlException {
+	private DatabaseDefinitions loadYaml(File file) throws TelosysToolsException {
 		YamlFileManager yamlFileManager = new YamlFileManager(file);
-		return yamlFileManager.loadObject(DatabaseDefinitions.class);
+		//return yamlFileManager.loadObject(DatabaseDefinitions.class);
+		Map<String,Object> yamlData = yamlFileManager.loadMap();
+//		@SuppressWarnings("unchecked")
+//		Map<String,Object> model = (Map<String,Object>) data.get("databases"); // LinkedHashMap
+		
+		
+		DatabaseDefinitionBuilder databaseDefinitionBuilder = new DatabaseDefinitionBuilder();
+		return databaseDefinitionBuilder.buildDatabaseDefinitions(yamlData);
 	}
 
 }

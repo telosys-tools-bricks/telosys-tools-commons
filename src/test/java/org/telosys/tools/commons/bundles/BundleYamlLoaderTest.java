@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.TelosysToolsException;
 import org.telosys.tools.commons.YamlFileManager;
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
-import org.telosys.tools.commons.exception.TelosysYamlException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -73,7 +73,7 @@ public class BundleYamlLoaderTest {
 	}
 	
 	@Test
-	public void testYaml1() throws TelosysYamlException {
+	public void testYaml1() throws TelosysToolsException {
 		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/bundle.yaml"));
 		// Load YAML as a "map"
 		Map<String,Object> rootMap = yaml.loadMap();

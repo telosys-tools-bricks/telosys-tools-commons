@@ -4,11 +4,13 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.telosys.tools.commons.FileUtil;
+import org.telosys.tools.commons.TelosysToolsException;
+import org.telosys.tools.commons.YamlFileManager;
 import org.telosys.tools.commons.exception.TelosysRuntimeException;
-import org.telosys.tools.commons.exception.TelosysYamlException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,7 +24,7 @@ public class DatabaseDefinitionsLoaderTest {
 	}
 
 	@Test(expected = Exception.class)
-	public void testLoadErrorNoFile() throws TelosysYamlException {
+	public void testLoadErrorNoFile() throws TelosysToolsException {
 		print("--- testLoad0");
 		DatabaseDefinitionsLoader loader = new DatabaseDefinitionsLoader();
 		loader.load(FileUtil.getFileByClassPath("/yaml/no-file.yaml"));
@@ -32,10 +34,10 @@ public class DatabaseDefinitionsLoaderTest {
 	 * Check YAML syntax for initial file "META-INF/files/databases.yaml"
 	 * to be sure the example file is valid
 	 * @throws URISyntaxException
-	 * @throws TelosysYamlException
+	 * @throws TelosysToolsException
 	 */
 	@Test
-	public void testLoadInitialDatabasesYaml() throws URISyntaxException, TelosysYamlException {
+	public void testLoadInitialDatabasesYaml() throws URISyntaxException, TelosysToolsException {
 		URL resource = getClass().getClassLoader().getResource("META-INF/files/databases.yaml");
 		if (resource == null) {
 			throw new TelosysRuntimeException("file not found!");
@@ -46,9 +48,36 @@ public class DatabaseDefinitionsLoaderTest {
 			databaseDefinitions.containsDatabase("h2");
 		}
 	}
+	
+	@Test
+	public void testYamlStructure() throws TelosysToolsException {
+		File file = FileUtil.getFileByClassPath("/yaml/databases.yaml");
+		YamlFileManager yamlFileManager = new YamlFileManager(file);
+		Map<String,Object> data = yamlFileManager.loadMap();
+		
+		
+		Object o = data.get("databases");
+		print("databases: " + o.getClass().getCanonicalName()  ) ; // 
+		if (o instanceof List) {
+			@SuppressWarnings("unchecked")
+			List<Object> list = (List<Object>) o;
+			for ( Object element : list ) {
+	    		print(" - " + element.getClass().getCanonicalName()  ) ; // LinkedHashMap
+//	    		print(" - " + element + " -> " + entry.getValue().getClass().getCanonicalName() ) ;
+			}
+		}
+//		@SuppressWarnings("unchecked")
+		
+//		List<Object> databases = (List<Object>) data.get("databases"); // ArrayList
+//    	for (Map.Entry<String, Object> entry : databases.entrySet()) {
+//    		print(" - " + entry.getKey() + " -> " + entry.getValue().getClass().getCanonicalName() ) ;
+//    	    String dbName = entry.getKey();
+//    	    Map<String, Object> dbConfig = (Map<String, Object>) entry.getValue();
+//    	}
+	}
 
 	@Test
-	public void testLoadDatabasesYaml() throws TelosysYamlException {
+	public void testLoadDatabasesYaml() throws TelosysToolsException {
 		print("--- testLoad1");
 
 		File file = FileUtil.getFileByClassPath("/yaml/databases.yaml");

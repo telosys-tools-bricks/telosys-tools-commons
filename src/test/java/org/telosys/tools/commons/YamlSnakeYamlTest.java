@@ -16,10 +16,6 @@ import org.telosys.tools.commons.beans.Course;
 import org.telosys.tools.commons.beans.Student;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import junit.env.telosys.tools.commons.TestsEnv;
 
@@ -52,13 +48,6 @@ public class YamlSnakeYamlTest {
 		print("  scrape_interval : " + global.get("scrape_interval")) ;
 		print("  scrape_timeout  : " + global.get("scrape_timeout")) ;
 		
-		
-//		Map<String, Object> alerting = (Map<String, Object>) map.get("alerting");
-//		print(alerting);
-//		
-//		List<Object> ruleFiles = (List<Object>) map.get("rule_files");
-//		print(ruleFiles);
-
 		List<Map<String, Object>> scrapeConfigs = (List<Map<String, Object>>) map.get("scrape_configs");
 		print("scrape_configs count = " + scrapeConfigs.size());
 		for ( Map<String, Object> scrapeConfig : scrapeConfigs ) {
@@ -66,21 +55,6 @@ public class YamlSnakeYamlTest {
 		}
 	}
 
-	@Test
-	public void testLoadBean() throws IOException {
-		print("--- testLoadBean");
-		File file = TestsEnv.getTestFile("/yaml/student.yaml");		
-		Student student = (Student) loadBean(file, Student.class);
-		assertNotNull(student);
-	}
-	private Object loadBean(File file, Class<? extends Object> clazz) throws IOException {
-		print("Loading from : " + file.getAbsolutePath());
-		Yaml yaml = new Yaml(new Constructor(clazz));
-		Object object = yaml.load(new FileInputStream(file));
-		print("Object loaded :");
-		print(object.toString());
-		return object;
-	}	
 
 	private Student buildStudent() {
 		Student student = new Student();
@@ -112,15 +86,4 @@ public class YamlSnakeYamlTest {
 		yaml.dump(object, writer);
 	}
 	
-	@Test
-	public void testSaveAndLoadBean() throws IOException {
-		print("--- testSaveAndLoadBean");
-		File file = TestsEnv.getTmpFile("yaml/student-dump.yaml");
-		saveBean(file, buildStudent());
-		Student student = (Student) loadBean(file, Student.class);
-		assertNotNull(student);
-		assertEquals("The department", student.getDepartment());
-		assertEquals(2010, student.getYear());
-		assertEquals(2, student.getCourses().size());
-	}
 }

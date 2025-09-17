@@ -8,7 +8,6 @@ import javax.crypto.SecretKey;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.telosys.tools.commons.exception.TelosysYamlException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,7 +29,7 @@ public class YamlFileManagerWithEncryptionTest {
 	}
 	
 	@Test
-	public void testSaveAndLoadMapWithEncryption() throws TelosysYamlException, TelosysToolsException {
+	public void testSaveAndLoadMapWithEncryption() throws TelosysToolsException {
 		File file = TestsEnv.getTmpFile("yaml/data-map-encr.yaml");
 		SecretKey secretKey = CryptoAES.buildSecretKey();
 		
