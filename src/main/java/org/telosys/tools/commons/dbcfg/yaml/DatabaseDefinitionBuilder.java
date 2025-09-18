@@ -67,15 +67,6 @@ public class DatabaseDefinitionBuilder {
 		return new DatabaseDefinitions(databaseDefinitionsList);
     }
 
-//    public List<DatabaseDefinition> buildDatabaseDefinitionsList( Map<String,Object> databases) {
-//    	List<DatabaseDefinition> list = new LinkedList<>();
-//    	for (Map.Entry<String, Object> entry : databases.entrySet()) {
-//    	    String dbName = entry.getKey();
-//    	    Map<String, Object> dbConfig = (Map<String, Object>) entry.getValue();
-//    	}
-//    	return list;
-//    }
-    
     public DatabaseDefinition buildDatabaseDefinition(Map<String,Object> map) throws TelosysToolsException {
     	// New instance with default values
 		DatabaseDefinition databaseDefinition = new DatabaseDefinition();

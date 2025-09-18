@@ -53,10 +53,6 @@ public class DatabaseConnectionProvider {
 		// init database definitions from Telosys project
     	DatabaseDefinitionsLoader loader = new DatabaseDefinitionsLoader();
 		this.databaseDefinitions = loader.load(telosysToolsCfg);
-//    	try {
-//		} catch (TelosysYamlException e) {
-//			throw new TelosysToolsException("YAML error, cannot load databases configuration", e);
-//		}
     }
     
     /**

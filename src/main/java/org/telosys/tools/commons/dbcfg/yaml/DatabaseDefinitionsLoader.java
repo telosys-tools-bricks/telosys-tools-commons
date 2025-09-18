@@ -66,13 +66,10 @@ public class DatabaseDefinitionsLoader {
 	}
 	
 	private DatabaseDefinitions loadYaml(File file) throws TelosysToolsException {
+		// Load YAML data as Map
 		YamlFileManager yamlFileManager = new YamlFileManager(file);
-		//return yamlFileManager.loadObject(DatabaseDefinitions.class);
 		Map<String,Object> yamlData = yamlFileManager.loadMap();
-//		@SuppressWarnings("unchecked")
-//		Map<String,Object> model = (Map<String,Object>) data.get("databases"); // LinkedHashMap
-		
-		
+		// Build all Database Definitions
 		DatabaseDefinitionBuilder databaseDefinitionBuilder = new DatabaseDefinitionBuilder();
 		return databaseDefinitionBuilder.buildDatabaseDefinitions(yamlData);
 	}

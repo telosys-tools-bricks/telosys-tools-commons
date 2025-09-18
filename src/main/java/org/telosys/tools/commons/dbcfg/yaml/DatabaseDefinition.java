@@ -15,7 +15,11 @@
  */
 package org.telosys.tools.commons.dbcfg.yaml;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
+
+import org.telosys.tools.commons.StrUtil;
 
 /**
  * Database definition loaded from YAML file 
@@ -27,40 +31,52 @@ public class DatabaseDefinition {
 
 	private static final String VOID = "";
 	
-    private String     id    = VOID ;
-    private String     name  = VOID;
-    private String     type  = VOID;
+    private String     id       = VOID ;
+    private String     name     = VOID;
+    private String     type     = VOID;
     //--- JDBC connection
-    private String     url   = VOID;
     private String     driver   = VOID;
+    private String     url      = VOID;
     private String     user     = VOID;
     private String     password = VOID;
     //--- Metadata criteria
-    private String     catalog  = VOID;
-    private String     schema   = VOID;
-    private String     tableNamePattern = VOID;
+    private String     catalog          = "!";  // default value since v 4.3.0 ("!" = do not use to get metadata)
+    private String     schema           = "!";  // default value since v 4.3.0 ("!" = do not use to get metadata)
+    private String     tableNamePattern = "%" ; // default value since v 4.3.0
     private String     tableNameInclude = VOID;
     private String     tableNameExclude = VOID;
-    private String     tableTypes       = VOID;
+    private String     tableTypes       = "TABLE" ; // default value since v 4.3.0
     
     //--- DSL model creation
-	private String     dbModelName  = VOID ; // UNUSED : just for backward compatibility with YAML parser 
+//	"dbModelName" is UNUSED : removed in v 4.3.0 (before just for backward compatibility with YAML parser) 
 	// what kind of links to define in the model
 	private boolean    linksManyToOne  = true ; 
 	private boolean    linksOneToMany  = false ; 
 	private boolean    linksManyToMany = false ; 
 	// what kind of database information to define in the model (true by default for all)
-	private boolean    dbCatalog      = true ;  // v 4.1.0  @DbCatalog(string) / Entity 
-	private boolean    dbComment      = true ;  // v 4.1.0  @DbComment(string) / Entity & Attribute
-	private boolean    dbDefaultValue = true ;  // v 4.1.0  @DbDefaultValue(string) / Attribute 
-	private boolean    dbName         = true ;  // v 4.1.0  @DbName(string) / Attribute 
-	private boolean    dbSchema       = true ;  // v 4.1.0  @DbSchema(string) / Entity 
-	// Attribute : @DbSize(string) : deprecated 
-	private boolean    dbTable        = true ;  // v 4.1.0  @DbTable(string) / Entity 
-	// Entity : @DbTablespace(string) : not retrieved from metadata
-	private boolean    dbType         = true ;  // v 4.1.0  @DbType(string) / Attribute 
-	private boolean    dbView         = true ;  // v 4.1.0  @DbView / Entity 
+	private boolean    dbCatalog       = true ;  // v 4.1.0  @DbCatalog(string)       Entity 
+	private boolean    dbSchema        = true ;  // v 4.1.0  @DbSchema(string)        Entity 
+	private boolean    dbTable         = true ;  // v 4.1.0  @DbTable(string)         Entity 
+	private boolean    dbView          = true ;  // v 4.1.0  @DbView                  Entity 
+	private boolean    dbComment       = true ;  // v 4.1.0  @DbComment(string)       Entity & Attribute
+	private boolean    dbDefaultValue  = true ;  // v 4.1.0  @DbDefaultValue(string)  Attribute 
+	private boolean    dbName          = true ;  // v 4.1.0  @DbName(string)          Attribute 
+	private boolean    dbType          = true ;  // v 4.1.0  @DbType(string)          Attribute 
+	// @DbTablespace(string) / Entity : not retrieved from metadata
 
+	private static final Map<String, String> JDBC_DRIVERS_MAP ;
+    static {
+        Map<String, String> map = new HashMap<>();
+        map.put("POSTGRESQL", "org.postgresql.Driver"                        );
+        map.put("MYSQL",      "com.mysql.cj.jdbc.Driver"                     );
+        map.put("MARIADB",    "org.mariadb.jdbc.Driver"                      );
+        map.put("SQLITE",     "org.sqlite.JDBC"                              );
+        map.put("SQLSERVER",  "com.microsoft.sqlserver.jdbc.SQLServerDriver" );
+        map.put("ORACLE",     "oracle.jdbc.OracleDriver"                     );
+        map.put("H2",         "org.h2.Driver"                                );
+        map.put("DERBY",      "org.apache.derby.jdbc.ClientDriver"           );
+        JDBC_DRIVERS_MAP = map; // assign to final field
+    }
 	//----------------------------------------------------------------------------------
     /**
      * Constructor
@@ -109,6 +125,19 @@ public class DatabaseDefinition {
 	}
 
 	public String getDriver() {
+		// try to find a default driver class name if not defined  
+		if ( StrUtil.nullOrVoid(this.driver) ) { // driver undefined 
+			// => try to get default driver from the database type if any 
+			String databaseType = getType();
+			if ( ! StrUtil.nullOrVoid(databaseType) ) {
+				// database type is defined => use it to get the default driver class name 
+				String defaultDriver = JDBC_DRIVERS_MAP.get(databaseType.toUpperCase());
+				if ( defaultDriver != null ) {
+					return defaultDriver;
+				}
+			}
+		}
+		// in all others cases => return the driver value "as is" 
 		return voidIfNull(driver);
 	}
 	public void setDriver(String driver) {
@@ -187,12 +216,7 @@ public class DatabaseDefinition {
 		}
 	}
 
-	public String getDbModelName() {
-		return voidIfNull(dbModelName);
-	}
-	public void setDbModelName(String dbModelName) {
-		this.dbModelName = dbModelName;
-	}
+// removed in v 4.3.0 : getDbModelName() and setDbModelName(..)
 
 	//----------------------------------------------------------------------------------
 	public boolean isLinksManyToOne() {
