@@ -15,22 +15,8 @@
  */
 package org.telosys.tools.commons.credentials;
 
-public class GitUserToken {
-
-	private final String user;
-	private final String token;
-	
-	public GitUserToken(String user, String token) {
-		super();
-		this.user = user;
-		this.token = token;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public String getToken() {
-		return token;
-	}
+public enum GitCredentialsScope {
+	MODELS,
+	BUNDLES,
+	GLOBAL
 }

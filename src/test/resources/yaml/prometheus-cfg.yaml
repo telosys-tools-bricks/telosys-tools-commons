@@ -1338,7 +1338,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -1433,7 +1433,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -1523,12 +1523,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-controle-surface-microservice/0
+- job_name: serviceMonitor/dev/dev-checking-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -1540,7 +1540,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: dev-controle-surface
+    regex: dev-checking
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -1618,12 +1618,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-demande-geophoto-microservice/0
+- job_name: serviceMonitor/dev/dev-xyz-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -1635,7 +1635,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: dev-demande-geophoto
+    regex: dev-xyz
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -1713,12 +1713,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-dossier-surface-microservice/0
+- job_name: serviceMonitor/dev/dev-abcde-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -1730,7 +1730,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: dev-dossier-surface
+    regex: dev-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -1808,12 +1808,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-feu-microservice/0
+- job_name: serviceMonitor/dev/dev-solar-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -1903,12 +1903,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-feu-microserviceamqp/0
+- job_name: serviceMonitor/dev/dev-solar-microserviceamqp/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -2003,7 +2003,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -2187,7 +2187,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -2282,7 +2282,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -2372,12 +2372,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-rpg-constate-microservice/0
+- job_name: serviceMonitor/dev/dev-action-aaa-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -2389,7 +2389,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: dev-rpg-constate
+    regex: dev-action-aaa
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -2467,12 +2467,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-rpg-declare-microservice/0
+- job_name: serviceMonitor/dev/dev-action-bbb-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -2484,7 +2484,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: dev-rpg-declare
+    regex: dev-action-bbb
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -2562,12 +2562,12 @@ scrape_configs:
     namespaces:
       names:
       - dev
-- job_name: serviceMonitor/dev/dev-usager-microservice/0
+- job_name: serviceMonitor/dev/dev-customer-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -2579,7 +2579,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: dev-usager
+    regex: dev-customer
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -2662,7 +2662,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -3499,7 +3499,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -3594,7 +3594,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -3684,12 +3684,12 @@ scrape_configs:
     namespaces:
       names:
       - pprc
-- job_name: serviceMonitor/pprc/pprc-controle-surface-microservice/0
+- job_name: serviceMonitor/pprc/pprc-checking-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -3701,7 +3701,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: pprc-controle-surface
+    regex: pprc-checking
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -3779,12 +3779,12 @@ scrape_configs:
     namespaces:
       names:
       - pprc
-- job_name: serviceMonitor/pprc/pprc-demande-geophoto-microservice/0
+- job_name: serviceMonitor/pprc/pprc-xyz-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -3796,7 +3796,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: pprc-demande-geophoto
+    regex: pprc-xyz
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -3874,12 +3874,12 @@ scrape_configs:
     namespaces:
       names:
       - pprc
-- job_name: serviceMonitor/pprc/pprc-dossier-surface-microservice/0
+- job_name: serviceMonitor/pprc/pprc-abcde-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -3891,7 +3891,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: pprc-dossier-surface
+    regex: pprc-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -3969,12 +3969,12 @@ scrape_configs:
     namespaces:
       names:
       - pprc
-- job_name: serviceMonitor/pprc/pprc-feu-microservice/0
+- job_name: serviceMonitor/pprc/pprc-solar-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4069,7 +4069,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4253,7 +4253,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4348,7 +4348,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4438,12 +4438,12 @@ scrape_configs:
     namespaces:
       names:
       - pprc
-- job_name: serviceMonitor/pprc/pprc-rpg-constate-microservice/0
+- job_name: serviceMonitor/pprc/pprc-action-aaa-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4455,7 +4455,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: pprc-rpg-constate
+    regex: pprc-action-aaa
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -4533,12 +4533,12 @@ scrape_configs:
     namespaces:
       names:
       - pprc
-- job_name: serviceMonitor/pprc/pprc-rpg-declare-microservice/0
+- job_name: serviceMonitor/pprc/pprc-action-bbb-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4550,7 +4550,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: pprc-rpg-declare
+    regex: pprc-action-bbb
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -4628,12 +4628,12 @@ scrape_configs:
     namespaces:
       names:
       - pprc
-- job_name: serviceMonitor/pprc/pprc-usager-microservice/0
+- job_name: serviceMonitor/pprc/pprc-customer-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4645,7 +4645,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: pprc-usager
+    regex: pprc-customer
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -4728,7 +4728,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4823,7 +4823,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -4918,7 +4918,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5008,12 +5008,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-controle-surface-microservice/0
+- job_name: serviceMonitor/qlf01/qlf01-checking-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5025,7 +5025,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf01-controle-surface
+    regex: qlf01-checking
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -5103,12 +5103,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-demande-geophoto-microservice/0
+- job_name: serviceMonitor/qlf01/qlf01-xyz-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5120,7 +5120,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf01-demande-geophoto
+    regex: qlf01-xyz
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -5198,12 +5198,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-dossier-surface-microservice/0
+- job_name: serviceMonitor/qlf01/qlf01-abcde-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5215,7 +5215,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf01-dossier-surface
+    regex: qlf01-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -5293,12 +5293,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-dossier-surface-microserviceamqp/0
+- job_name: serviceMonitor/qlf01/qlf01-abcde-microserviceamqp/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5310,7 +5310,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf01-dossier-surface
+    regex: qlf01-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -5388,12 +5388,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-feu-microservice/0
+- job_name: serviceMonitor/qlf01/qlf01-solar-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5483,12 +5483,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-feu-microserviceamqp/0
+- job_name: serviceMonitor/qlf01/qlf01-solar-microserviceamqp/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5583,7 +5583,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5767,7 +5767,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5862,7 +5862,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5952,12 +5952,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-rpg-constate-microservice/0
+- job_name: serviceMonitor/qlf01/qlf01-action-aaa-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -5969,7 +5969,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf01-rpg-constate
+    regex: qlf01-action-aaa
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -6047,12 +6047,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-rpg-declare-microservice/0
+- job_name: serviceMonitor/qlf01/qlf01-action-bbb-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6064,7 +6064,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf01-rpg-declare
+    regex: qlf01-action-bbb
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -6142,12 +6142,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf01
-- job_name: serviceMonitor/qlf01/qlf01-usager-microservice/0
+- job_name: serviceMonitor/qlf01/qlf01-customer-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6159,7 +6159,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf01-usager
+    regex: qlf01-customer
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -6242,7 +6242,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6337,7 +6337,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6432,7 +6432,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6522,12 +6522,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf02
-- job_name: serviceMonitor/qlf02/qlf02-controle-surface-microservice/0
+- job_name: serviceMonitor/qlf02/qlf02-checking-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6539,7 +6539,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf02-controle-surface
+    regex: qlf02-checking
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -6617,12 +6617,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf02
-- job_name: serviceMonitor/qlf02/qlf02-demande-geophoto-microservice/0
+- job_name: serviceMonitor/qlf02/qlf02-xyz-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6634,7 +6634,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf02-demande-geophoto
+    regex: qlf02-xyz
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -6712,12 +6712,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf02
-- job_name: serviceMonitor/qlf02/qlf02-dossier-surface-microservice/0
+- job_name: serviceMonitor/qlf02/qlf02-abcde-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6729,7 +6729,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf02-dossier-surface
+    regex: qlf02-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -6807,12 +6807,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf02
-- job_name: serviceMonitor/qlf02/qlf02-feu-microservice/0
+- job_name: serviceMonitor/qlf02/qlf02-solar-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -6907,7 +6907,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7091,7 +7091,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7186,7 +7186,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7276,12 +7276,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf02
-- job_name: serviceMonitor/qlf02/qlf02-rpg-constate-microservice/0
+- job_name: serviceMonitor/qlf02/qlf02-action-aaa-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7293,7 +7293,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf02-rpg-constate
+    regex: qlf02-action-aaa
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -7371,12 +7371,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf02
-- job_name: serviceMonitor/qlf02/qlf02-rpg-declare-microservice/0
+- job_name: serviceMonitor/qlf02/qlf02-action-bbb-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7388,7 +7388,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf02-rpg-declare
+    regex: qlf02-action-bbb
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -7466,12 +7466,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf02
-- job_name: serviceMonitor/qlf02/qlf02-usager-microservice/0
+- job_name: serviceMonitor/qlf02/qlf02-customer-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7483,7 +7483,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf02-usager
+    regex: qlf02-customer
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -7566,7 +7566,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7661,7 +7661,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7756,7 +7756,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7846,12 +7846,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf03
-- job_name: serviceMonitor/qlf03/qlf03-controle-surface-microservice/0
+- job_name: serviceMonitor/qlf03/qlf03-checking-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7863,7 +7863,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf03-controle-surface
+    regex: qlf03-checking
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -7941,12 +7941,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf03
-- job_name: serviceMonitor/qlf03/qlf03-demande-geophoto-microservice/0
+- job_name: serviceMonitor/qlf03/qlf03-xyz-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -7958,7 +7958,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf03-demande-geophoto
+    regex: qlf03-xyz
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -8036,12 +8036,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf03
-- job_name: serviceMonitor/qlf03/qlf03-dossier-surface-microservice/0
+- job_name: serviceMonitor/qlf03/qlf03-abcde-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8053,7 +8053,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf03-dossier-surface
+    regex: qlf03-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -8131,12 +8131,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf03
-- job_name: serviceMonitor/qlf03/qlf03-feu-microservice/0
+- job_name: serviceMonitor/qlf03/qlf03-solar-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8231,7 +8231,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8415,7 +8415,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8510,7 +8510,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8600,12 +8600,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf03
-- job_name: serviceMonitor/qlf03/qlf03-rpg-constate-microservice/0
+- job_name: serviceMonitor/qlf03/qlf03-action-aaa-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8617,7 +8617,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf03-rpg-constate
+    regex: qlf03-action-aaa
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -8695,12 +8695,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf03
-- job_name: serviceMonitor/qlf03/qlf03-rpg-declare-microservice/0
+- job_name: serviceMonitor/qlf03/qlf03-action-bbb-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8712,7 +8712,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf03-rpg-declare
+    regex: qlf03-action-bbb
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -8790,12 +8790,12 @@ scrape_configs:
     namespaces:
       names:
       - qlf03
-- job_name: serviceMonitor/qlf03/qlf03-usager-microservice/0
+- job_name: serviceMonitor/qlf03/qlf03-customer-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8807,7 +8807,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: qlf03-usager
+    regex: qlf03-customer
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -8890,7 +8890,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -8985,7 +8985,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9080,7 +9080,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9170,12 +9170,12 @@ scrape_configs:
     namespaces:
       names:
       - rec01
-- job_name: serviceMonitor/rec01/rec01-controle-surface-microservice/0
+- job_name: serviceMonitor/rec01/rec01-checking-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9187,7 +9187,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: rec01-controle-surface
+    regex: rec01-checking
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -9265,12 +9265,12 @@ scrape_configs:
     namespaces:
       names:
       - rec01
-- job_name: serviceMonitor/rec01/rec01-demande-geophoto-microservice/0
+- job_name: serviceMonitor/rec01/rec01-xyz-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9282,7 +9282,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: rec01-demande-geophoto
+    regex: rec01-xyz
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -9360,12 +9360,12 @@ scrape_configs:
     namespaces:
       names:
       - rec01
-- job_name: serviceMonitor/rec01/rec01-dossier-surface-microservice/0
+- job_name: serviceMonitor/rec01/rec01-abcde-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9377,7 +9377,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: rec01-dossier-surface
+    regex: rec01-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -9455,12 +9455,12 @@ scrape_configs:
     namespaces:
       names:
       - rec01
-- job_name: serviceMonitor/rec01/rec01-feu-microservice/0
+- job_name: serviceMonitor/rec01/rec01-solar-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9555,7 +9555,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9739,7 +9739,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9834,7 +9834,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9924,12 +9924,12 @@ scrape_configs:
     namespaces:
       names:
       - rec01
-- job_name: serviceMonitor/rec01/rec01-rpg-constate-microservice/0
+- job_name: serviceMonitor/rec01/rec01-action-aaa-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -9941,7 +9941,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: rec01-rpg-constate
+    regex: rec01-action-aaa
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -10019,12 +10019,12 @@ scrape_configs:
     namespaces:
       names:
       - rec01
-- job_name: serviceMonitor/rec01/rec01-rpg-declare-microservice/0
+- job_name: serviceMonitor/rec01/rec01-action-bbb-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10036,7 +10036,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: rec01-rpg-declare
+    regex: rec01-action-bbb
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -10114,12 +10114,12 @@ scrape_configs:
     namespaces:
       names:
       - rec01
-- job_name: serviceMonitor/rec01/rec01-usager-microservice/0
+- job_name: serviceMonitor/rec01/rec01-customer-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10131,7 +10131,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: rec01-usager
+    regex: rec01-customer
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -10214,7 +10214,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10309,7 +10309,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10404,7 +10404,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10494,12 +10494,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-controle-surface-microservice/0
+- job_name: serviceMonitor/staging/staging-checking-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10511,7 +10511,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: staging-controle-surface
+    regex: staging-checking
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -10589,12 +10589,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-demande-geophoto-microservice/0
+- job_name: serviceMonitor/staging/staging-xyz-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10606,7 +10606,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: staging-demande-geophoto
+    regex: staging-xyz
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -10684,12 +10684,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-dossier-surface-microservice/0
+- job_name: serviceMonitor/staging/staging-abcde-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10701,7 +10701,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: staging-dossier-surface
+    regex: staging-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -10779,12 +10779,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-dossier-surface-microserviceamqp/0
+- job_name: serviceMonitor/staging/staging-abcde-microserviceamqp/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10796,7 +10796,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: staging-dossier-surface
+    regex: staging-abcde
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -10874,12 +10874,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-feu-microservice/0
+- job_name: serviceMonitor/staging/staging-solar-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -10969,12 +10969,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-feu-microserviceamqp/0
+- job_name: serviceMonitor/staging/staging-solar-microserviceamqp/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -11069,7 +11069,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -11253,7 +11253,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -11348,7 +11348,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -11438,12 +11438,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-rpg-constate-microservice/0
+- job_name: serviceMonitor/staging/staging-action-aaa-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -11455,7 +11455,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: staging-rpg-constate
+    regex: staging-action-aaa
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -11533,12 +11533,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-rpg-declare-microservice/0
+- job_name: serviceMonitor/staging/staging-action-bbb-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -11550,7 +11550,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: staging-rpg-declare
+    regex: staging-action-bbb
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -11628,12 +11628,12 @@ scrape_configs:
     namespaces:
       names:
       - staging
-- job_name: serviceMonitor/staging/staging-usager-microservice/0
+- job_name: serviceMonitor/staging/staging-customer-microservice/0
   honor_labels: true
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:
@@ -11645,7 +11645,7 @@ scrape_configs:
     action: replace
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_instance]
     separator: ;
-    regex: staging-usager
+    regex: staging-customer
     replacement: $1
     action: keep
   - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
@@ -11728,7 +11728,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 10s
-  metrics_path: /isis/manage/prometheus
+  metrics_path: /osiris/manage/prometheus
   scheme: http
   follow_redirects: true
   relabel_configs:

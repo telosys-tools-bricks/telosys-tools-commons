@@ -15,37 +15,29 @@
  */
 package org.telosys.tools.commons.credentials;
 
-import java.io.File;
-
 import org.telosys.tools.commons.TelosysToolsException;
-import org.telosys.tools.commons.YamlFileManager;
 
 public class GitCredentialsManager {
 
-	private static final String GIT_CREDENTIALS_FILE_NAME = "git_user";
-			
-	private YamlFileManager getYamlFileManager() throws TelosysToolsException {
-		File file = UserHomeUtil.getFileInTelosysDir(GIT_CREDENTIALS_FILE_NAME);
-		return new YamlFileManager(file);
+	private static final GitCredentialsDAO gitCredentialsDAO = new GitCredentialsDAO();
+	
+	private GitCredentialsManager() {
+	}
+
+	public static final void setCredentials( GitCredentialsScope scope, GitCredentials credentials ) throws TelosysToolsException {
+		GitCredentialsHolder holder = gitCredentialsDAO.load();
+		holder.setCredentials(scope, credentials);
+		gitCredentialsDAO.save(holder);
 	}
 	
-	public GitCredentials load() throws TelosysToolsException {
-		YamlFileManager yamlFileManager = getYamlFileManager(); 
-//		try {
-//			return new GitCredentials( yamlFileManager.loadMap() );
-//		} catch (TelosysYamlException e) {
-//			throw new TelosysToolsException("Cannot load git credentials", e);
-//		}
-		return new GitCredentials( yamlFileManager.loadMap() );
+	public static final GitCredentials getCredentials( GitCredentialsScope scope ) throws TelosysToolsException {
+		GitCredentialsHolder holder = gitCredentialsDAO.load();
+		return holder.getCredentials(scope);
 	}
-	
-	public void save(GitCredentials gitCredentials) throws TelosysToolsException {
-		YamlFileManager yamlFileManager = getYamlFileManager();
-//		try {
-//		} catch (TelosysYamlException e) {
-//			throw new TelosysToolsException("Cannot save git credentials", e);
-//		}
-		yamlFileManager.saveMap(gitCredentials.getMap());
+
+	public static final void removeCredentials( GitCredentialsScope scope ) throws TelosysToolsException {
+		GitCredentialsHolder holder = gitCredentialsDAO.load();
+		holder.removeCredentials(scope);
+		gitCredentialsDAO.save(holder);
 	}
-	
 }
