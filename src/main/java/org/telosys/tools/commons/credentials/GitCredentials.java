@@ -17,20 +17,20 @@ package org.telosys.tools.commons.credentials;
 
 public class GitCredentials {
 
-	private final String user;
-	private final String token;
+	private final String userName;
+	private final String passwordOrToken;
 	
-	public GitCredentials(String user, String token) {
+	public GitCredentials(String userName, String passwordOrToken) {
 		super();
-		this.user = user;
-		this.token = token;
+		this.userName = userName;
+		this.passwordOrToken = passwordOrToken;
 	}
 
-	public String getUser() {
-		return user;
+	public String getUserName() {
+		return userName;
 	}
 
-	public String getToken() {
-		return token;
+	public String getPasswordOrToken() {
+		return passwordOrToken;
 	}
 }

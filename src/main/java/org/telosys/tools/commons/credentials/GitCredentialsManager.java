@@ -15,29 +15,84 @@
  */
 package org.telosys.tools.commons.credentials;
 
+import java.io.File;
+
 import org.telosys.tools.commons.TelosysToolsException;
 
 public class GitCredentialsManager {
 
-	private static final GitCredentialsDAO gitCredentialsDAO = new GitCredentialsDAO();
+	private final GitCredentialsDAO gitCredentialsDAO ;
 	
-	private GitCredentialsManager() {
+	/**
+	 * Default constructor (to use the standard YAML file)
+	 */
+	public GitCredentialsManager() {
+		super();
+		this.gitCredentialsDAO = new GitCredentialsDAO();
 	}
 
-	public static final void setCredentials( GitCredentialsScope scope, GitCredentials credentials ) throws TelosysToolsException {
+	/**
+	 * Constructor to use a specific directory (for tests only)
+	 * @param specificDirectory
+	 */
+	protected GitCredentialsManager(File specificDirectory) {
+		super();
+		this.gitCredentialsDAO = new GitCredentialsDAO(specificDirectory);
+	}
+
+	/**
+	 * Set the given credentials for the given scope (load, update and save the credentials in a file) 
+	 * @param scope
+	 * @param credentials
+	 * @throws TelosysToolsException
+	 */
+	public final void setCredentials(GitCredentialsScope scope, GitCredentials credentials) throws TelosysToolsException {
 		GitCredentialsHolder holder = gitCredentialsDAO.load();
+		// holder is never null (empty holder if no YAML file)
 		holder.setCredentials(scope, credentials);
 		gitCredentialsDAO.save(holder);
 	}
 	
-	public static final GitCredentials getCredentials( GitCredentialsScope scope ) throws TelosysToolsException {
+	/**
+	 * Get the credentials for the given scope (load the credentials from a file)
+	 * @param scope
+	 * @return
+	 * @throws TelosysToolsException
+	 */
+	public final GitCredentials getCredentials(GitCredentialsScope scope) throws TelosysToolsException {
 		GitCredentialsHolder holder = gitCredentialsDAO.load();
 		return holder.getCredentials(scope);
 	}
 
-	public static final void removeCredentials( GitCredentialsScope scope ) throws TelosysToolsException {
+	/**
+	 * Removes the credentials for the given scope (load, remove and save the credentials in a file)
+	 * @param scope
+	 * @return true if found and removed, false if not found
+	 * @throws TelosysToolsException
+	 */
+	public final boolean removeCredentials(GitCredentialsScope scope) throws TelosysToolsException {
 		GitCredentialsHolder holder = gitCredentialsDAO.load();
-		holder.removeCredentials(scope);
-		gitCredentialsDAO.save(holder);
+		// holder is never null (empty holder if no YAML file)
+		if ( holder.removeCredentials(scope) ) {
+			// removed => save
+			gitCredentialsDAO.save(holder);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public final GitCredentials searchUsableCredentials(GitCredentialsScope scope) throws TelosysToolsException {
+		GitCredentialsHolder holder = gitCredentialsDAO.load();
+		// Search first at specific scope level (models/bundles)
+		GitCredentials credentials = holder.getCredentials(scope);
+		if ( credentials != null ) {
+			return credentials;
+		}
+		else {
+			// Nothing at specific scope level => search at 'global' scope level 
+			return holder.getCredentials(GitCredentialsScope.GLOBAL);
+		}
 	}
 }

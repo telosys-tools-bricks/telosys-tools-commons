@@ -40,10 +40,18 @@ public class GitCredentialsHolder {
 	private final Map<String,String> credentialsMap ;
 	
     /**
-     * Constructor
+     * Default constructor (empty holder)
+     */
+    protected GitCredentialsHolder() {
+        super();
+        this.credentialsMap = new HashMap<>();
+    }
+    
+    /**
+     * Constructor (init holder with the given map)
      * @param inputMap
      */
-    public GitCredentialsHolder(Map<String,Object> inputMap) {
+    protected GitCredentialsHolder(Map<String,Object> inputMap) {
         super();
         this.credentialsMap = new HashMap<>();
         for (Map.Entry<String, Object> entry : inputMap.entrySet()) {
@@ -53,6 +61,7 @@ public class GitCredentialsHolder {
     }
 
     /**
+     * Returns a copy of the current internal map
      * @return
      */
     protected Map<String,Object> getMap() {
@@ -63,85 +72,22 @@ public class GitCredentialsHolder {
     	return objectMap;
     }
 
-//    /**
-//     * Get 'global' credentials
-//     * @return
-//     */
-//    public final GitCredentials getCredentialsForGlobal() {
-//        return getCredentialsForScope(KEY_GLOBAL);
-//    }
-//    /**
-//     * Set 'global' credentials
-//     * @param gitUserToken
-//     */
-//    public final void setCredentialsForGlobal(GitCredentials gitUserToken) {
-//    	setCredentialsForScope(KEY_GLOBAL, gitUserToken);
-//    }
-//    /**
-//     * Remove 'global' credentials
-//     */
-//    public final void removeCredentialsForGlobal() {
-//    	removeCredentialsForScope(KEY_GLOBAL);
-//    }
-    
-//    /**
-//     * Get 'models' credentials
-//     * @return
-//     */
-//    public final GitCredentials getCredentialsForModels() {
-//    	return getCredentialsForScope(KEY_MODELS);
-//    }
-//    /**
-//     * Set 'models' credentials
-//     * @param gitUserToken
-//     */
-//    public final void setCredentialsForModels(GitCredentials gitUserToken) {
-//    	setCredentialsForScope(KEY_MODELS, gitUserToken);
-//    }
-//    /**
-//     * Remove 'models' credentials
-//     */
-//    public final void removeCredentialsForModels() {
-//    	removeCredentialsForScope(KEY_MODELS);
-//    }
-    
-//    /**
-//     * Get 'bundles' credentials
-//     * @return
-//     */
-//    public final GitCredentials getCredentialsForBundles() {
-//    	return getCredentialsForScope(KEY_BUNDLES);
-//    }
-//    /**
-//     * Set 'bundles' credentials
-//     * @param gitUserToken
-//     */
-//    public final void setCredentialsForBundles(GitCredentials gitUserToken) {
-//    	setCredentialsForScope(KEY_BUNDLES, gitUserToken);
-//    }
-//    /**
-//     * Remove 'bundles' credentials
-//     */
-//    public final void removeCredentialsForBundles() {
-//    	removeCredentialsForScope(KEY_BUNDLES);
-//    }
-    
-    //--------------------------------------------------------------------
-    // GET
-    //--------------------------------------------------------------------
-//    protected final GitCredentials getCredentialsForScope(String scope) {
-//    	String user = get(scope, KEY_USER);
-//    	String token = get(scope, KEY_TOKEN);
-//    	if (user != null && token != null) {
-//    		return new GitCredentials(user, token) ;
-//    	}
-//    	else {
-//    		return null;
-//    	}
-//    }
+    /**
+     * Returns true if this holder is empty (no credentials in any scope)
+     * @return
+     */
+    public final boolean isEmpty() {
+    	return credentialsMap.isEmpty();
+    }
+
+    /**
+     * Get credentials for the given scope
+     * @param scope
+     * @return
+     */
     public final GitCredentials getCredentials(GitCredentialsScope scope) {
-    	String user = get(scope, KEY_USER);
-    	String token = get(scope, KEY_TOKEN);
+    	String user  = credentialsMap.get(buildKey(scope, KEY_USER));
+    	String token = credentialsMap.get(buildKey(scope, KEY_TOKEN));
     	if (user != null && token != null) {
     		return new GitCredentials(user, token) ;
     	}
@@ -149,49 +95,38 @@ public class GitCredentialsHolder {
     		return null;
     	}
     }
-//    private String get(String scope, String what) {
-//    	if ( KEY_GLOBAL.equals(scope) ) {
-//    		return  credentialsMap.get(key(KEY_GLOBAL, what) );
-//    	}
-//    	else {
-//        	String s = credentialsMap.get(key(scope, what) );
-//        	return s != null ? s : credentialsMap.get(key(KEY_GLOBAL, what) );
-//    	}
-//    }
-    private String get(GitCredentialsScope scope, String what) {
-    	if ( scope == GitCredentialsScope.GLOBAL ) {
-    		return  credentialsMap.get(key(GitCredentialsScope.GLOBAL, what) );
+
+    /**
+     * Set credentials for the given scope
+     * @param scope
+     * @param gitCredentials
+     */
+    public final void setCredentials(GitCredentialsScope scope, GitCredentials gitCredentials) {
+    	credentialsMap.put( buildKey(scope, KEY_USER) , gitCredentials.getUserName());
+    	credentialsMap.put( buildKey(scope, KEY_TOKEN), gitCredentials.getPasswordOrToken());
+    }
+
+    /**
+     * Remove credentials for the given scope
+     * @param scope
+     */
+    public final boolean removeCredentials(GitCredentialsScope scope) {
+    	if ( credentialsExist(scope) ) {
+        	credentialsMap.remove( buildKey(scope, KEY_USER)  );
+        	credentialsMap.remove( buildKey(scope, KEY_TOKEN) );
+        	return true;
     	}
     	else {
-        	String s = credentialsMap.get(key(scope, what) );
-        	return s != null ? s : credentialsMap.get(key(GitCredentialsScope.GLOBAL, what) );
+    		return false;
     	}
     }
-//    private String getFromMap(String scope, String what) {
-//    	String key = scope + "." + what ;
-//    	return credentialsMap.get(key);
-//    }
 
-    //--------------------------------------------------------------------
-    // SET
-    //--------------------------------------------------------------------
-    public final void setCredentials(GitCredentialsScope scope, GitCredentials gitCredentials) {
-    	credentialsMap.put( key(scope, KEY_USER) , gitCredentials.getUser());
-    	credentialsMap.put( key(scope, KEY_TOKEN), gitCredentials.getToken());
-    }
-
-    //--------------------------------------------------------------------
-    // REMOVE
-    //--------------------------------------------------------------------
-    public final void removeCredentials(GitCredentialsScope scope) {
-    	credentialsMap.remove( key(scope, KEY_USER)  );
-    	credentialsMap.remove( key(scope, KEY_TOKEN) );
+    public final boolean credentialsExist(GitCredentialsScope scope) {
+    	return credentialsMap.get(buildKey(scope, KEY_USER) ) != null 
+    		|| credentialsMap.get(buildKey(scope, KEY_TOKEN) ) != null  ;
     }
     
-//    private String key(String scope, String what) {
-//    	return scope + "." + what ;
-//    }
-    private String key(GitCredentialsScope scope, String what) {
+    private String buildKey(GitCredentialsScope scope, String what) {
     	switch (scope) {
     	case GLOBAL:
     		return KEY_GLOBAL + "." + what ;

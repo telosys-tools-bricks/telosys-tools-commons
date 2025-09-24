@@ -91,59 +91,6 @@ public class YamlFileManager {
 		}
 	}
 	
-//	/**
-//	 * Loads an instance of the given class from the given YAML file
-//	 * @param clazz
-//	 * @return
-//	 * @throws TelosysToolsException
-//	 */
-//	public <T> T loadObject(Class<T> clazz) throws TelosysToolsException {
-//		try (InputStream inputStream = new FileInputStream(file)) {
-//			Yaml yaml = new Yaml(new Constructor(clazz));
-//			return yaml.load(inputStream);
-//
-//		} catch ( Exception e) { 
-//			// FileNotFoundException
-//			// IOException is thrown by automatic close() invocation on inputStream
-//			throw new TelosysToolsException(file, e);
-//		}
-//	}
-
-//	/**
-//	 * Saves the given data in a YAML file
-//	 * @param data
-//	 */
-//	public void saveObject(Object data) throws TelosysToolsException {
-//		
-//		// Get file writer
-//		FileUtil.createParentFolderIfNecessary(file);
-//		Writer writer;
-//		try {
-//			writer = new FileWriter(file);
-//		} catch (IOException e) {
-//			throw new TelosysToolsException(file, e );
-//		}
-//
-//		// Write data in YAML file writer
-//		DumperOptions options = new DumperOptions();
-//		options.setIndent(2);
-//		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-//		
-//		Yaml yaml = new Yaml( options ) ;
-//		try {
-//			yaml.dump(data, writer);
-//		} catch (Exception e) {
-//			throw new TelosysToolsException(file, e );
-//		}
-//		
-//		// Close file writer
-//		try {
-//			writer.close();
-//		} catch (IOException e) {
-//			throw new TelosysToolsException(file, e );
-//		}
-//	}
-
 	/**
 	 * Serialize the given map and save in the YAML file
 	 * @param map
@@ -165,4 +112,11 @@ public class YamlFileManager {
 
 	}
 	
+	/**
+	 * Returns true if the YAML file exists (else false)
+	 * @return
+	 */
+	public boolean fileExists() {
+		return file.exists();
+	}
 }

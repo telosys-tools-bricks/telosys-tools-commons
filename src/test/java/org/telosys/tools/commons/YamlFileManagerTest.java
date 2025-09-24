@@ -31,49 +31,24 @@ public class YamlFileManagerTest {
 		TestsEnv.getTmpExistingFolder("/yaml");
 	}
 	
-//	@SuppressWarnings("unchecked")
 	@Test
 	public void testLoadMap1() throws TelosysToolsException  {
-		print("--- testLoadMap");
-		
 		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/model.yaml"));
 		
 		Map<String,Object> data = yaml.loadMap();
 		@SuppressWarnings("unchecked")
-		Map<String,Object> model = (Map<String,Object>) data.get("model"); // LinkedHashMap
-		print(model.getClass().getName());
-		print(model.toString());
-		
-		print("  name : " + model.get("name")) ;
-		print("  version : " + model.get("version")) ;
-		assertEquals("MyModelName", model.get("name"));
-		assertEquals(1.0, model.get("version")); // Double
+		Map<String,Object> modelMap = (Map<String,Object>) data.get("model"); // LinkedHashMap
+		assertEquals("java.util.LinkedHashMap", modelMap.getClass().getName());
+		assertEquals("MyModelName", modelMap.get("name"));
+		assertEquals(1.0, modelMap.get("version")); // No quotes => type = Double for value 1.0
 	}
-
-//	@Test
-//	public void testLoadBean() throws TelosysToolsException {
-//		print("--- testLoadBean");
-//		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/student.yaml"));
-//		Student student = yaml.loadObject( Student.class);
-//		print(student.toString());
-//		assertEquals("History", student.getDepartment());
-//		assertEquals(2020, student.getYear());
-//		assertEquals(2, student.getCourses().size());
-//	}
-//
-//	@Test
-//	public void testLoadBeanInvalid() {
-//		print("--- testLoadBeanInvalid");
-//		YamlFileManager yaml = new YamlFileManager(FileUtil.getFileByClassPath("/yaml/student-invalid.yaml"));
-//		try {
-//			yaml.loadObject(Student.class);
-//		} catch (TelosysToolsException  e) {
-//			assertTrue(e.getCause() instanceof YAMLException);
-//			assertTrue(e.getCause() instanceof MarkedYAMLException);
-//			printYamlExceptionType((YAMLException)e.getCause());
-//		}
-//	}
 	
+	@Test(expected = TelosysToolsException.class)
+	public void testLoadMapWithNoFile() throws TelosysToolsException  {
+		YamlFileManager yaml = new YamlFileManager(TestsEnv.getTmpFile("/yaml/aa/bb/no-file.yaml")); 
+		yaml.loadMap(); // throws exception
+	}		
+
 	protected void printYamlExceptionType(YAMLException ye) {
 		if ( ye instanceof MarkedYAMLException ) {
 			print("--- YAMLException is instance of MarkedYAMLException"); 
@@ -102,70 +77,19 @@ public class YamlFileManagerTest {
 		}
 	}
 
-//	@Test
-//	public void testSaveMap() throws TelosysToolsException {
-//		print("--- testSaveMap");
-//		
-//		Map<String,Object> innerMap = new HashMap<>();
-//		innerMap.put("firstName", "Bob");
-//		innerMap.put("age", 12);
-//
-//		Map<String,Object> map1 = new HashMap<>();
-//		map1.put("aa", "aa-value");
-//		map1.put("bb", true);
-//		map1.put("cc", 123);
-//		map1.put("void-map", new HashMap<>() );
-//		map1.put("innerMap", innerMap);
-//
-//		List<String> list = new LinkedList<>();
-//		list.add("element1");
-//		list.add("element2");
-//
-//		Map<String,Object> data = new HashMap<>();
-//		data.put("map1", map1);
-//		data.put("list", list);
-//		
-//		File file1 = TestsEnv.getTmpFile("yaml/data1.yaml");
-//		saveObject(file1, map1);
-//		assertTrue(file1.exists());
-//		
-//		File file2 = TestsEnv.getTmpFile("yaml/data2.yaml");
-//		saveObject(file2, data);
-//		assertTrue(file2.exists());
-//	}
-
-//	@Test
-//	public void testSaveBean() throws TelosysToolsException {
-//		print("--- testSaveBean");
-//		List<Course> courses = new LinkedList<>();
-//		Student student = new Student();
-//		student.setYear(2022);
-//		student.setDepartment("Math");
-//		student.setCourses(courses);
-//
-//		File file = TestsEnv.getTmpFile("yaml/data3-student.yaml");
-//		saveObject(file, student);
-//		assertTrue(file.exists());
-//	}
-
-//	private void saveObject(File file, Object data) throws TelosysToolsException {
-//		print("Saving data : " + data);
-//		print("in file : " + file.getAbsolutePath() );
-//		YamlFileManager yaml = new YamlFileManager(file);
-//		yaml.saveObject(data);
-//	}
-
 	@Test
 	public void testSaveAndLoadMap() throws TelosysToolsException  {
 		File file = TestsEnv.getTmpFile("yaml/data-map-1.yaml");
 		YamlFileManager yaml = new YamlFileManager(file);
+		// Init and save
 		Map<String,Object> map = new HashMap<>();
 		map.put("k1", "v1");
 		map.put("k2", "v2");
 		yaml.saveMap(map);
-		
+		// Load
 		YamlFileManager yaml2 = new YamlFileManager(file);
 		Map<String,Object> map2 = yaml2.loadMap();
+		// Check same maps
 		assertEquals(map, map2);
 	}
 
