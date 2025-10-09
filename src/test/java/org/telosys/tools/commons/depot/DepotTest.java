@@ -12,75 +12,79 @@ public class DepotTest {
 
 	@Test
 	public void testGitHubNominalCases() throws TelosysToolsException {
-		Depot d;
+		Depot depot;
 		
 		//--- GitHub organization 
-		d = new Depot("github_org:my-org");
-		assertTrue(d.isGitHubDepot());
-		assertFalse(d.isGitLabDepot());
-		assertEquals("github_org", d.getType());
-		assertEquals("my-org", d.getName());
-		assertEquals("", d.getRootURL()); 
+		depot = new Depot("github_org:my-org");
+		assertTrue(depot.isGitHubDepot());
+		assertFalse(depot.isGitLabDepot());
+		assertEquals("github_org", depot.getType());
+		assertEquals("my-org", depot.getNamespace());
+		assertEquals("", depot.getSpecificRootURL()); 
+		assertEquals("https://github.com", depot.getGitHubRootUrl() ); 
+		assertEquals("https://github.com", depot.getRootURL());
+		assertEquals("https://github.com/my-org", depot.getBaseURL());
+		
 		// url with default values
-		assertEquals("https://github.com", d.getGitHubRootUrl() ); 
-		assertEquals("https://api.github.com", d.getGitHubApiRootUrl() );
-		assertEquals("https://api.github.com/orgs/my-org/repos?per_page=100", d.getApiUrl());
-		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
+		// API 
+		assertEquals("https://api.github.com", depot.getGitHubApiRootUrl() );
+		assertEquals("https://api.github.com/orgs/my-org/repos?per_page=100", depot.getApiUrl());
+		assertEquals("https://api.github.com/rate_limit", depot.getApiRateLimitUrl());
 
-		d = new Depot(" github_org : my-org   ");
-		assertTrue(d.isGitHubDepot());
-		assertFalse(d.isGitLabDepot());
-		assertEquals("github_org", d.getType());
-		assertEquals("my-org", d.getName());
-		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/orgs/my-org/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
-		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
+		depot = new Depot(" github_org : my-org   ");
+		assertTrue(depot.isGitHubDepot());
+		assertFalse(depot.isGitLabDepot());
+		assertEquals("github_org", depot.getType());
+		assertEquals("my-org", depot.getNamespace());
+		assertEquals("", depot.getSpecificRootURL());
+		assertEquals("https://api.github.com/orgs/my-org/repos", StrUtil.removeFrom(depot.getApiUrl(), '?')); // without "?per_page=nn"
+		assertEquals("https://api.github.com/rate_limit", depot.getApiRateLimitUrl());
 
-		d = new Depot("github_org:my-templates ( https://myhost:9090 ) ");
-		assertTrue(d.isGitHubDepot());
-		assertFalse(d.isGitLabDepot());
-		assertEquals("github_org", d.getType());
-		assertEquals("my-templates", d.getName());
-		assertEquals("https://myhost:9090", d.getRootURL());
-		assertEquals("https://myhost:9090", d.getGitHubApiRootUrl() );
-		assertEquals("https://myhost:9090/orgs/my-templates/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
-		assertEquals("https://myhost:9090/rate_limit", d.getApiRateLimitUrl());
+		depot = new Depot("github_org:my-templates ( https://myhost:9090 ) ");
+		assertTrue(depot.isGitHubDepot());
+		assertFalse(depot.isGitLabDepot());
+		assertEquals("github_org", depot.getType());
+		assertEquals("my-templates", depot.getNamespace());
+		assertEquals("https://myhost:9090", depot.getSpecificRootURL());
+		assertEquals("https://myhost:9090", depot.getGitHubApiRootUrl() );
+		assertEquals("https://myhost:9090/orgs/my-templates/repos", StrUtil.removeFrom(depot.getApiUrl(), '?')); // without "?per_page=nn"
+		assertEquals("https://myhost:9090/rate_limit", depot.getApiRateLimitUrl());
 
 		//--- GitHub user 
-		d = new Depot(" github_user : toto   ");
-		assertTrue(d.isGitHubDepot());
-		assertFalse(d.isGitLabDepot());
-		assertEquals("github_user", d.getType());
-		assertEquals("toto", d.getName());
-		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/users/toto/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
-		assertEquals("https://api.github.com/rate_limit", d.getApiRateLimitUrl());
+		depot = new Depot(" github_user : toto   ");
+		assertTrue(depot.isGitHubDepot());
+		assertFalse(depot.isGitLabDepot());
+		assertEquals("github_user", depot.getType());
+		assertEquals("toto", depot.getNamespace());
+		assertEquals("", depot.getSpecificRootURL());
+		assertEquals("https://api.github.com/users/toto/repos", StrUtil.removeFrom(depot.getApiUrl(), '?')); // without "?per_page=nn"
+		assertEquals("https://api.github.com/rate_limit", depot.getApiRateLimitUrl());
 
-		d = new Depot(" github_user :toto(http://myhost/ )  "); // trailing "/" is removed
-		assertTrue(d.isGitHubDepot());
-		assertFalse(d.isGitLabDepot());
-		assertEquals("github_user", d.getType());
-		assertEquals("toto", d.getName());
-		assertEquals("http://myhost", d.getRootURL());
-		assertEquals("http://myhost/users/toto/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
-		assertEquals("http://myhost/rate_limit", d.getApiRateLimitUrl());
+		depot = new Depot(" github_user :toto(http://myhost/ )  "); // trailing "/" is removed
+		assertTrue(depot.isGitHubDepot());
+		assertFalse(depot.isGitLabDepot());
+		assertEquals("github_user", depot.getType());
+		assertEquals("toto", depot.getNamespace());
+		assertEquals("http://myhost", depot.getSpecificRootURL());
+		assertEquals("http://myhost/users/toto/repos", StrUtil.removeFrom(depot.getApiUrl(), '?')); // without "?per_page=nn"
+		assertEquals("http://myhost/rate_limit", depot.getApiRateLimitUrl());
 
 		// GitHub current user 
-		d = new Depot(" github_current_user ");
-		assertTrue(d.isGitHubDepot());
-		assertFalse(d.isGitLabDepot());
-		assertEquals("github_current_user", d.getType());
-		assertEquals("", d.getName());
-		assertEquals("", d.getRootURL());
-		assertEquals("https://api.github.com/user/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
+		depot = new Depot(" github_current_user ");
+		assertTrue(depot.isGitHubDepot());
+		assertFalse(depot.isGitLabDepot());
+		assertEquals("github_current_user", depot.getType());
+		assertEquals("", depot.getNamespace());
+		assertEquals("", depot.getSpecificRootURL());
+		assertEquals("https://api.github.com/user/repos", StrUtil.removeFrom(depot.getApiUrl(), '?')); // without "?per_page=nn"
 
-		d = new Depot(" github_current_user( https://myhost:8888) ");
-		assertTrue(d.isGitHubDepot());
-		assertFalse(d.isGitLabDepot());
-		assertEquals("github_current_user", d.getType());
-		assertEquals("", d.getName());
-		assertEquals("https://myhost:8888", d.getRootURL());
-		assertEquals("https://myhost:8888/user/repos", StrUtil.removeFrom(d.getApiUrl(), '?')); // without "?per_page=nn"
+		depot = new Depot(" github_current_user( https://myhost:8888) ");
+		assertTrue(depot.isGitHubDepot());
+		assertFalse(depot.isGitLabDepot());
+		assertEquals("github_current_user", depot.getType());
+		assertEquals("", depot.getNamespace());
+		assertEquals("https://myhost:8888", depot.getSpecificRootURL());
+		assertEquals("https://myhost:8888/user/repos", StrUtil.removeFrom(depot.getApiUrl(), '?')); // without "?per_page=nn"
 	}
 
 	@Test(expected = TelosysToolsException.class)

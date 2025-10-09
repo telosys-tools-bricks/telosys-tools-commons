@@ -265,7 +265,7 @@ public class GitHubClient implements DepotClient {
 	@Override
 	public final long downloadRepositoryBranch(Depot depot, String repoName, String branch, String destinationFile) throws TelosysToolsException {
 		checkDepotIsGitHub(depot);
-		String url = buildDownloadBranchURL(depot.getName(), repoName, branch);
+		String url = buildDownloadBranchURL(depot.getNamespace(), repoName, branch);
 		HttpClient httpClient = buildHttpClient();
 		try {
 			return httpClient.downloadFile(url, destinationFile);

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.telosys.tools.commons.StrUtil;
 import org.telosys.tools.commons.TelosysToolsException;
+import org.telosys.tools.commons.exception.TelosysRuntimeException;
 
 /** 
  * Depot 
@@ -57,9 +58,9 @@ public class Depot {
 	
 	private final String definition;
 	private final String type;
-	private final String name;
-	private final String rootUrl;    // specific root URL 
-	private final String apiRootUrl; // specific API root URL 
+	private final String namespace;
+	private final String specificRootUrl;  // specific root URL 
+	private final String apiRootUrl;       // API root URL 
 
 	/**
 	 * Constructor
@@ -73,17 +74,18 @@ public class Depot {
 		}
 		this.definition = depotDefinition;
 		// parse depot definition 
-		this.type = parseDepotType(depotDefinition);
-		this.name = parseDepotName(depotDefinition);
-		this.rootUrl = parseRootUrl(depotDefinition);
-		this.apiRootUrl = this.rootUrl ; // temporary ( in the future add "(api-root-url)" after "(root-url)" in depot definition ? )
+		this.type = parseType(depotDefinition);
+		this.namespace = parseNamespace(depotDefinition);
+		this.specificRootUrl = parseSpecificRootUrl(depotDefinition);
+		this.apiRootUrl = this.specificRootUrl ; // temporary ( in the future add "(api-root-url)" after "(root-url)" in depot definition ? )
 		checkParts();
 	}
 	
 	private TelosysToolsException invalidDepotError(String depotString, String error) {
 		return new TelosysToolsException(INVALID_DEPOT + " '" + depotString + "' - " + error);
 	}
-	private String parseDepotType(String depotString) throws TelosysToolsException {
+	private String parseType(String depotString) throws TelosysToolsException {
+		// left part before ":"  
 		String depotWithoutRootUrl = StrUtil.removeFrom(depotString, '(');
 		String[] parts = depotWithoutRootUrl.split(":");
 		if (parts.length > 0  ) {
@@ -93,7 +95,8 @@ public class Depot {
 			throw invalidDepotError(depotString, "bad syntax");
 		}
 	}
-	private String parseDepotName(String depotString) {
+	private String parseNamespace(String depotString) {
+		// part after ":" and before "(" if any 
 		String depotWithoutRootUrl = StrUtil.removeFrom(depotString, '(');
 		String[] parts = depotWithoutRootUrl.split(":");
 		if (parts.length > 1  ) {
@@ -103,7 +106,7 @@ public class Depot {
 			return "";
 		}
 	}
-	private String parseRootUrl(String depotString) throws TelosysToolsException {
+	private String parseSpecificRootUrl(String depotString) throws TelosysToolsException {
         int start = depotString.indexOf('(');
         if ( start >= 0 ) {
             int end = depotString.indexOf(')', start);
@@ -125,7 +128,7 @@ public class Depot {
 		if ( ! VALID_TYPES.contains(type) ) {
 			throw invalidDepotError(definition, "invalid type");
 		}
-		if ( ! GITHUB_CURRENT_USER.equals(type) && name.isEmpty() ) {
+		if ( ! GITHUB_CURRENT_USER.equals(type) && namespace.isEmpty() ) {
 			throw invalidDepotError(definition, "name required");
 		}
 	}
@@ -147,19 +150,54 @@ public class Depot {
 	}
 
 	/**
-	 * Returns the depot name
+	 * Returns the depot namespace, the part after the root URL (user, organization, owner, group, subgroup )
 	 * @return
 	 */
-	public String getName() {
-		return name;
+	public String getNamespace() {
+		return namespace;
 	}
 
 	/**
-	 * Returns the depot root URL (https://myhost:9090, etc ) 
+	 * Returns the specific depot root URL (https://myhost:9090, etc ) 
+	 * @return
+	 */
+	public String getSpecificRootURL() {
+		return specificRootUrl;
+	}
+	
+	/**
+	 * Returns the depot root URL (eg "https://github.com", "https://gitlab.com",  or specific root URL ) 
 	 * @return
 	 */
 	public String getRootURL() {
-		return rootUrl;
+		if ( this.isGitHubDepot() ) {
+			// With GitHub the URL structure is the same for "user" and "organization" 
+			//  - HTTPS:  https://github.com/<owner>/<repo>.git
+			//  - SSH:    git@github.com:<owner>/<repo>.git
+			// where <owner> = either a username (for personal repos) or an organization name
+			// example: https://github.com/telosys-models
+			return getGitHubRootUrl() ; 
+		}
+		else if ( this.isGitLabDepot() ) {
+			// On GitLab, the pattern is "https://gitlab.com/<namespace>/<repository>"
+			// where <namespace> = either 
+			//  . a user (personal repo), 
+			//  . a group (equivalent of a GitHub organization) or 
+			//  . a subgroup (group inside group)
+			return getGitLabRootUrl() ; 
+		}
+		else {
+			throw new TelosysRuntimeException("Cannot get root URL (invalid depot type)");
+		}		
+	}
+	
+	/**
+	 * Returns the depot base URL : {root-URL} + "/" + {namespace} 
+	 * (eg "https://github.com/mybundles", "https://gitlab.com/group/subgroup" ) 
+	 * @return
+	 */
+	public String getBaseURL() {
+		return getRootURL() + "/" + getNamespace() ; 
 	}
 	
 	/**
@@ -181,11 +219,11 @@ public class Depot {
 	private String buildGitHubApiURL(String root) throws TelosysToolsException {
 		if ( this.isGitHubOrganization() ) {
 			// example: https://api.github.com/orgs/telosys-models/repos  
-			return root + "/orgs/" + getName() + "/repos?" + GITHUB_PER_PAGE ; 
+			return root + "/orgs/" + getNamespace() + "/repos?" + GITHUB_PER_PAGE ; 
 		}
 		else if ( this.isGitHubUser()) {
 			// example: https://api.github.com/users/telosys-models/repos  
-			return root + "/users/" + getName() + "/repos?" + GITHUB_PER_PAGE ; 
+			return root + "/users/" + getNamespace() + "/repos?" + GITHUB_PER_PAGE ; 
 		}
 		else if ( this.isGitHubCurrentUser() ) {
 			// fixed URL
@@ -200,10 +238,10 @@ public class Depot {
 	}
 
 	protected String getGitHubRootUrl() { // v 4.3.0
-		return this.rootUrl.isEmpty() ? GITHUB_DEFAULT_ROOT_URL : this.rootUrl ;
+		return this.specificRootUrl.isEmpty() ? GITHUB_DEFAULT_ROOT_URL : this.specificRootUrl ;
 	}
 	protected String getGitLabRootUrl() { // v 4.3.0
-		return this.rootUrl.isEmpty() ? GITLAB_DEFAULT_ROOT_URL : this.rootUrl ;
+		return this.specificRootUrl.isEmpty() ? GITLAB_DEFAULT_ROOT_URL : this.specificRootUrl ;
 	}
 	protected String getGitHubApiRootUrl() { // v 4.3.0
 		return this.apiRootUrl.isEmpty() ? GITHUB_DEFAULT_API_ROOT_URL : this.apiRootUrl ;
@@ -263,7 +301,7 @@ public class Depot {
 			//  - SSH:    git@github.com:<owner>/<repo>.git
 			// where <owner> = either a username (for personal repos) or an organization name
 			// example: https://github.com/telosys-models/cars 
-			return getGitHubRootUrl() + "/" + getName() + "/" + repositoryName + ".git" ; 
+			return getGitHubRootUrl() + "/" + getNamespace() + "/" + repositoryName + ".git" ; 
 			// ".git" suffix is optional (can be used or not) 
 			// ".git" suffix is used by "git clone" => use it too
 		}
@@ -273,7 +311,7 @@ public class Depot {
 			//  . a user (personal repo), 
 			//  . a group (equivalent of a GitHub organization) or 
 			//  . a subgroup (group inside group)
-			return getGitLabRootUrl() + "/" + getName() + "/" + repositoryName + ".git" ; 
+			return getGitLabRootUrl() + "/" + getNamespace() + "/" + repositoryName + ".git" ; 
 			// ".git" suffix is optional (can be used or not) 
 			// ".git" suffix is used by "git clone" => use it too
 		}
